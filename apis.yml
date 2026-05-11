@@ -28,6 +28,12 @@ common:
     url: https://firehydrant.com
   - type: Documentation
     url: https://docs.firehydrant.io
+  - type: Integrations
+    url: https://firehydrant.com/integrations/
+integrations:
+  - name: Featured Slack
+  - name: Featured Microsoft Teams
+  - name: Featured Jira Cloud
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
