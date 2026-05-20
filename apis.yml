@@ -24,6 +24,10 @@ apis:
       - type: Documentation
         url: https://docs.firehydrant.io
 common:
+  - type: GitHubOrganization
+    url: https://github.com/firehydrant
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/firehydrant
   - type: Website
     url: https://firehydrant.com
   - type: Documentation
