@@ -1,43 +1,44 @@
 aid: firehydrant
 name: FireHydrant
-description: >-
-  FireHydrant is an incident management platform providing automated runbooks, status pages, and retrospective workflows.
+description: FireHydrant is an incident management platform providing automated runbooks,
+  status pages, and retrospective workflows.
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - AIOps
-  - Incident Management
-url: >-
-  https://raw.githubusercontent.com/api-evangelist/firehydrant/refs/heads/main/apis.yml
+- AIOps
+- Incident Management
+url: https://raw.githubusercontent.com/api-evangelist/firehydrant/refs/heads/main/apis.yml
 created: '2026-03-27'
 modified: '2026-03-27'
 specificationVersion: '0.19'
 apis:
-  - aid: firehydrant:firehydrant
-    name: FireHydrant
-    description: >-
-      FireHydrant is an incident management platform providing automated runbooks, status pages, and retrospective workflows.
-    humanURL: https://firehydrant.com
-    tags:
-      - AIOps
-    properties:
-      - type: Documentation
-        url: https://docs.firehydrant.io
-common:
-  - type: GitHubOrganization
-    url: https://github.com/firehydrant
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/firehydrant
-  - type: Website
-    url: https://firehydrant.com
+- aid: firehydrant:firehydrant
+  name: FireHydrant
+  description: FireHydrant is an incident management platform providing automated
+    runbooks, status pages, and retrospective workflows.
+  humanURL: https://firehydrant.com
+  tags:
+  - AIOps
+  properties:
   - type: Documentation
     url: https://docs.firehydrant.io
-  - type: Integrations
-    url: https://firehydrant.com/integrations/
+  - url: graphql/firehydrant-graphql.md
+    type: GraphQL
+common:
+- type: GitHubOrganization
+  url: https://github.com/firehydrant
+- type: LinkedIn
+  url: https://www.linkedin.com/company/firehydrant
+- type: Website
+  url: https://firehydrant.com
+- type: Documentation
+  url: https://docs.firehydrant.io
+- type: Integrations
+  url: https://firehydrant.com/integrations/
 integrations:
-  - name: Featured Slack
-  - name: Featured Microsoft Teams
-  - name: Featured Jira Cloud
+- name: Featured Slack
+- name: Featured Microsoft Teams
+- name: Featured Jira Cloud
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com

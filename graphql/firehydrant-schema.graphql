@@ -1,0 +1,857 @@
+"""
+FireHydrant GraphQL Schema
+Conceptual schema based on the FireHydrant REST API (https://developers.firehydrant.io/).
+Models reliability operations and incident management resources.
+"""
+
+# ─── Scalars ──────────────────────────────────────────────────────────────────
+
+scalar DateTime
+scalar JSON
+
+# ─── Enumerations ─────────────────────────────────────────────────────────────
+
+enum IncidentStatus {
+  STARTED
+  ACKNOWLEDGED
+  INVESTIGATING
+  IDENTIFIED
+  MONITORING
+  RESOLVED
+  CLOSED
+}
+
+enum IncidentSeverity {
+  SEV1
+  SEV2
+  SEV3
+  SEV4
+  SEV5
+}
+
+enum IncidentPriority {
+  P1
+  P2
+  P3
+  P4
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum FollowUpStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CANCELLED
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MEMBER
+  RESPONDER
+  OBSERVER
+}
+
+enum WebhookAction {
+  INCIDENT_CREATED
+  INCIDENT_UPDATED
+  INCIDENT_RESOLVED
+  ALERT_TRIGGERED
+  CHANGE_EVENT_CREATED
+  RUNBOOK_STEP_COMPLETED
+  RETROSPECTIVE_CREATED
+}
+
+# ─── Core Incident Types ───────────────────────────────────────────────────────
+
+"""A FireHydrant incident record."""
+type Incident {
+  id: ID!
+  name: String!
+  description: String
+  status: IncidentStatus!
+  severity: IncidentSeverity
+  priority: IncidentPriority
+  type: IncidentType
+  tags: [IncidentTag!]
+  labels: [IncidentLabel!]
+  customFields: [IncidentCustomField!]
+  attachments: [IncidentAttachment!]
+  links: [IncidentLink!]
+  teams: [IncidentTeam!]
+  services: [Service!]
+  environments: [Environment!]
+  functionalities: [Functionality!]
+  milestones: [IncidentMilestone!]
+  updates: [IncidentUpdate!]
+  timeline: IncidentTimeline
+  events: [IncidentEvent!]
+  tasks: [Task!]
+  followUps: [FollowUp!]
+  runbooks: [Runbook!]
+  alerts: [Alert!]
+  retrospective: Retrospective
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  resolvedAt: DateTime
+  closedAt: DateTime
+  createdBy: User
+  commander: User
+  communicationsLead: User
+  channel: String
+  slackChannel: String
+  customerImpact: String
+  impactDuration: Int
+  postmortemUrl: String
+}
+
+"""Detailed view of an incident with all related data."""
+type IncidentDetails {
+  incident: Incident!
+  affectedServiceCount: Int!
+  affectedEnvironmentCount: Int!
+  totalUpdates: Int!
+  totalTasks: Int!
+  openFollowUps: Int!
+  duration: Int
+  meanTimeToAcknowledge: Int
+  meanTimeToResolve: Int
+}
+
+"""A named incident type for categorization."""
+type IncidentType {
+  id: ID!
+  name: String!
+  description: String
+  template: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A tag attached to an incident."""
+type IncidentTag {
+  id: ID!
+  name: String!
+}
+
+"""A label key-value pair on an incident."""
+type IncidentLabel {
+  key: String!
+  value: String!
+}
+
+"""A custom field value on an incident."""
+type IncidentCustomField {
+  id: ID!
+  name: String!
+  fieldType: String!
+  value: JSON
+  required: Boolean!
+}
+
+"""A file or document attached to an incident."""
+type IncidentAttachment {
+  id: ID!
+  filename: String!
+  url: String!
+  contentType: String
+  size: Int
+  uploadedAt: DateTime!
+  uploadedBy: User
+}
+
+"""An external link associated with an incident."""
+type IncidentLink {
+  id: ID!
+  name: String!
+  url: String!
+  iconUrl: String
+  createdAt: DateTime!
+}
+
+"""A team involved in an incident response."""
+type IncidentTeam {
+  team: Team!
+  role: String
+  joinedAt: DateTime!
+}
+
+"""A status update posted during an incident."""
+type IncidentUpdate {
+  id: ID!
+  body: String!
+  status: IncidentStatus
+  postedAt: DateTime!
+  postedBy: User
+  notifySubscribers: Boolean!
+  slackMessageUrl: String
+}
+
+"""A chronological timeline of all incident events and updates."""
+type IncidentTimeline {
+  incidentId: ID!
+  events: [IncidentEvent!]!
+  totalCount: Int!
+}
+
+"""A discrete event in the incident timeline."""
+type IncidentEvent {
+  id: ID!
+  type: String!
+  body: String
+  occurredAt: DateTime!
+  actor: User
+  metadata: JSON
+}
+
+"""A milestone in an incident lifecycle (e.g., detected, acknowledged, resolved)."""
+type IncidentMilestone {
+  id: ID!
+  type: String!
+  occurredAt: DateTime!
+}
+
+# ─── Task and Follow-Up ───────────────────────────────────────────────────────
+
+"""A list of tasks grouped under a heading."""
+type TaskList {
+  id: ID!
+  name: String!
+  tasks: [Task!]!
+  completedCount: Int!
+  totalCount: Int!
+}
+
+"""An actionable task on an incident."""
+type Task {
+  id: ID!
+  title: String!
+  description: String
+  status: TaskStatus!
+  assignee: User
+  dueAt: DateTime
+  completedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A follow-up action item generated from an incident."""
+type FollowUp {
+  id: ID!
+  summary: String!
+  description: String
+  status: FollowUpStatus!
+  priority: IncidentPriority
+  assignee: User
+  dueAt: DateTime
+  resolvedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  externalTicketUrl: String
+  incidentId: ID!
+}
+
+# ─── Runbook Types ────────────────────────────────────────────────────────────
+
+"""A runbook defining a sequence of response steps."""
+type Runbook {
+  id: ID!
+  name: String!
+  description: String
+  steps: [RunbookStep!]!
+  attachments: [RunbookAttachment!]
+  conditions: [RunbookCondition!]
+  owner: Team
+  repeatable: Boolean!
+  autoAttach: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A single step within a runbook."""
+type RunbookStep {
+  id: ID!
+  name: String!
+  description: String
+  type: String!
+  action: String
+  config: JSON
+  position: Int!
+  required: Boolean!
+  completedAt: DateTime
+  completedBy: User
+  skipped: Boolean!
+}
+
+"""A file or resource attached to a runbook."""
+type RunbookAttachment {
+  id: ID!
+  filename: String!
+  url: String!
+  uploadedAt: DateTime!
+}
+
+"""A condition that controls runbook auto-attachment or step gating."""
+type RunbookCondition {
+  id: ID!
+  conditionType: String!
+  params: JSON
+}
+
+# ─── Alerting ─────────────────────────────────────────────────────────────────
+
+"""An alert received from an external monitoring system."""
+type Alert {
+  id: ID!
+  summary: String!
+  body: String
+  status: String!
+  severity: IncidentSeverity
+  source: AlertSource
+  externalId: String
+  externalUrl: String
+  triggeredAt: DateTime!
+  resolvedAt: DateTime
+  incident: Incident
+  metadata: JSON
+}
+
+"""The origin system that produced an alert."""
+type AlertSource {
+  id: ID!
+  name: String!
+  type: String!
+  iconUrl: String
+}
+
+"""Configuration for an alerting integration source."""
+type IntegrationAlerting {
+  id: ID!
+  name: String!
+  provider: String!
+  webhookUrl: String
+  enabled: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ─── Environment and Service ──────────────────────────────────────────────────
+
+"""A deployment environment (e.g., production, staging)."""
+type Environment {
+  id: ID!
+  name: String!
+  description: String
+  shortName: String
+  prefix: String
+  activeIncidents: [Incident!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A registered service in the FireHydrant service catalog."""
+type Service {
+  id: ID!
+  name: String!
+  description: String
+  shortName: String
+  owner: Team
+  labels: JSON
+  links: [IncidentLink!]
+  alert: Alert
+  environments: [Environment!]
+  functionalities: [Functionality!]
+  activeIncidents: [Incident!]
+  checklistTemplates: [String!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Detailed metadata about a service including health and SLOs."""
+type ServiceDetail {
+  service: Service!
+  uptimePercentage: Float
+  incidentCount: Int!
+  meanTimeToResolve: Int
+  lastIncidentAt: DateTime
+  sloCount: Int
+}
+
+"""A function or feature grouping within a service."""
+type FunctionDetail {
+  id: ID!
+  name: String!
+  description: String
+  service: Service!
+  owner: Team
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A product functionality tracked for impact during incidents."""
+type Functionality {
+  id: ID!
+  name: String!
+  description: String
+  services: [Service!]
+  owner: Team
+  labels: JSON
+  activeIncidents: [Incident!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ─── Team and User ────────────────────────────────────────────────────────────
+
+"""A group of users responsible for services or on-call rotations."""
+type Team {
+  id: ID!
+  name: String!
+  description: String
+  slug: String!
+  memberships: [TeamMembership!]!
+  schedules: [Schedule!]
+  services: [Service!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A user's membership record within a team."""
+type TeamMembership {
+  user: User!
+  team: Team!
+  defaultIncidentRole: String
+  joinedAt: DateTime!
+}
+
+"""An on-call schedule."""
+type Schedule {
+  id: ID!
+  name: String!
+  description: String
+  team: Team!
+  rotations: [ScheduleRotation!]!
+  currentOnCall: [User!]
+  timezone: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A rotation layer within an on-call schedule."""
+type ScheduleRotation {
+  id: ID!
+  name: String!
+  participants: [User!]!
+  handoffTime: String
+  frequency: String!
+  startAt: DateTime!
+}
+
+"""A named group for notification routing."""
+type UserGroup {
+  id: ID!
+  name: String!
+  members: [User!]!
+  createdAt: DateTime!
+}
+
+"""A FireHydrant platform user."""
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: UserRole!
+  details: UserDetails
+  teams: [Team!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""Extended profile data for a user."""
+type UserDetails {
+  userId: ID!
+  slackHandle: String
+  pagerDutyId: String
+  phone: String
+  timezone: String
+  onCall: Boolean!
+}
+
+# ─── Webhook ─────────────────────────────────────────────────────────────────
+
+"""A webhook configured to send FireHydrant event payloads."""
+type Webhook {
+  id: ID!
+  name: String!
+  url: String!
+  secret: String
+  actions: [WebhookAction!]!
+  enabled: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  lastDeliveryAt: DateTime
+  lastDeliveryStatus: String
+}
+
+# ─── Integration ─────────────────────────────────────────────────────────────
+
+"""An external tool integrated with FireHydrant."""
+type Integration {
+  id: ID!
+  name: String!
+  provider: String!
+  enabled: Boolean!
+  config: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ─── NuncService / Status Page ────────────────────────────────────────────────
+
+"""A service listed on a FireHydrant Nunc status page."""
+type NuncService {
+  id: ID!
+  name: String!
+  displayName: String
+  description: String
+  statusPage: StatusPage!
+  currentStatus: String!
+  uptime: Float
+}
+
+"""A Nunc-powered status page configuration."""
+type StatusPage {
+  id: ID!
+  name: String!
+  url: String!
+  domain: String
+  logoUrl: String
+  components: [NuncService!]!
+  incidents: [Incident!]
+  maintenances: [ChangeEvent!]
+  allowSearch: Boolean!
+  subscribersEnabled: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ─── Change Event ─────────────────────────────────────────────────────────────
+
+"""A recorded change event (deployment, config change, etc.)."""
+type ChangeEvent {
+  id: ID!
+  summary: String!
+  description: String
+  type: String!
+  environment: Environment
+  service: Service
+  externalId: String
+  externalUrl: String
+  startedAt: DateTime!
+  endedAt: DateTime
+  createdAt: DateTime!
+  createdBy: User
+  labels: JSON
+}
+
+# ─── FireHydrant AI ───────────────────────────────────────────────────────────
+
+"""AI-generated insights and recommendations from FireHydrant."""
+type FireHydrantAI {
+  incidentId: ID!
+  summary: String
+  suggestedSeverity: IncidentSeverity
+  suggestedRunbooks: [Runbook!]
+  impactAnalysis: String
+  timelineAnalysis: String
+  similarIncidents: [Incident!]
+  generatedAt: DateTime!
+}
+
+# ─── Retrospective ────────────────────────────────────────────────────────────
+
+"""A post-incident retrospective (postmortem)."""
+type Retrospective {
+  id: ID!
+  incident: Incident!
+  sections: [RetroSection!]!
+  status: String!
+  publishedAt: DateTime
+  publishedBy: User
+  aiInsights: FireHydrantAI
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""A section within a retrospective document."""
+type RetroSection {
+  id: ID!
+  title: String!
+  body: String
+  position: Int!
+  details: [RetroDetail!]
+}
+
+"""A detail item within a retrospective section."""
+type RetroDetail {
+  id: ID!
+  key: String!
+  value: String
+}
+
+# ─── API Keys and Tokens ──────────────────────────────────────────────────────
+
+"""An API key for authenticating with the FireHydrant API."""
+type APIKey {
+  id: ID!
+  name: String!
+  prefix: String!
+  lastUsedAt: DateTime
+  expiresAt: DateTime
+  createdAt: DateTime!
+  createdBy: User
+  revoked: Boolean!
+}
+
+"""A short-lived authentication token."""
+type Token {
+  id: ID!
+  value: String
+  expiresAt: DateTime!
+  createdAt: DateTime!
+  createdBy: User
+}
+
+# ─── Connections (Pagination) ─────────────────────────────────────────────────
+
+type IncidentConnection {
+  nodes: [Incident!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type ServiceConnection {
+  nodes: [Service!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type TeamConnection {
+  nodes: [Team!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type PageInfo {
+  currentPage: Int!
+  perPage: Int!
+  totalPages: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+# ─── Input Types ──────────────────────────────────────────────────────────────
+
+input IncidentFilter {
+  status: IncidentStatus
+  severity: IncidentSeverity
+  priority: IncidentPriority
+  serviceId: ID
+  teamId: ID
+  environmentId: ID
+  tagName: String
+  createdAfter: DateTime
+  createdBefore: DateTime
+}
+
+input CreateIncidentInput {
+  name: String!
+  description: String
+  severity: IncidentSeverity
+  priority: IncidentPriority
+  typeId: ID
+  serviceIds: [ID!]
+  teamIds: [ID!]
+  environmentIds: [ID!]
+  tags: [String!]
+  customFields: [CustomFieldInput!]
+}
+
+input UpdateIncidentInput {
+  name: String
+  description: String
+  status: IncidentStatus
+  severity: IncidentSeverity
+  priority: IncidentPriority
+  commanderId: ID
+  communicationsLeadId: ID
+  customerImpact: String
+  tags: [String!]
+}
+
+input IncidentUpdateInput {
+  body: String!
+  status: IncidentStatus
+  notifySubscribers: Boolean
+}
+
+input TaskInput {
+  title: String!
+  description: String
+  assigneeId: ID
+  dueAt: DateTime
+}
+
+input FollowUpInput {
+  summary: String!
+  description: String
+  priority: IncidentPriority
+  assigneeId: ID
+  dueAt: DateTime
+}
+
+input RunbookInput {
+  name: String!
+  description: String
+  ownerId: ID
+  autoAttach: Boolean
+  repeatable: Boolean
+}
+
+input ServiceInput {
+  name: String!
+  description: String
+  shortName: String
+  ownerId: ID
+  labels: JSON
+}
+
+input TeamInput {
+  name: String!
+  description: String
+}
+
+input WebhookInput {
+  name: String!
+  url: String!
+  secret: String
+  actions: [WebhookAction!]!
+}
+
+input ChangeEventInput {
+  summary: String!
+  description: String
+  type: String!
+  serviceId: ID
+  environmentId: ID
+  startedAt: DateTime!
+  endedAt: DateTime
+  labels: JSON
+}
+
+input ScheduleInput {
+  name: String!
+  teamId: ID!
+  timezone: String!
+}
+
+input AlertInput {
+  summary: String!
+  body: String
+  severity: IncidentSeverity
+  externalId: String
+  externalUrl: String
+  metadata: JSON
+}
+
+input StatusPageInput {
+  name: String!
+  domain: String
+  logoUrl: String
+  allowSearch: Boolean
+  subscribersEnabled: Boolean
+}
+
+input APIKeyInput {
+  name: String!
+  expiresAt: DateTime
+}
+
+input CustomFieldInput {
+  fieldId: ID!
+  value: JSON!
+}
+
+# ─── Root Types ───────────────────────────────────────────────────────────────
+
+type Query {
+  incident(id: ID!): Incident
+  incidents(filter: IncidentFilter, page: Int, perPage: Int): IncidentConnection!
+  service(id: ID!): Service
+  services(page: Int, perPage: Int): ServiceConnection!
+  serviceDetail(id: ID!): ServiceDetail
+  team(id: ID!): Team
+  teams(page: Int, perPage: Int): TeamConnection!
+  user(id: ID!): User
+  users(page: Int, perPage: Int): [User!]!
+  runbook(id: ID!): Runbook
+  runbooks(page: Int, perPage: Int): [Runbook!]!
+  environment(id: ID!): Environment
+  environments(page: Int, perPage: Int): [Environment!]!
+  schedule(id: ID!): Schedule
+  schedules(page: Int, perPage: Int): [Schedule!]!
+  statusPage(id: ID!): StatusPage
+  statusPages(page: Int, perPage: Int): [StatusPage!]!
+  alert(id: ID!): Alert
+  alerts(page: Int, perPage: Int): [Alert!]!
+  retrospective(id: ID!): Retrospective
+  webhook(id: ID!): Webhook
+  webhooks(page: Int, perPage: Int): [Webhook!]!
+  integration(id: ID!): Integration
+  integrations(page: Int, perPage: Int): [Integration!]!
+  changeEvent(id: ID!): ChangeEvent
+  changeEvents(page: Int, perPage: Int): [ChangeEvent!]!
+  functionality(id: ID!): Functionality
+  functionalities(page: Int, perPage: Int): [Functionality!]!
+  apiKey(id: ID!): APIKey
+  apiKeys(page: Int, perPage: Int): [APIKey!]!
+  fireHydrantAI(incidentId: ID!): FireHydrantAI
+}
+
+type Mutation {
+  createIncident(input: CreateIncidentInput!): Incident!
+  updateIncident(id: ID!, input: UpdateIncidentInput!): Incident!
+  resolveIncident(id: ID!): Incident!
+  addIncidentUpdate(incidentId: ID!, input: IncidentUpdateInput!): IncidentUpdate!
+  createTask(incidentId: ID!, input: TaskInput!): Task!
+  updateTask(id: ID!, input: TaskInput!): Task!
+  createFollowUp(incidentId: ID!, input: FollowUpInput!): FollowUp!
+  updateFollowUp(id: ID!, input: FollowUpInput!): FollowUp!
+  createRunbook(input: RunbookInput!): Runbook!
+  attachRunbook(incidentId: ID!, runbookId: ID!): Incident!
+  createService(input: ServiceInput!): Service!
+  updateService(id: ID!, input: ServiceInput!): Service!
+  createTeam(input: TeamInput!): Team!
+  addTeamMember(teamId: ID!, userId: ID!): TeamMembership!
+  createWebhook(input: WebhookInput!): Webhook!
+  deleteWebhook(id: ID!): Boolean!
+  createChangeEvent(input: ChangeEventInput!): ChangeEvent!
+  createSchedule(input: ScheduleInput!): Schedule!
+  triggerAlert(input: AlertInput!): Alert!
+  createStatusPage(input: StatusPageInput!): StatusPage!
+  createRetrospective(incidentId: ID!): Retrospective!
+  createAPIKey(input: APIKeyInput!): APIKey!
+  revokeAPIKey(id: ID!): APIKey!
+}
+
+type Subscription {
+  incidentCreated: Incident!
+  incidentUpdated(id: ID!): Incident!
+  alertTriggered: Alert!
+}
