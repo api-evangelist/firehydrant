@@ -1,0 +1,651 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "FireHydrant REST API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Verify API connectivity and authentication",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/ping"
+      },
+      "docs": "Verify API connectivity and authentication"
+    },
+    {
+      "info": {
+        "name": "List incidents",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/incidents",
+        "params": [
+          {
+            "name": "page",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "per_page",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "query",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "status",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "severity",
+            "value": "",
+            "type": "query"
+          }
+        ]
+      },
+      "docs": "List incidents"
+    },
+    {
+      "info": {
+        "name": "Declare an incident",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/incidents",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Declare an incident"
+    },
+    {
+      "info": {
+        "name": "Retrieve an incident",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/incidents/:incident_id",
+        "params": [
+          {
+            "name": "incident_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Retrieve an incident"
+    },
+    {
+      "info": {
+        "name": "Update an incident",
+        "type": "http"
+      },
+      "http": {
+        "method": "PATCH",
+        "url": "https://api.firehydrant.io/v1/incidents/:incident_id",
+        "params": [
+          {
+            "name": "incident_id",
+            "value": "",
+            "type": "path"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Update an incident"
+    },
+    {
+      "info": {
+        "name": "Archive an incident",
+        "type": "http"
+      },
+      "http": {
+        "method": "DELETE",
+        "url": "https://api.firehydrant.io/v1/incidents/:incident_id",
+        "params": [
+          {
+            "name": "incident_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Archive an incident"
+    },
+    {
+      "info": {
+        "name": "Close an incident",
+        "type": "http"
+      },
+      "http": {
+        "method": "PUT",
+        "url": "https://api.firehydrant.io/v1/incidents/:incident_id/close",
+        "params": [
+          {
+            "name": "incident_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Close an incident"
+    },
+    {
+      "info": {
+        "name": "Add an incident note",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/incidents/:incident_id/notes",
+        "params": [
+          {
+            "name": "incident_id",
+            "value": "",
+            "type": "path"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Add an incident note"
+    },
+    {
+      "info": {
+        "name": "List events for an incident",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/incidents/:incident_id/events",
+        "params": [
+          {
+            "name": "incident_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "List events for an incident"
+    },
+    {
+      "info": {
+        "name": "List services",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/services",
+        "params": [
+          {
+            "name": "page",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "per_page",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "query",
+            "value": "",
+            "type": "query"
+          }
+        ]
+      },
+      "docs": "List services"
+    },
+    {
+      "info": {
+        "name": "Create a service",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/services",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a service"
+    },
+    {
+      "info": {
+        "name": "Retrieve a service",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/services/:service_id",
+        "params": [
+          {
+            "name": "service_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Retrieve a service"
+    },
+    {
+      "info": {
+        "name": "Update a service",
+        "type": "http"
+      },
+      "http": {
+        "method": "PATCH",
+        "url": "https://api.firehydrant.io/v1/services/:service_id",
+        "params": [
+          {
+            "name": "service_id",
+            "value": "",
+            "type": "path"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Update a service"
+    },
+    {
+      "info": {
+        "name": "Delete a service",
+        "type": "http"
+      },
+      "http": {
+        "method": "DELETE",
+        "url": "https://api.firehydrant.io/v1/services/:service_id",
+        "params": [
+          {
+            "name": "service_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Delete a service"
+    },
+    {
+      "info": {
+        "name": "List environments",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/environments"
+      },
+      "docs": "List environments"
+    },
+    {
+      "info": {
+        "name": "Create an environment",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/environments",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create an environment"
+    },
+    {
+      "info": {
+        "name": "Retrieve an environment",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/environments/:environment_id",
+        "params": [
+          {
+            "name": "environment_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Retrieve an environment"
+    },
+    {
+      "info": {
+        "name": "List functionalities",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/functionalities"
+      },
+      "docs": "List functionalities"
+    },
+    {
+      "info": {
+        "name": "Create a functionality",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/functionalities",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a functionality"
+    },
+    {
+      "info": {
+        "name": "List teams",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/teams"
+      },
+      "docs": "List teams"
+    },
+    {
+      "info": {
+        "name": "Create a team",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/teams",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a team"
+    },
+    {
+      "info": {
+        "name": "Retrieve a team",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/teams/:team_id",
+        "params": [
+          {
+            "name": "team_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Retrieve a team"
+    },
+    {
+      "info": {
+        "name": "List runbooks",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/runbooks"
+      },
+      "docs": "List runbooks"
+    },
+    {
+      "info": {
+        "name": "Create a runbook",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/runbooks",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a runbook"
+    },
+    {
+      "info": {
+        "name": "Execute a runbook against a target",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/runbooks/executions",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Execute a runbook against a target"
+    },
+    {
+      "info": {
+        "name": "List changes",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/changes"
+      },
+      "docs": "List changes"
+    },
+    {
+      "info": {
+        "name": "Create a change entry",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/changes",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a change entry"
+    },
+    {
+      "info": {
+        "name": "Create a change event",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/change_events",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a change event"
+    },
+    {
+      "info": {
+        "name": "Retrieve a change event",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/change_events/:change_event_id",
+        "params": [
+          {
+            "name": "change_event_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Retrieve a change event"
+    },
+    {
+      "info": {
+        "name": "Delete a change event",
+        "type": "http"
+      },
+      "http": {
+        "method": "DELETE",
+        "url": "https://api.firehydrant.io/v1/change_events/:change_event_id",
+        "params": [
+          {
+            "name": "change_event_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Delete a change event"
+    },
+    {
+      "info": {
+        "name": "Create a comment on a conversation",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/conversations/:conversation_id/comments",
+        "params": [
+          {
+            "name": "conversation_id",
+            "value": "",
+            "type": "path"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a comment on a conversation"
+    },
+    {
+      "info": {
+        "name": "Ingest a Signals alert event",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/signals/events",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Ingest a Signals alert event"
+    },
+    {
+      "info": {
+        "name": "List severities",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/severities"
+      },
+      "docs": "List severities"
+    },
+    {
+      "info": {
+        "name": "Create a severity",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/severities",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a severity"
+    },
+    {
+      "info": {
+        "name": "List priorities",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/priorities"
+      },
+      "docs": "List priorities"
+    },
+    {
+      "info": {
+        "name": "Create a priority",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/priorities",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a priority"
+    },
+    {
+      "info": {
+        "name": "Create a scheduled maintenance event",
+        "type": "http"
+      },
+      "http": {
+        "method": "POST",
+        "url": "https://api.firehydrant.io/v1/scheduled_maintenances",
+        "body": {
+          "type": "json",
+          "data": "{}"
+        }
+      },
+      "docs": "Create a scheduled maintenance event"
+    },
+    {
+      "info": {
+        "name": "Retrieve an audit event",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "https://api.firehydrant.io/v1/audits/:audit_event_id",
+        "params": [
+          {
+            "name": "audit_event_id",
+            "value": "",
+            "type": "path"
+          }
+        ]
+      },
+      "docs": "Retrieve an audit event"
+    }
+  ],
+  "bundled": true
+}
