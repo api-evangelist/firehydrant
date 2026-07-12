@@ -25,6 +25,12 @@ apis:
   - url: graphql/firehydrant-graphql.md
     type: GraphQL
 common:
+- type: TrustCenter
+  url: security/firehydrant-trust-center.yml
+- type: DomainSecurity
+  url: security/firehydrant-domain-security.yml
+- type: Authentication
+  url: authentication/firehydrant-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/firehydrant
 - type: LinkedIn
@@ -35,6 +41,8 @@ common:
   url: https://docs.firehydrant.io
 - type: Integrations
   url: https://firehydrant.com/integrations/
+- type: Blog
+  url: https://firehydrant.com/rss.xml
 integrations:
 - name: Featured Slack
 - name: Featured Microsoft Teams
