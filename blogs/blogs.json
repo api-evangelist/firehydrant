@@ -1,0 +1,21 @@
+{
+  "repo": "firehydrant",
+  "feeds": [
+    {
+      "source": "https://firehydrant.com/rss.xml",
+      "feed_url": "https://firehydrant.com/rss.xml",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
+      "source": "https://firehydrant.com/integrations/",
+      "feed_url": "https://firehydrant.com/rss.xml",
+      "title": "",
+      "saved": 0,
+      "method": "discovered"
+    }
+  ],
+  "fetched": "2026-07-11T11:50:51Z",
+  "post_count": 63
+}
