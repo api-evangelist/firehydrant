@@ -25,6 +25,8 @@ apis:
   - url: graphql/firehydrant-graphql.md
     type: GraphQL
 common:
+- type: AgenticAccess
+  url: agentic-access/firehydrant-agentic-access.yml
 - type: TrustCenter
   url: security/firehydrant-trust-center.yml
 - type: DomainSecurity
