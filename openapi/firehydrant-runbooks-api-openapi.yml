@@ -1,0 +1,81 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Runbooks API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Runbooks
+paths:
+  /runbooks:
+    get:
+      summary: List runbooks
+      operationId: listRunbooks
+      responses:
+        '200':
+          description: Runbooks
+      tags:
+      - Runbooks
+    post:
+      summary: Create a runbook
+      operationId: createRunbook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                type:
+                  type: string
+                steps:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '201':
+          description: Runbook created
+      tags:
+      - Runbooks
+  /runbooks/executions:
+    post:
+      summary: Execute a runbook against a target
+      operationId: createRunbookExecution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - runbook_id
+              properties:
+                runbook_id:
+                  type: string
+                attachment_type:
+                  type: string
+                attachment_id:
+                  type: string
+      responses:
+        '201':
+          description: Execution created
+      tags:
+      - Runbooks
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

@@ -1,0 +1,36 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Audits
+paths:
+  /audits/{audit_event_id}:
+    get:
+      summary: Retrieve an audit event
+      operationId: getAuditEvent
+      parameters:
+      - name: audit_event_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Audit event
+      tags:
+      - Audits
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

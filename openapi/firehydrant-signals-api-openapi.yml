@@ -1,0 +1,62 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Signals API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Signals
+paths:
+  /signals/events:
+    post:
+      summary: Ingest a Signals alert event
+      operationId: createSignalsEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - summary
+              properties:
+                summary:
+                  type: string
+                body:
+                  type: string
+                level:
+                  type: string
+                  enum:
+                  - INFO
+                  - WARN
+                  - ERROR
+                  - CRITICAL
+                images:
+                  type: array
+                  items:
+                    type: object
+                links:
+                  type: array
+                  items:
+                    type: object
+                annotations:
+                  type: object
+                status:
+                  type: string
+      responses:
+        '202':
+          description: Accepted
+      tags:
+      - Signals
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

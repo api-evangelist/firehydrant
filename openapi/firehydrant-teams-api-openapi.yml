@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Teams API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Teams
+paths:
+  /teams:
+    get:
+      summary: List teams
+      operationId: listTeams
+      responses:
+        '200':
+          description: Teams
+      tags:
+      - Teams
+    post:
+      summary: Create a team
+      operationId: createTeam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Team created
+      tags:
+      - Teams
+  /teams/{team_id}:
+    get:
+      summary: Retrieve a team
+      operationId: getTeam
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Team
+      tags:
+      - Teams
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

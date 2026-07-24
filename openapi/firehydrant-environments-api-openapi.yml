@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Environments API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Environments
+paths:
+  /environments:
+    get:
+      summary: List environments
+      operationId: listEnvironments
+      responses:
+        '200':
+          description: Environments
+      tags:
+      - Environments
+    post:
+      summary: Create an environment
+      operationId: createEnvironment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Environment created
+      tags:
+      - Environments
+  /environments/{environment_id}:
+    get:
+      summary: Retrieve an environment
+      operationId: getEnvironment
+      parameters:
+      - name: environment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Environment
+      tags:
+      - Environments
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

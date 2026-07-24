@@ -1,0 +1,119 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Services API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Services
+paths:
+  /services:
+    get:
+      summary: List services
+      operationId: listServices
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      - name: query
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Services
+      tags:
+      - Services
+    post:
+      summary: Create a service
+      operationId: createService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                service_tier:
+                  type: integer
+                owner:
+                  type: object
+                labels:
+                  type: object
+      responses:
+        '201':
+          description: Service created
+      tags:
+      - Services
+  /services/{service_id}:
+    get:
+      summary: Retrieve a service
+      operationId: getService
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Service
+      tags:
+      - Services
+    patch:
+      summary: Update a service
+      operationId: updateService
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated service
+      tags:
+      - Services
+    delete:
+      summary: Delete a service
+      operationId: deleteService
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deleted
+      tags:
+      - Services
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

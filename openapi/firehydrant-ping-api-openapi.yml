@@ -1,0 +1,39 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Ping API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Ping
+paths:
+  /ping:
+    get:
+      summary: Verify API connectivity and authentication
+      operationId: ping
+      responses:
+        '200':
+          description: Bot user info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                  actor:
+                    type: object
+      tags:
+      - Ping
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

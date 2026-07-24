@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: FireHydrant REST Audits Scheduled Maintenances API
+  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  version: '1.0'
+  contact:
+    name: FireHydrant
+    url: https://docs.firehydrant.com/reference
+servers:
+- url: https://api.firehydrant.io/v1
+  description: Production
+security:
+- bearerAuth: []
+tags:
+- name: Scheduled Maintenances
+paths:
+  /scheduled_maintenances:
+    post:
+      summary: Create a scheduled maintenance event
+      operationId: createScheduledMaintenance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - summary
+              - starts_at
+              - ends_at
+              properties:
+                summary:
+                  type: string
+                description:
+                  type: string
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Created
+      tags:
+      - Scheduled Maintenances
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
