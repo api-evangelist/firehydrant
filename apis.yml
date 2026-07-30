@@ -3,7 +3,20 @@ name: FireHydrant
 description: FireHydrant is an incident management platform providing automated runbooks,
   status pages, and retrospective workflows.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/firehydrant.png
 tags:
 - AIOps
 - Incident Management
@@ -14,8 +27,9 @@ specificationVersion: '0.19'
 apis:
 - aid: firehydrant:firehydrant
   name: FireHydrant
-  description: FireHydrant is an incident management platform providing automated
-    runbooks, status pages, and retrospective workflows.
+  description: >-
+    FireHydrant is an incident management platform providing automated runbooks, status pages, and retrospective
+    workflows.
   humanURL: https://firehydrant.com
   tags:
   - AIOps
@@ -24,6 +38,142 @@ apis:
     url: https://docs.firehydrant.io
   - url: graphql/firehydrant-graphql.md
     type: GraphQL
+- aid: firehydrant:firehydrant-audits-api
+  name: FireHydrant Audits API
+  description: The Audits API from FireHydrant — 1 operation(s) for audits.
+  humanURL: https://firehydrant.com
+  tags:
+  - Audits
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-audits-api-openapi.yml
+- aid: firehydrant:firehydrant-change-events-api
+  name: FireHydrant Change Events API
+  description: The Change Events API from FireHydrant — 2 operation(s) for change events.
+  humanURL: https://firehydrant.com
+  tags:
+  - Change Events
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-change-events-api-openapi.yml
+- aid: firehydrant:firehydrant-changes-api
+  name: FireHydrant Changes API
+  description: The Changes API from FireHydrant — 1 operation(s) for changes.
+  humanURL: https://firehydrant.com
+  tags:
+  - Changes
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-changes-api-openapi.yml
+- aid: firehydrant:firehydrant-conversations-api
+  name: FireHydrant Conversations API
+  description: The Conversations API from FireHydrant — 1 operation(s) for conversations.
+  humanURL: https://firehydrant.com
+  tags:
+  - Conversations
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-conversations-api-openapi.yml
+- aid: firehydrant:firehydrant-environments-api
+  name: FireHydrant Environments API
+  description: The Environments API from FireHydrant — 2 operation(s) for environments.
+  humanURL: https://firehydrant.com
+  tags:
+  - Environments
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-environments-api-openapi.yml
+- aid: firehydrant:firehydrant-functionalities-api
+  name: FireHydrant Functionalities API
+  description: The Functionalities API from FireHydrant — 1 operation(s) for functionalities.
+  humanURL: https://firehydrant.com
+  tags:
+  - Functionalities
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-functionalities-api-openapi.yml
+- aid: firehydrant:firehydrant-incidents-api
+  name: FireHydrant Incidents API
+  description: The Incidents API from FireHydrant — 5 operation(s) for incidents.
+  humanURL: https://firehydrant.com
+  tags:
+  - Incidents
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-incidents-api-openapi.yml
+- aid: firehydrant:firehydrant-ping-api
+  name: FireHydrant Ping API
+  description: The Ping API from FireHydrant — 1 operation(s) for ping.
+  humanURL: https://firehydrant.com
+  tags:
+  - Ping
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-ping-api-openapi.yml
+- aid: firehydrant:firehydrant-priorities-api
+  name: FireHydrant Priorities API
+  description: The Priorities API from FireHydrant — 1 operation(s) for priorities.
+  humanURL: https://firehydrant.com
+  tags:
+  - Priorities
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-priorities-api-openapi.yml
+- aid: firehydrant:firehydrant-runbooks-api
+  name: FireHydrant Runbooks API
+  description: The Runbooks API from FireHydrant — 2 operation(s) for runbooks.
+  humanURL: https://firehydrant.com
+  tags:
+  - Runbooks
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-runbooks-api-openapi.yml
+- aid: firehydrant:firehydrant-scheduled-maintenances-api
+  name: FireHydrant Scheduled Maintenances API
+  description: >-
+    The Scheduled Maintenances API from FireHydrant — 1 operation(s) for scheduled maintenances.
+  humanURL: https://firehydrant.com
+  tags:
+  - Scheduled Maintenances
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-scheduled-maintenances-api-openapi.yml
+- aid: firehydrant:firehydrant-services-api
+  name: FireHydrant Services API
+  description: The Services API from FireHydrant — 2 operation(s) for services.
+  humanURL: https://firehydrant.com
+  tags:
+  - Services
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-services-api-openapi.yml
+- aid: firehydrant:firehydrant-severities-api
+  name: FireHydrant Severities API
+  description: The Severities API from FireHydrant — 1 operation(s) for severities.
+  humanURL: https://firehydrant.com
+  tags:
+  - Severities
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-severities-api-openapi.yml
+- aid: firehydrant:firehydrant-signals-api
+  name: FireHydrant Signals API
+  description: The Signals API from FireHydrant — 1 operation(s) for signals.
+  humanURL: https://firehydrant.com
+  tags:
+  - Signals
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-signals-api-openapi.yml
+- aid: firehydrant:firehydrant-teams-api
+  name: FireHydrant Teams API
+  description: The Teams API from FireHydrant — 2 operation(s) for teams.
+  humanURL: https://firehydrant.com
+  tags:
+  - Teams
+  properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-teams-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/firehydrant-agentic-access.yml
