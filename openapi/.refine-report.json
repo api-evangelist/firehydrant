@@ -1,0 +1,42 @@
+{
+  "provider": "firehydrant",
+  "sources": [
+    "firehydrant-audits-api-openapi.yml",
+    "firehydrant-change-events-api-openapi.yml",
+    "firehydrant-changes-api-openapi.yml",
+    "firehydrant-conversations-api-openapi.yml",
+    "firehydrant-environments-api-openapi.yml",
+    "firehydrant-functionalities-api-openapi.yml",
+    "firehydrant-incidents-api-openapi.yml",
+    "firehydrant-ping-api-openapi.yml",
+    "firehydrant-priorities-api-openapi.yml",
+    "firehydrant-runbooks-api-openapi.yml",
+    "firehydrant-scheduled-maintenances-api-openapi.yml",
+    "firehydrant-services-api-openapi.yml",
+    "firehydrant-severities-api-openapi.yml",
+    "firehydrant-signals-api-openapi.yml",
+    "firehydrant-teams-api-openapi.yml"
+  ],
+  "outputs": [
+    "firehydrant-audits-api-openapi.yml",
+    "firehydrant-change-events-api-openapi.yml",
+    "firehydrant-changes-api-openapi.yml",
+    "firehydrant-conversations-api-openapi.yml",
+    "firehydrant-environments-api-openapi.yml",
+    "firehydrant-functionalities-api-openapi.yml",
+    "firehydrant-incidents-api-openapi.yml",
+    "firehydrant-ping-api-openapi.yml",
+    "firehydrant-priorities-api-openapi.yml",
+    "firehydrant-runbooks-api-openapi.yml",
+    "firehydrant-scheduled-maintenances-api-openapi.yml",
+    "firehydrant-services-api-openapi.yml",
+    "firehydrant-severities-api-openapi.yml",
+    "firehydrant-signals-api-openapi.yml",
+    "firehydrant-teams-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
