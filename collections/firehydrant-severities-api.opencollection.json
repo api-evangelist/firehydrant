@@ -1,0 +1,50 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "FireHydrant REST Audits Severities API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Severities",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List severities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.firehydrant.io/v1/severities"
+          },
+          "docs": "List severities"
+        },
+        {
+          "info": {
+            "name": "Create a severity",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.firehydrant.io/v1/severities",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a severity"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

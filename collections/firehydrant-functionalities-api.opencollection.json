@@ -1,0 +1,50 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "FireHydrant REST Audits Functionalities API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Functionalities",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List functionalities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.firehydrant.io/v1/functionalities"
+          },
+          "docs": "List functionalities"
+        },
+        {
+          "info": {
+            "name": "Create a functionality",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.firehydrant.io/v1/functionalities",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a functionality"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

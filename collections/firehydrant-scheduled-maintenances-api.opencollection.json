@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "FireHydrant REST Audits Scheduled Maintenances API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scheduled Maintenances",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a scheduled maintenance event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.firehydrant.io/v1/scheduled_maintenances",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a scheduled maintenance event"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
