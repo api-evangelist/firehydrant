@@ -170,6 +170,8 @@ apis:
   description: The Teams API from FireHydrant — 2 operation(s) for teams.
   humanURL: https://firehydrant.com
   tags:
+  - Team
+  tags_raw:
   - Teams
   properties:
   - type: OpenAPI
