@@ -1,0 +1,218 @@
+generated: '2026-08-29'
+method: derived
+source: openapi/firehydrant-api-openapi.yml
+note: >-
+  Entity graph derived from the 228 paths, 373 operations and 328 component schemas of the
+  published FireHydrant OpenAPI, plus the id-reference fields those schemas declare. Path nesting
+  and *_id fields are the evidence; nothing is inferred from prose.
+identifiers:
+  format: UUID v4
+  example: f8125cf4-b3a7-4f88-b5ab-57a60b9ed89b
+  prefixed: false
+  note: >-
+    FireHydrant uses bare UUIDs with no type prefix. An ID carries no information about what it
+    identifies, so an agent holding a loose UUID cannot tell an incident from a team from a runbook
+    without the surrounding context.
+core_entity: Incident
+entities:
+- name: Incident
+  path: /v1/incidents
+  operations: 42
+  description: >-
+    The spine of the model. Everything else either configures how an incident is declared, attaches
+    to a live incident, or reports on incidents after the fact.
+  relationships:
+  - has_many: Milestone
+    via: milestones
+  - has_many: RoleAssignment
+    via: role_assignments
+  - has_many: Task
+    via: tasks
+  - has_many: FollowUp
+    via: follow_ups
+  - has_many: Impact
+    via: impacts
+  - has_many: Note
+  - has_many: Event
+  - has_many: Alert
+    via: /v1/incidents/{incident_id}/alerts
+  - has_many: ChangeEvent
+    via: /v1/incidents/{incident_id}/related_changes
+  - has_many: StatusPage
+    via: /v1/incidents/{incident_id}/status_pages
+  - has_many: ConferenceBridge
+    via: conference_bridges
+  - has_many: IncidentChannel
+    via: incident_channels
+  - belongs_to: Severity
+    via: severity
+  - belongs_to: Priority
+    via: priority
+  - belongs_to: IncidentType
+    via: incident_type_id
+  - has_many: Team
+    via: team_ids
+  - has_many: Service
+    via: services
+  - has_many: Environment
+    via: environments
+  - has_many: Functionality
+    via: functionalities
+  - has_many: CustomFieldValue
+    via: custom_fields
+  - has_many: Tag
+    via: tags
+  - has_many: RetrospectiveReport
+    via: /v1/post_mortems/reports
+- name: Service
+  path: /v1/services
+  description: Service catalog entry. The unit of ownership impact analysis hangs off.
+  relationships:
+  - belongs_to: Team
+    via: team_id
+  - has_many: ServiceDependency
+    via: /v1/service_dependencies
+  - has_many: Functionality
+  - has_many: Environment
+  - has_many: ChangeEvent
+- name: Environment
+  path: /v1/environments
+  relationships:
+  - has_many: Service
+    via: /v1/environments/{environment_id}/services
+  - has_many: Functionality
+    via: /v1/environments/{environment_id}/functionalities
+- name: Functionality
+  path: /v1/functionalities
+  relationships:
+  - has_many: Service
+- name: Team
+  path: /v1/teams
+  operations: 10
+  relationships:
+  - has_many: User
+    via: member_ids
+  - has_many: SignalRule
+    via: /v1/teams/{team_id}/signal_rules
+  - has_many: OnCallSchedule
+    via: /v1/teams/{team_id}/on_call_schedules
+  - has_many: EscalationPolicy
+    via: /v1/teams/{team_id}/escalation_policies
+  - has_many: CallRoute
+    via: /v1/teams/{team_id}/call_routes
+  - has_many: Service
+  - provisioned_by: ScimGroup
+    via: /v1/scim/v2/Groups
+- name: User
+  path: /v1/users
+  relationships:
+  - has_many: Team
+  - belongs_to: Role
+  - has_many: NotificationSetting
+  - provisioned_by: ScimUser
+    via: /v1/scim/v2/Users
+- name: Runbook
+  path: /v1/runbooks
+  operations: 13
+  relationships:
+  - has_many: RunbookExecution
+  - has_many: RunbookStep
+  - belongs_to: Incident
+    via: execution attaches to an incident
+- name: Change
+  path: /v1/changes
+  relationships:
+  - has_many: ChangeIdentity
+    via: /v1/changes/{change_id}/identities
+  - belongs_to: ChangeType
+    via: /v1/change_types
+  - has_many: ChangeEvent
+- name: ChangeEvent
+  path: /v1/change_events
+  relationships:
+  - belongs_to: Service
+    via: services
+  - belongs_to: Environment
+    via: environments
+  - has_many: Incident
+    via: related changes
+  note: The entity fhcli writes from CI.
+- name: Alert
+  path: /v1/alerts
+  relationships:
+  - belongs_to: Incident
+    via: /v1/incidents/{incident_id}/alerts
+  - has_many: ProcessingLogEntry
+  - belongs_to: SignalEventSource
+- name: SignalsSurface
+  path: /v1/signals
+  operations: 11
+  description: The on-call and alerting product — schedules, escalation policies, rules, targets.
+  entities:
+  - OnCallSchedule
+  - EscalationPolicy
+  - SignalRule
+  - SignalEventSource
+  - SignalWebhookTarget
+  - SignalEmailTarget
+  - SignalTransposer
+  - CallRoute
+- name: RetrospectiveReport
+  path: /v1/post_mortems/reports
+  operations: 9
+  relationships:
+  - belongs_to: Incident
+  - has_many: RetrospectiveField
+    via: /v1/post_mortems/reports/{report_id}/fields/{field_id}
+  - has_many: RetrospectiveQuestion
+  - has_many: RetrospectiveReason
+- name: StatusPage
+  path: /v1/nunc_connections
+  operations: 8
+  note: >-
+    FireHydrant's own status-page product is called "nunc" internally, and the API path exposes that
+    name — a caller reading the docs for "status pages" will not find /v1/status_pages.
+  relationships:
+  - has_many: StatusPageComponentGroup
+  - has_many: StatusPageSubscriber
+  - has_many: StatusPageLink
+  - has_many: ScheduledMaintenance
+- name: Integration
+  path: /v1/integrations
+  operations: 23
+  connections:
+  - AWS (connections, CloudTrail batches)
+  - Slack
+  - Microsoft Teams
+  - Jira Cloud / Jira Server
+  - Statuspage.io
+  - ticketing projects (14 operations)
+- name: Webhook
+  path: /v1/webhooks
+  relationships:
+  - has_many: WebhookDelivery
+    via: /v1/webhooks/{webhook_id}/deliveries
+- name: AuditEvent
+  path: /v1/audit_events
+  note: Read-only audit trail; an Enterprise-plan feature.
+- name: Role
+  path: /v1/roles
+  relationships:
+  - has_many: Permission
+  note: RBAC. Roles and permissions are first-class API resources.
+configuration_entities:
+- Severity
+- Priority
+- IncidentType
+- IncidentRole
+- IncidentTag
+- Lifecycle (milestones and phases)
+- SeverityMatrix
+- CustomFieldDefinition
+- ChecklistTemplate
+- TaskList
+- StatusUpdateTemplate
+- SavedSearch
+- FormConfiguration
+render: null
+render_note: No subway/ diagram exists in this repo yet.

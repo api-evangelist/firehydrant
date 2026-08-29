@@ -37,6 +37,23 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
+  "notes": [
+    "firehydrant-audits-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-change-events-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-changes-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-conversations-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-environments-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-functionalities-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-incidents-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-ping-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-priorities-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-runbooks-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-scheduled-maintenances-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-services-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-severities-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-signals-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "firehydrant-teams-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
   "skipped": []
 }

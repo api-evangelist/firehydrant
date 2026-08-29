@@ -1,0 +1,152 @@
+generated: '2026-08-29'
+method: searched
+source: https://docs.firehydrant.com/reference/firehydrant-api
+supporting_sources:
+- https://docs.firehydrant.com/docs/api-keys
+- https://docs.firehydrant.com/docs/webhooks
+- openapi/firehydrant-api-openapi.yml
+authentication:
+  style: bearer-token
+  header: Authorization
+  format: 'Bearer {token}'
+  token_prefix: fhb-
+  token_type: API key (organization-scoped, Owner permission required to create)
+  scheme_in_spec: api_key (apiKey, in header, name Authorization)
+  every_endpoint_authenticated: true
+  exception: /v1/ping (ping_noauth) is documented as an unauthenticated connectivity check
+  docs: https://docs.firehydrant.com/docs/api-keys
+  artifact: authentication/firehydrant-authentication.yml
+base_urls:
+  primary: https://api.firehydrant.io/v1
+  read_only: https://api-read.firehydrant.io/v1
+  read_only_note: >-
+    Documented read-replica host with a much longer timeout for complex reads, but may lag the
+    primary by as much as 30 seconds. POST/PATCH/PUT/DELETE against it return an error. This is
+    a real runtime choice an agent must make and is documented nowhere in the OpenAPI servers[].
+versioning:
+  scheme: uri-path
+  current: v1
+  docs: https://docs.firehydrant.com/reference/firehydrant-api
+  header_negotiation: false
+idempotency:
+  supported: false
+  header: null
+  evidence: >-
+    No Idempotency-Key header, parameter or documented retry-safety contract appears anywhere in
+    the 373-operation OpenAPI or in the API reference. Recorded as absent, not omitted — a client
+    retrying a failed POST /v1/incidents can create a duplicate incident.
+pagination:
+  style: page-number
+  request_params:
+  - name: page
+    default: 1
+  - name: per_page
+    default: 20
+    max: 200
+  response_envelope:
+    data: array of entities
+    pagination:
+      fields: [count, page, items, pages, last, prev, next]
+  docs: https://docs.firehydrant.com/reference/firehydrant-api
+field_expansion:
+  supported: false
+  note: >-
+    No expand/fields/include parameter. Several list endpoints explicitly document that they
+    return a reduced entity (e.g. list_change_events omits attachments and related changes) and
+    require a follow-up GET on the individual resource for the full object.
+metadata:
+  labels: >-
+    Change events and alerts accept a free-form `labels` map; incidents carry `tags` and
+    `custom_fields` (custom field definitions are themselves an API resource).
+request_tracing:
+  request_id_header: null
+  note: No request-id / correlation-id header is documented.
+error_envelope:
+  shape: '{"error": "<message>"}'
+  evidence: >-
+    Observed live on an unauthenticated GET https://api.firehydrant.io/v1/ping —
+    {"error":"This endpoint requires you to be authenticated."} — and documented for 429 as
+    {"error": "rate limit exceeded"}.
+  rfc9457: false
+  problem_json: false
+  artifact: errors/firehydrant-problem-types.yml
+rate_limit_signaling:
+  limit: 50 requests per account per 10 seconds (300 per minute), shared across all API keys
+  effective_since: '2023-02-07'
+  status_code: 429
+  headers:
+  - RateLimit-Limit
+  - Retry-After
+  docs: https://docs.firehydrant.com/reference/firehydrant-api
+  artifact: rate-limits/firehydrant-rate-limits.yml
+webhook_signing:
+  header: fh-signature
+  algorithm: HMAC-SHA256, hex digest of the raw request body with the webhook secret
+  docs: https://docs.firehydrant.com/docs/webhooks
+dry_run_mode:
+  supported: false
+  note: >-
+    No dry-run/preview/simulate parameter is documented. FireHydrant does publish a human-facing
+    "Fire Drill" mode and an alert-visualization preview in the product UI, but neither is an
+    API-level dry-run flag.
+reversibility:
+  grade: verified
+  na: false
+  note: >-
+    FireHydrant's write surface is a configuration and incident-record API and it ships a genuine
+    reversal pair for its highest-volume write: DELETE /v1/incidents/{incident_id} archives an
+    incident and POST /v1/incidents/{incident_id}/unarchive brings it back. The archive is a soft
+    delete with no published expiry, which is what makes the reversal usable — an agent can undo a
+    mistakenly-opened incident at any time. Other write surfaces reverse by delete or by an
+    inactive-status flag. Every operationId below was verified by grep against
+    openapi/firehydrant-api-openapi.yml; no window is asserted that the provider does not state.
+  surfaces:
+  - write_operation: createIncident
+    reversal: unarchiveIncident (after archiveIncident)
+    reversal_operation_id: unarchiveIncident
+    window: unbounded — archive is a soft delete with no published expiry
+    window_source: openapi/firehydrant-api-openapi.yml#unarchiveIncident
+    note: >-
+      archiveIncident is DELETE /v1/incidents/{incident_id}; unarchiveIncident is
+      POST /v1/incidents/{incident_id}/unarchive. A true round trip, and the only one in the API.
+  - write_operation: createChangeEvent
+    reversal: deleteChangeEvent
+    reversal_operation_id: deleteChangeEvent
+    window: null
+    window_source: null
+    note: Hard delete; no restore operation is published.
+  - write_operation: createWebhook
+    reversal: deleteWebhook, or set the webhook Status to Inactive
+    reversal_operation_id: deleteWebhook
+    window: null
+    window_source: https://docs.firehydrant.com/docs/webhooks
+    note: >-
+      The webhooks doc explicitly recommends inactivating rather than deleting so the config can be
+      brought back later — a soft, unbounded reversal the API models as a status field, not an op.
+  - write_operation: createTeam
+    reversal: archiveTeam
+    reversal_operation_id: archiveTeam
+    window: null
+    window_source: null
+    note: DELETE /v1/teams/{team_id} archives rather than hard-deletes, but no unarchive op is published.
+  irreversible:
+  - operation: publishRetrospectiveReport
+    note: >-
+      POST publish on a retrospective report has no unpublish operation in the published spec.
+  - operation: createStatusPageSubscribers
+    note: >-
+      Adding subscribers to a public status page can trigger outbound notification to real people.
+      deleteStatusPageSubscribers removes them, but does not recall anything already sent.
+  - operation: Signals paging
+    note: >-
+      docs.firehydrant.com/reference/create_signals_page documents an endpoint that pages a user,
+      team, on-call schedule or escalation policy — dispatching a real push/SMS/voice page to a
+      human, with no un-page operation. It is NOT present in the published OpenAPI captured here,
+      so no operationId is claimed for it; recorded because it is the highest-consequence write an
+      agent can reach on this platform.
+cross_links:
+  errors: errors/firehydrant-problem-types.yml
+  lifecycle: lifecycle/firehydrant-lifecycle.yml
+  authentication: authentication/firehydrant-authentication.yml
+  rate_limits: rate-limits/firehydrant-rate-limits.yml
+  data_model: data-model/firehydrant-data-model.yml

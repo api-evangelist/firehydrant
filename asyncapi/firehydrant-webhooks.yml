@@ -1,0 +1,120 @@
+generated: '2026-08-29'
+method: searched
+source: https://docs.firehydrant.com/docs/webhooks
+spec_type: none
+asyncapi_published: false
+note: >-
+  FireHydrant ships a real, documented webhook surface — with configuration CRUD in the REST API,
+  HMAC request signing, a delivery history endpoint, and published example payloads — but publishes
+  NO AsyncAPI document and no event-schema registry. The event catalog below is transcribed from
+  the webhooks documentation and the OpenAPI; nothing here is invented. Emitting `type: Webhooks`,
+  not `type: AsyncAPI`.
+delivery:
+  transport: http-post
+  destination: one endpoint URL per webhook configuration
+  fan_out: >-
+    Each webhook configuration sends to exactly one destination; multiple destinations require
+    multiple configurations.
+  status: Active | Inactive (inactivating preserves the config without delivering)
+security:
+  signature_header: fh-signature
+  algorithm: HMAC-SHA256
+  encoding: hex digest
+  signed_content: raw request body
+  secret: per-webhook shared secret set at configuration time
+  docs: https://docs.firehydrant.com/docs/webhooks
+event_subscriptions:
+- name: Change Events
+  description: Fires whenever a new Change Event is created within FireHydrant.
+- name: Incidents
+  description: Fires whenever any change occurs on any public incident.
+- name: Incidents (Private)
+  description: Same as Incidents, but for private incidents.
+- name: Signals
+  status: BETA
+  description: Fires on any Signals/alert activity, including alert state changes.
+incident_triggering_events:
+- name: Chat events
+  description: A new chat message posted into the FireHydrant timeline from the web UI or an incident channel.
+- name: Follow-up updates
+  description: Follow-ups created or updated (e.g. marked done) on incidents.
+- name: General updates
+  description: Any change to any field on an incident, including custom fields.
+- name: Milestone changes
+  description: Any change to the current milestone.
+- name: Milestone timestamp changes
+  description: Edits to any milestone timestamp, regardless of the current milestone.
+- name: Notes and infrastructure updates
+  description: Posting incident notes or changing impacted infrastructure.
+- name: Role assignments
+  description: Users assigned or de-assigned roles on an incident.
+- name: Task updates
+  description: Tasks created or updated on an incident.
+- name: Team assignments
+  description: Teams assigned or unassigned from an incident.
+payload:
+  envelope: '{ "data": { "incident": { ... } } }'
+  example_published: true
+  example_url: https://docs.firehydrant.com/docs/webhooks
+  incident_fields:
+  - id
+  - number
+  - name
+  - description
+  - summary
+  - current_milestone
+  - milestones[] (type, occurred_at, duration, updated_by_id, updated_by_type)
+  - severity (slug, description, type)
+  - priority (slug, description)
+  - customer_impact_summary
+  - incident_channels[] (source, name, url, status)
+  - conference_bridges[]
+  - role_assignments[]
+  - tasks[]
+  - follow_ups[]
+  - impacts[]
+  - labels[]
+  - tags[]
+  - counts (starred_events, starred_messages)
+  - created_at
+  - started_at
+  - private_status_page_url
+management_api:
+  operations:
+  - listWebhooks
+  - createWebhook
+  - getWebhook
+  - updateWebhook
+  - deleteWebhook
+  - listWebhookDeliveries
+  paths:
+  - /v1/webhooks
+  - /v1/webhooks/{webhook_id}
+  - /v1/webhooks/{webhook_id}/deliveries
+  source: openapi/firehydrant-api-openapi.yml
+signals_targets:
+  description: >-
+    Signals additionally supports its own webhook alert TARGETS — outbound destinations an alert can
+    page — configured through a separate resource.
+  operations:
+  - listSignalWebhookTargets
+  - createSignalWebhookTarget
+  - getSignalsWebhookTarget
+  - updateSignalsWebhookTarget
+  - deleteSignalsWebhookTarget
+  path: /v1/signals/webhook_targets
+  docs: https://docs.firehydrant.com/docs/signals-webhook-alert-targets
+inbound_events:
+  description: >-
+    FireHydrant is also an event CONSUMER — Signals ingests alerts from 20+ named event sources
+    (Alertmanager, AWS CloudWatch, Datadog, Grafana, Honeycomb, Sentry, PagerDuty, Pingdom,
+    Dynatrace, Chronosphere, CircleCI, Cloudflare, Azure Monitor, MongoDB Atlas, SignalFX,
+    Site24x7, StatusCake, GCP Service Health, Stackdriver, email, and a generic webhook source).
+  ingest_url_operation: getSignalIngestUrl
+  event_sources_operation: listSignalEventSources
+  docs: https://docs.firehydrant.com/docs/generic-webhook-event-source
+gaps:
+- No AsyncAPI document is published.
+- No JSON Schema is published for any webhook payload; only a prose example.
+- No event-type identifier appears in the payload envelope — a consumer must infer the event from the diff.
+- No documented retry/backoff policy for failed deliveries, though a deliveries endpoint exists.

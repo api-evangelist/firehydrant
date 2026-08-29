@@ -1,0 +1,76 @@
+generated: '2026-08-29'
+method: searched
+status: published
+source: https://github.com/freshworks-oss/firehydrant-mcp
+note: >-
+  Official FireHydrant MCP server, Speakeasy-generated from the FireHydrant OpenAPI and
+  published to npm as `firehydrant-mcp`. It is a LOCAL stdio server only — the README's
+  install paths are Claude Desktop (.mcpb bundle), Cursor, Claude Code CLI, Windsurf and
+  VS Code, all `npx firehydrant-mcp start --api-key ...`, and the README states plainly
+  that "Claude Desktop doesn't yet support SSE/remote MCP servers." No hosted/remote MCP
+  endpoint is published by FireHydrant, so none is recorded here.
+deployment:
+  mode: local-stdio
+  endpoint: null
+  install: npx firehydrant-mcp start --api-key ...
+  package: https://www.npmjs.com/package/firehydrant-mcp
+  auth: api-key
+  verified: searched
+server:
+  name: FireHydrant
+  transport: stdio
+  package: firehydrant-mcp
+  version: 0.0.4
+  published: '2026-02-24'
+  repository: https://github.com/freshworks-oss/firehydrant-mcp
+  bundle: https://github.com/firehydrant/firehydrant-mcp/releases/download/v0.0.4/mcp-server.mcpb
+  license: MIT
+  generator: Speakeasy
+auth:
+  type: api-key
+  flag: --api-key
+  scheme: FireHydrant API key (Bearer token, `fhb-` prefix)
+  docs: https://docs.firehydrant.com/docs/api-keys
+tools:
+- name: list-incidents
+  scopes: [read]
+  description: List incidents
+  source_operation: openapi/firehydrant-api-openapi.yml#listIncidents
+- name: create-incident
+  scopes: [read, write]
+  description: Create an incident
+  source_operation: openapi/firehydrant-api-openapi.yml#createIncident
+- name: list-alerts
+  scopes: [read]
+  description: List alerts
+  source_operation: openapi/firehydrant-api-openapi.yml#listAlerts
+- name: list-retros-by-incident
+  scopes: [read]
+  description: >-
+    Lists all retrospectives (RCAs) for an incident — the list, basic data, and the fields
+    of a retrospective.
+  source_operation: null
+  note: >-
+    Backed by GET /v1/incidents/{incident_id}/retrospectives, which is present in the MCP
+    server's own generated spec but NOT in the public FireHydrant OpenAPI.
+- name: update-retrospective-field
+  scopes: [read, write]
+  description: Update a field on an incident retrospective
+  source_operation: null
+  note: >-
+    Backed by PATCH /v1/incidents/{incident_id}/retrospectives/{retrospective_id}/fields/{field_id},
+    present in the MCP server's own generated spec but NOT in the public FireHydrant OpenAPI.
+    The nearest published operation is updateRetrospectiveField on
+    /v1/post_mortems/reports/{report_id}/fields/{field_id}.
+prompts:
+- name: firehydrant-generate-retrospective-for-last-incident
+  description: Generate a retrospective for the last incident
+  source: src/custom/prompts/generate-retrospective.ts
+coverage:
+  tools_published: 5
+  prompts_published: 1
+  rest_operations_total: 373
+  note: >-
+    The MCP server exposes 5 of the API's 373 operations. It is a deliberately narrow
+    incident-response surface (list/create incidents, list alerts, read and edit
+    retrospectives), not a projection of the whole API.

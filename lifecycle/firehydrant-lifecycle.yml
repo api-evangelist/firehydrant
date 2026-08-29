@@ -1,0 +1,57 @@
+generated: '2026-08-29'
+method: searched
+source: https://docs.firehydrant.com/reference/firehydrant-api
+versioning:
+  scheme: uri-path
+  current: v1
+  docs: https://docs.firehydrant.com/reference/firehydrant-api
+  note: >-
+    A single major version, v1, since launch. FireHydrant has never shipped a v2 REST surface; new
+    products (Signals, status pages, retrospectives) are added as new v1 resources rather than a
+    version bump.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    FireHydrant publishes NO written deprecation or sunset policy, and no RFC 8594 Sunset /
+    Deprecation header support is documented. Deprecation is communicated per operation, in prose,
+    inside the API reference: four Signals on-call shift operations and the runbook-audits
+    operation carry an explicit [DEPRECATED] marker and a migration note in their description.
+    This is a real practice with no contract behind it — an agent cannot detect a deprecation from
+    a response header, only by re-reading the docs.
+  deprecated_operations_documented:
+  - id: create_on_call_shift
+    url: https://docs.firehydrant.com/reference/create_on_call_shift
+    guidance: Overrides are now the only way to modify a schedule's shifts; this endpoint creates an override.
+  - id: get_on_call_shift
+    url: https://docs.firehydrant.com/reference/get_on_call_shift
+    guidance: Request the rotation and inspect its shifts instead; overrides can split a shift under one ID.
+  - id: delete_on_call_shift
+    url: https://docs.firehydrant.com/reference/delete_on_call_shift
+    guidance: Creates a "gap" override for the window instead of deleting.
+  - id: update_on_call_shift
+    url: https://docs.firehydrant.com/reference/update_on_call_shift
+    guidance: Creates an override for the specified time window.
+  - id: list_runbook_audits
+    url: https://docs.firehydrant.com/reference/list_runbook_audits
+    guidance: Marked "This endpoint is deprecated." with no replacement named.
+deprecated_operations_in_spec: []
+deprecated_in_spec_note: >-
+  Zero operations in openapi/firehydrant-api-openapi.yml carry `deprecated: true`, even though the
+  API reference marks five as deprecated in prose. The machine-readable contract and the human docs
+  disagree — a spec-driven client will keep generating calls to endpoints FireHydrant has retired.
+sla:
+  url: https://firehydrant.com/legal/ssa/
+  uptime_target: null
+  note: >-
+    SLAs are listed as an Enterprise-plan feature on the pricing page; no public uptime target is
+    published. The Services Agreement is the governing document.
+status_page: https://status.firehydrant.com/
+status_page_note: >-
+  FireHydrant runs its own status page on its own status-page product (nunc). Historical service
+  status write-ups are also posted to the blog under /blog/service-status-update-*.
+changelog: https://firehydrant.com/changelog/
+support:
+  url: https://docs.firehydrant.com/docs/contacting-support
+  plans: Standard support on Pro; premium support plus a named CSM and solutions engineer on Enterprise.

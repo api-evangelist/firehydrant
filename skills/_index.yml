@@ -1,0 +1,31 @@
+generated: '2026-08-29'
+method: generated
+source: >-
+  Generated from openapi/firehydrant-api-openapi.yml plus conventions/, errors/, rate-limits/,
+  mcp/ and cli/ in this repo. Every operationId referenced in every skill was verified by grep
+  against the published spec before the skill was written. FireHydrant publishes no AGENTS.md or
+  skill files of its own — searched 2026-08-29.
+skills:
+- file: firehydrant-declare-and-drive-incident.md
+  name: Declare and drive a FireHydrant incident
+  api: openapi/firehydrant-api-openapi.yml
+  operations: [listSeverities, listPriorities, listServices, listTeams, createIncident, getIncident,
+    updateIncident, createIncidentNote, listIncidentMilestones, listIncidentTasks, createIncidentTask,
+    listIncidentEvents, archiveIncident, unarchiveIncident]
+- file: firehydrant-record-change-events-from-ci.md
+  name: Record change events from CI into FireHydrant
+  api: openapi/firehydrant-api-openapi.yml
+  operations: [listServices, listEnvironments, createChangeEvent, listChangeEvents, getChangeEvent]
+- file: firehydrant-triage-alerts-and-oncall.md
+  name: Triage FireHydrant Signals alerts and find who is on call
+  api: openapi/firehydrant-api-openapi.yml
+  operations: [listAlerts, getAlert, listIncidentAlerts, listSignalsOnCall, listSignalEventSources, listTeams]
+- file: firehydrant-retrospective-workflow.md
+  name: Work a FireHydrant retrospective to publication
+  api: openapi/firehydrant-api-openapi.yml
+  operations: [listRetrospectiveReports, updateRetrospectiveField, publishRetrospectiveReport,
+    listRetrospectiveQuestions, listRetrospectiveMetrics, getIncident]
+- file: firehydrant-scim-provisioning.md
+  name: Provision FireHydrant users and teams over SCIM 2.0
+  api: openapi/firehydrant-api-openapi.yml
+  operations: [getScimUsers, createScimUser, getScimGroups, createScimGroup]

@@ -3,87 +3,65 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
 provider: FireHydrant
 providerId: firehydrant
+generated: '2026-08-29'
+method: searched
+source: https://docs.firehydrant.com/reference/firehydrant-api
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+modified: '2026-08-29'
 tags:
-  - AIOps
-  - Incident Management
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the FireHydrant API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
+- AIOps
+- Incident Management
+- Rate Limiting
+description: >-
+  FireHydrant publishes a single, flat API rate limit that applies per ACCOUNT, not per key —
+  50 requests every 10 seconds (300 per minute), shared across every API key the organization
+  has issued. It is not tiered by plan. This artifact replaces the 2026-05-04 scaffold, whose
+  per-tier free/professional/enterprise numbers were invented and are not what FireHydrant
+  publishes.
+limit_count: 1
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
+  limit: RateLimit-Limit
+  remaining: null
+  reset: null
   retryAfter: Retry-After
-  policy: RateLimit-Policy
+  policy: null
+  note: >-
+    FireHydrant documents exactly two response headers on a throttled response — RateLimit-Limit
+    (the maximum number of requests in the pool) and Retry-After (seconds to wait). No
+    X-RateLimit-Remaining or reset header is documented.
 responseCodes:
   throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
+errorBody: '{"error": "rate limit exceeded"}'
 limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - FireHydrant
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - FireHydrant
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - FireHydrant
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - FireHydrant
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - FireHydrant
+- name: Account API rate limit
+  scope: account
+  applies_to: all API keys belonging to the account, collectively
+  metric: requests
+  limit: 50
+  window: 10 seconds
+  timeFrame: 10s
+  equivalent_per_minute: 300
+  burst: null
+  effective_since: '2023-02-07'
+  tier: all
+  source: https://docs.firehydrant.com/reference/firehydrant-api
+  applies:
+  - FireHydrant API
 policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+- name: Retry-After
+  description: >-
+    On a 429, honor the Retry-After header, which gives the number of seconds to wait before
+    retrying. FireHydrant does not document a remaining/reset header, so a client cannot pace
+    itself proactively — it must react to the 429.
+- name: Shared pool
+  description: >-
+    Adding API keys does not add capacity. Every key on an account draws from the same 50/10s
+    pool, so a noisy automation starves every other integration on the org.
+- name: Read replica
+  description: >-
+    https://api-read.firehydrant.io/v1 is a documented read-only host with a much longer timeout
+    for complex reads (may lag the primary by up to 30s). The docs do not state whether it has a
+    separate rate-limit pool.
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com

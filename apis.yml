@@ -1,7 +1,15 @@
 aid: firehydrant
 name: FireHydrant
-description: FireHydrant is an incident management platform providing automated runbooks,
-  status pages, and retrospective workflows.
+description: >-
+  FireHydrant is an incident management platform, now part of Freshworks, that covers the whole
+  incident lifecycle — declaring and driving incidents from Slack or Microsoft Teams, Signals
+  on-call scheduling and alerting, automated runbooks, a service catalog with environments and
+  functionalities, its own hosted status pages, AI-enriched incident summaries, and retrospectives
+  with analytics. Its REST API at api.firehydrant.io/v1 is a 373-operation, 228-path surface
+  covering incidents, alerts, teams, runbooks, changes, integrations, webhooks and SCIM 2.0
+  provisioning, authenticated with a single organization API key sent as a Bearer token. FireHydrant
+  also ships an official MCP server, first-party TypeScript and Go SDKs, a Terraform provider, and
+  the fhcli change-event CLI.
 type: Index
 deliveryModel:
   model: unknown
@@ -31,9 +39,17 @@ image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/firehydran
 tags:
 - AIOps
 - Incident Management
+- On-Call
+- Alerting
+- Status Pages
+- Runbooks
+- Site Reliability Engineering
+- Observability
+- Retrospectives
+- DevOps
 url: https://raw.githubusercontent.com/api-evangelist/firehydrant/refs/heads/main/apis.yml
 created: '2026-03-27'
-modified: '2026-03-27'
+modified: '2026-08-29'
 specificationVersion: '0.23'
 apis:
 - aid: firehydrant:firehydrant
@@ -42,17 +58,23 @@ apis:
     FireHydrant is an incident management platform providing automated runbooks, status pages, and retrospective
     workflows.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - AIOps
   properties:
+  - type: OpenAPI
+    url: openapi/firehydrant-api-openapi.yml
   - type: Documentation
-    url: https://docs.firehydrant.io
+    url: https://docs.firehydrant.com
+  - type: APIReference
+    url: https://docs.firehydrant.com/reference/firehydrant-api
   - url: graphql/firehydrant-graphql.md
     type: GraphQL
 - aid: firehydrant:firehydrant-audits-api
   name: FireHydrant Audits API
   description: The Audits API from FireHydrant — 1 operation(s) for audits.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Audits
   properties:
@@ -62,6 +84,7 @@ apis:
   name: FireHydrant Change Events API
   description: The Change Events API from FireHydrant — 2 operation(s) for change events.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Change Events
   properties:
@@ -71,6 +94,7 @@ apis:
   name: FireHydrant Changes API
   description: The Changes API from FireHydrant — 1 operation(s) for changes.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Changes
   properties:
@@ -80,6 +104,7 @@ apis:
   name: FireHydrant Conversations API
   description: The Conversations API from FireHydrant — 1 operation(s) for conversations.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Conversations
   properties:
@@ -89,6 +114,7 @@ apis:
   name: FireHydrant Environments API
   description: The Environments API from FireHydrant — 2 operation(s) for environments.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Environments
   properties:
@@ -98,6 +124,7 @@ apis:
   name: FireHydrant Functionalities API
   description: The Functionalities API from FireHydrant — 1 operation(s) for functionalities.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Functionalities
   properties:
@@ -107,6 +134,7 @@ apis:
   name: FireHydrant Incidents API
   description: The Incidents API from FireHydrant — 5 operation(s) for incidents.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Incidents
   properties:
@@ -116,6 +144,7 @@ apis:
   name: FireHydrant Ping API
   description: The Ping API from FireHydrant — 1 operation(s) for ping.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Ping
   properties:
@@ -125,6 +154,7 @@ apis:
   name: FireHydrant Priorities API
   description: The Priorities API from FireHydrant — 1 operation(s) for priorities.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Priorities
   properties:
@@ -134,6 +164,7 @@ apis:
   name: FireHydrant Runbooks API
   description: The Runbooks API from FireHydrant — 2 operation(s) for runbooks.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Runbooks
   properties:
@@ -144,6 +175,7 @@ apis:
   description: >-
     The Scheduled Maintenances API from FireHydrant — 1 operation(s) for scheduled maintenances.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Scheduled Maintenances
   properties:
@@ -153,6 +185,7 @@ apis:
   name: FireHydrant Services API
   description: The Services API from FireHydrant — 2 operation(s) for services.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Services
   properties:
@@ -162,6 +195,7 @@ apis:
   name: FireHydrant Severities API
   description: The Severities API from FireHydrant — 1 operation(s) for severities.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Severities
   properties:
@@ -171,6 +205,7 @@ apis:
   name: FireHydrant Signals API
   description: The Signals API from FireHydrant — 1 operation(s) for signals.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Signals
   properties:
@@ -180,6 +215,7 @@ apis:
   name: FireHydrant Teams API
   description: The Teams API from FireHydrant — 2 operation(s) for teams.
   humanURL: https://firehydrant.com
+  baseURL: https://api.firehydrant.io/v1
   tags:
   - Team
   tags_raw:
@@ -203,15 +239,84 @@ common:
 - type: Website
   url: https://firehydrant.com
 - type: Documentation
-  url: https://docs.firehydrant.io
+  url: https://docs.firehydrant.com
 - type: Integrations
   url: https://firehydrant.com/integrations/
 - type: Blog
   url: https://firehydrant.com/rss.xml
+- type: OpenAPI
+  url: openapi/firehydrant-api-openapi.yml
+- type: Overlay
+  url: overlays/firehydrant-api-overlay.yaml
+- type: DeveloperPortal
+  url: https://docs.firehydrant.com/reference/firehydrant-api
+- type: APIReference
+  url: https://docs.firehydrant.com/reference/firehydrant-api
+- type: GettingStarted
+  url: https://docs.firehydrant.com/docs/admin-quickstart
+- type: Support
+  url: https://docs.firehydrant.com/docs/contacting-support
+- type: Pricing
+  url: https://firehydrant.com/pricing/
+- type: SignUp
+  url: https://app.firehydrant.io/registrations/new/
+- type: TermsOfService
+  url: https://firehydrant.com/legal/ssa/
+- type: PrivacyPolicy
+  url: https://firehydrant.com/legal/privacy/
+- type: StatusPage
+  url: https://status.firehydrant.com/
+- type: Lifecycle
+  url: lifecycle/firehydrant-lifecycle.yml
+- type: ChangeLog
+  url: https://firehydrant.com/changelog/
+- type: ChangeLog
+  url: changelog/firehydrant-changelog.yml
+- type: Security
+  url: https://firehydrant.com/security/
+- type: VulnerabilityDisclosure
+  url: security/firehydrant-vulnerability-disclosure.yml
+- type: Compliance
+  url: https://firehydrant.com/security/
+- type: Conformance
+  url: conformance/firehydrant-conformance.yml
+- type: Packages
+  url: packages/firehydrant-packages.yml
+- type: SDKs
+  url: packages/firehydrant-packages.yml
+- type: CLI
+  url: cli/firehydrant-cli.yml
+- type: MCPServer
+  url: mcp/firehydrant-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/firehydrant-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/firehydrant-llms.txt
+- type: Webhooks
+  url: asyncapi/firehydrant-webhooks.yml
+- type: Conventions
+  url: conventions/firehydrant-conventions.yml
+- type: ErrorCatalog
+  url: errors/firehydrant-problem-types.yml
+- type: DataModel
+  url: data-model/firehydrant-data-model.yml
+- type: RateLimits
+  url: rate-limits/firehydrant-rate-limits.yml
+- type: Plans
+  url: plans/firehydrant-plans-pricing.yml
+- type: FinOps
+  url: finops/firehydrant-finops.yml
 integrations:
 - name: Featured Slack
 - name: Featured Microsoft Teams
 - name: Featured Jira Cloud
+x-enrichment:
+  date: '2026-08-29'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v1
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

@@ -1,0 +1,54 @@
+generated: '2026-08-29'
+method: searched
+source: https://firehydrant.com/pricing/
+published_sandbox: false
+note: >-
+  FireHydrant publishes NO API sandbox. There is no test/live key separation (API keys carry a
+  single `fhb-` prefix regardless of environment), no test-mode host, no magic test identifiers, no
+  fixture or trigger tooling, and no time-simulation facility. The nearest published equivalents
+  are product-level, not API-level, and are recorded here so a reader can see what does exist.
+substitutes:
+- name: Free plan
+  type: free-tier
+  url: https://firehydrant.com/pricing/
+  description: >-
+    A permanently free tier (up to 10 responders, 2 runbooks, 1 public status page, 3 integrations)
+    that a developer can point a real API key at. This is the de facto sandbox — it is a
+    production org with small limits, not an isolated test environment.
+- name: 14-day Pro trial
+  type: trial
+  url: https://firehydrant.com/pricing/
+  description: Full Pro feature access for 14 days, no credit card required.
+- name: Fire Drill
+  type: product-simulation
+  url: https://docs.firehydrant.com/docs/running-a-fire-drill
+  description: >-
+    A product mode for rehearsing an incident response with the team. It creates a real incident
+    record; it is a human training exercise, not an API dry-run flag.
+- name: Alert Visualization
+  type: product-preview
+  url: https://docs.firehydrant.com/docs/alert-visualization
+  description: Preview what an alert will do before it fires — a UI preview, with no API equivalent.
+- name: Signals debugger
+  type: api-diagnostic
+  operation: debugSignal
+  path: POST /v1/signals/debugger
+  description: >-
+    An API operation for debugging Signals event ingestion. The closest thing to a test harness in
+    the contract, but it operates on the live org.
+environment_separation:
+  key_prefixes:
+  - prefix: fhb-
+    mode: live
+    note: One prefix only. There is no test-key prefix, so a client cannot tell from a key whether
+      it is pointed at something safe.
+  hosts:
+  - url: https://api.firehydrant.io/v1
+    mode: live read-write
+  - url: https://api-read.firehydrant.io/v1
+    mode: live read-only
+    note: >-
+      A read-only host that rejects POST/PATCH/PUT/DELETE. Not a sandbox, but it IS a safe surface
+      an agent can be pinned to when it should never write.
+test_values: []
+test_values_note: No published test cards, test identifiers, magic values or fixtures. None invented.

@@ -1,0 +1,67 @@
+generated: '2026-08-29'
+method: searched
+source: https://firehydrant.com/changelog/
+scheme: dated-release-notes
+current_version: null
+note: >-
+  FireHydrant publishes a dated product changelog on its marketing site, paginated across 6 pages
+  and reaching back several years. It is product-level, not API-versioned — entries describe
+  shipped features, and API changes appear inside them rather than as a separate API changelog.
+  There is no machine-readable feed for it. The recent window is captured here.
+cadence: >-
+  Roughly monthly since early 2026 ("We ship changes to FireHydrant every day"); weekly through
+  most of 2025.
+pages: 6
+entries:
+- date: '2026-07-09'
+  title: 'ICYMI: The New In-App Signals Migrator'
+  breaking: false
+- date: '2026-06-17'
+  title: A Better View of Your Team, Right From the Start
+  breaking: false
+- date: '2026-06-10'
+  title: 'May Recap: Deeper Analytics, Smarter On-Call Filters & More'
+  breaking: false
+- date: '2026-05-13'
+  title: 'April Recap: EU Instance, MS Teams Scribe, and more!'
+  breaking: false
+  highlights:
+  - EU instance (data residency)
+- date: '2026-03-18'
+  title: Consolidated Analytics Pages and Copy Retrospective to Markdown
+  breaking: false
+- date: '2026-02-27'
+  title: Customize Retrospective Exports
+  breaking: false
+- date: '2026-01-16'
+  title: Self Service Authenticated Status Pages
+  breaking: false
+- date: '2025-12-18'
+  title: Customizable Follow-Up Fields
+  breaking: false
+- date: '2025-12-12'
+  title: Mobile App Reliability, Web App Improvements, and Year-End Polish
+  breaking: false
+- date: '2025-12-05'
+  title: Clearer Alert Creation Visibility and Smarter Role Assignment
+  breaking: false
+- date: '2025-11-21'
+  title: Signals, Status Pages & More Improvements
+  breaking: false
+- date: '2025-11-13'
+  title: New Incident Navigation and Functionality Tiers
+  breaking: false
+- date: '2025-10-31'
+  title: Additional RBAC For Incident Types and Severities
+  breaking: false
+- date: '2025-08-08'
+  title: Upgrades to MCP Server, Terraform Provider, Schedule Rotations, and Many More
+  breaking: false
+  highlights:
+  - MCP server upgrade
+  - Terraform provider upgrade
+developer_relevant:
+- date: '2025-08-08'
+  note: Explicit changelog entry covering MCP server and Terraform provider upgrades.
+- date: '2026-05-13'
+  note: EU instance announced — a second data-residency deployment an API client must account for.

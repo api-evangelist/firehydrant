@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: FireHydrant REST Audits Incidents API
   description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
@@ -190,24 +190,14 @@ paths:
       tags:
       - Incidents
 components:
+  parameters:
+    IncidentId:
+      name: incident_id
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
-    Pagination:
-      type: object
-      properties:
-        count:
-          type: integer
-        page:
-          type: integer
-        items:
-          type: integer
-        pages:
-          type: integer
-        last:
-          type: integer
-        prev:
-          type: integer
-        next:
-          type: integer
     Incident:
       type: object
       properties:
@@ -247,13 +237,23 @@ components:
           type: object
         customer_impact_summary:
           type: string
-  parameters:
-    IncidentId:
-      name: incident_id
-      in: path
-      required: true
-      schema:
-        type: string
+    Pagination:
+      type: object
+      properties:
+        count:
+          type: integer
+        page:
+          type: integer
+        items:
+          type: integer
+        pages:
+          type: integer
+        last:
+          type: integer
+        prev:
+          type: integer
+        next:
+          type: integer
   securitySchemes:
     bearerAuth:
       type: http

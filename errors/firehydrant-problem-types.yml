@@ -1,0 +1,83 @@
+generated: '2026-08-29'
+method: derived
+source: openapi/firehydrant-api-openapi.yml
+docs: https://docs.firehydrant.com/reference/firehydrant-api
+format: vendor-json
+rfc9457: false
+note: >-
+  FireHydrant does not use RFC 9457 problem+json. It has TWO error shapes and an agent has to
+  handle both. The OpenAPI declares a structured ErrorEntity (code/detail/messages/meta) on the
+  documented 4xx responses, but the errors an unauthenticated or throttled caller actually
+  receives — verified live — are a flat {"error": "<message>"} envelope that appears nowhere in
+  the spec. The spec's error coverage is also thin: of 373 operations, only 12 declare a 400 and
+  2 declare a 409. No operation declares 401, 403, 404, 422, 429 or any 5xx, even though the
+  reference documents 429 explicitly and 401 was observed live.
+envelopes:
+- name: ErrorEntity
+  where: OpenAPI 4xx responses (application/json)
+  fields:
+  - name: code
+    type: string
+    description: A stable code on which to match errors
+  - name: detail
+    type: string
+  - name: messages
+    type: array of string
+  - name: meta
+    type: object
+    description: An object with additional error metadata
+  source: openapi/firehydrant-api-openapi.yml#/components/schemas/ErrorEntity
+- name: flat error string
+  where: authentication and rate-limit failures observed at runtime
+  fields:
+  - name: error
+    type: string
+  evidence:
+  - probe: GET https://api.firehydrant.io/v1/ping (no Authorization header)
+    status: 401
+    body: '{"error":"This endpoint requires you to be authenticated."}'
+    observed: '2026-08-29'
+  - doc: https://docs.firehydrant.com/reference/firehydrant-api
+    status: 429
+    body: '{"error": "rate limit exceeded"}'
+problems:
+- status: 400
+  title: Bad Request
+  schema: ErrorEntity
+  declared_on_operations: 12
+  example_operations:
+  - createChange
+  - createChangeIdentity
+  - updateChangeIdentity
+  - deleteChangeIdentity
+  - createChecklistTemplate
+  - createIncidentImpact
+  - deleteIncidentImpact
+  source_operation: openapi/firehydrant-api-openapi.yml#createChange
+- status: 409
+  title: Already Added
+  schema: ErrorEntity
+  declared_on_operations: 2
+  example_operations:
+  - createIncidentRelatedChange
+  source_operation: openapi/firehydrant-api-openapi.yml#createIncidentRelatedChange
+- status: 401
+  title: Authentication required
+  schema: flat error string
+  declared_in_spec: false
+  remediation: >-
+    Send Authorization: Bearer {fhb-...}. Every endpoint is authenticated except the documented
+    /v1/noauth/ping.
+  source: live probe 2026-08-29
+- status: 429
+  title: Rate limit exceeded
+  schema: flat error string
+  declared_in_spec: false
+  remediation: >-
+    Honor Retry-After (seconds). The pool is 50 requests per account per 10 seconds and is shared
+    across every API key on the account.
+  source: https://docs.firehydrant.com/reference/firehydrant-api
+gaps:
+- No 401/403/404/422/429/5xx responses are declared on any of the 373 operations.
+- The runtime flat error-string envelope (a single `error` key) is not modelled in the spec at all.
+- No error-code registry is published, so the ErrorEntity `code` field has no documented vocabulary.

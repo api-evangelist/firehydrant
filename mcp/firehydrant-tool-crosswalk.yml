@@ -1,0 +1,76 @@
+generated: '2026-08-29'
+method: derived
+source: mcp/firehydrant-mcp.yml + openapi/firehydrant-api-openapi.yml + graphql/firehydrant-schema.graphql
+note: >-
+  Tool names, scopes and descriptions read verbatim from the official MCP server source
+  (src/mcp-server/tools/*.ts). REST operationIds verified by grep against the published
+  FireHydrant OpenAPI — none invented.
+surfaces:
+  openapi:
+    file: openapi/firehydrant-api-openapi.yml
+    operations: 373
+    gated: false
+  mcp:
+    package: firehydrant-mcp
+    transport: stdio
+    url: null
+    gated: true
+    note: >-
+      Local stdio server; `tools/list` cannot be introspected anonymously because the server
+      is not hosted. Tool names and input models were read from the server's own generated
+      source instead, which is the same contract.
+  graphql:
+    endpoint: null
+    gated: true
+    note: >-
+      graphql/firehydrant-schema.graphql in this repo is an API Evangelist CONCEPTUAL model of
+      the REST surface, not a FireHydrant-published GraphQL endpoint. It is not crosswalked.
+crosswalk:
+- tool: list-incidents
+  category: incidents
+  rest: [listIncidents]
+  binding: rest
+  confidence: high
+- tool: create-incident
+  category: incidents
+  rest: [createIncident]
+  binding: rest
+  confidence: high
+- tool: list-alerts
+  category: alerts
+  rest: [listAlerts]
+  binding: rest
+  confidence: high
+mcp_only:
+- tool: list-retros-by-incident
+  reason: >-
+    Backed by GET /v1/incidents/{incident_id}/retrospectives, which appears in the MCP
+    server's generated spec but is absent from the published FireHydrant OpenAPI. The
+    published spec reaches retrospectives through /v1/post_mortems/reports instead.
+- tool: update-retrospective-field
+  reason: >-
+    Backed by PATCH /v1/incidents/{incident_id}/retrospectives/{retrospective_id}/fields/{field_id};
+    absent from the published OpenAPI. Nearest published operation is updateRetrospectiveField
+    on /v1/post_mortems/reports/{report_id}/fields/{field_id} — a different path shape, so this
+    is recorded as a divergence rather than mapped.
+rest_only:
+- capability: Incidents (beyond list/create)
+  note: get/update/delete incidents, milestones, roles, tasks, notes, impacts, links, events
+- capability: Services, Environments, Functionalities, Teams, Users
+  note: the whole service-catalog surface has no MCP tool
+- capability: Runbooks and runbook executions
+- capability: Changes and change events
+- capability: Status Pages (nunc) and status updates
+- capability: Signals — on-call schedules, escalation policies, alert rules, event sources, webhook targets, paging
+- capability: Integrations (AWS, Slack, Jira, Statuspage, ticketing, chat)
+- capability: Metrics/Reporting and analytics
+- capability: Webhooks CRUD and delivery history
+- capability: SCIM 2.0 Users and Groups provisioning
+- capability: Account Settings, RBAC roles, permissions, audit events, entitlements
+coverage:
+  tools_named: 5
+  tools_bound_to_rest: 3
+  mcp_only: 2
+  rest_operations_total: 373
+  rest_operations_with_a_tool: 3
+  rest_coverage_pct: 0.8

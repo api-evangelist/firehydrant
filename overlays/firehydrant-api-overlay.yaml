@@ -1,0 +1,82 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the FireHydrant API
+  version: 1.0.0
+extends: openapi/firehydrant-api-openapi.yml
+x-generated: '2026-08-29'
+x-method: generated
+x-source: >-
+  Derived from artifacts in this repo — conventions/, rate-limits/, errors/, lifecycle/,
+  conformance/ — all of which were read from FireHydrant's own documentation. This overlay records
+  what the published contract omits; it never mutates the harvested spec.
+actions:
+- target: $.info
+  update:
+    contact:
+      name: FireHydrant
+      url: https://docs.firehydrant.com/reference/firehydrant-api
+    x-apievangelist-slug: firehydrant
+    x-apievangelist-reviewed: '2026-08-29'
+    x-apievangelist-source: https://github.com/freshworks-oss/firehydrant-typescript-sdk/blob/main/openapi.yaml
+- target: $.servers
+  update:
+  - url: https://api.firehydrant.io/v1
+    description: >-
+      Production. NOTE the published spec declares only https://api.firehydrant.io/ without the /v1
+      path segment, while every path in the document already begins with /v1 — so the declared
+      server is correct as written and this entry is documentation of the effective base only.
+  - url: https://api-read.firehydrant.io/v1
+    description: >-
+      Documented read-only replica with a longer timeout for complex reads; may lag the primary by
+      up to 30 seconds. POST/PATCH/PUT/DELETE are rejected. Absent from the published servers[].
+- target: $.info
+  update:
+    x-rate-limit:
+      scope: account
+      limit: 50
+      window: 10s
+      equivalent_per_minute: 300
+      status: 429
+      headers: [RateLimit-Limit, Retry-After]
+      source: https://docs.firehydrant.com/reference/firehydrant-api
+- target: $.info
+  update:
+    x-pagination:
+      style: page-number
+      params: [page, per_page]
+      per_page_default: 20
+      per_page_max: 200
+      response: '{ data: [], pagination: { count, page, items, pages, last, prev, next } }'
+- target: $.info
+  update:
+    x-error-envelope:
+      spec_shape: '#/components/schemas/ErrorEntity'
+      runtime_shape: single `error` string key
+      rfc9457: false
+      note: >-
+        401 and 429 responses return a flat error object that is not modelled anywhere in the spec,
+        and no operation declares 401/403/404/429/5xx.
+- target: $.info
+  update:
+    x-reversibility:
+      grade: verified
+      pair:
+        archive: archiveIncident
+        restore: unarchiveIncident
+      window: unbounded — archive is a soft delete with no published expiry
+- target: $.info
+  update:
+    x-domain-standard:
+      id: scim2
+      surface: /v1/scim/v2/Users and /v1/scim/v2/Groups
+      media_type: application/scim+json
+      deviation: no urn:ietf:params:scim:schemas:* declarations, no /ServiceProviderConfig discovery
+- target: $.paths['/v1/incidents/{incident_id}/unarchive'].post
+  update:
+    x-reverses: archiveIncident
+- target: $.paths['/v1/webhooks']
+  update:
+    x-webhook-signature:
+      header: fh-signature
+      algorithm: HMAC-SHA256 hex digest of the raw body
+      docs: https://docs.firehydrant.com/docs/webhooks

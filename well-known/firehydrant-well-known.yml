@@ -1,0 +1,94 @@
+generated: '2026-08-29'
+method: probed
+source: live GET of /.well-known/* on every FireHydrant host in apis.yml and OpenAPI servers[]
+hit_count: 0
+note: >-
+  FireHydrant serves no /.well-known/ discovery documents. api.firehydrant.io returns a hard
+  404 with an empty body on every path. firehydrant.com (marketing) returns 404 with its
+  standard 89,039-byte 404 page. docs.firehydrant.com (ReadMe) returns 404. app.firehydrant.io
+  is a single-page-app catch-all that answers HTTP 200 with the same 8,825-byte HTML shell for
+  EVERY /.well-known/* path — including a random control path that cannot exist — so none of
+  its 200s is a document. No WellKnown, SecurityTxt, APICatalog or AgentCard pointer is emitted:
+  a recorded absence, not a served surface.
+hosts:
+- host: https://api.firehydrant.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://firehydrant.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://docs.firehydrant.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://app.firehydrant.io
+  soft_404_catch_all: true
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+  - path: /.well-known/openid-configuration
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+  - path: /.well-known/api-catalog
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+  - path: /.well-known/agent-card.json
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+  - path: /.well-known/agent.json
+    status: 200
+    note: SPA catch-all HTML shell, 8825 bytes — not a document, no file saved
+soft_404_control:
+- host: https://app.firehydrant.io
+  path: /.well-known/apievangelist-nonexistent-control
+  status: 200
+  bytes: 8825
+- host: https://firehydrant.com
+  path: /.well-known/apievangelist-nonexistent-control
+  status: 404
+  bytes: 89039

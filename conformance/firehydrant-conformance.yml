@@ -1,0 +1,95 @@
+generated: '2026-08-29'
+method: derived
+source: openapi/firehydrant-api-openapi.yml
+searched_sources:
+- https://firehydrant.com/security/
+- https://trust.freshworks.com/?product=firehydrant
+- https://docs.firehydrant.com/reference/firehydrant-api
+standards:
+- id: scim2
+  name: SCIM 2.0 (RFC 7643 / RFC 7644)
+  conforms: true
+  domain_standard: true
+  evidence: >-
+    The contract itself declares SCIM, not just a marketing page. openapi/firehydrant-api-openapi.yml
+    exposes /v1/scim/v2/Users and /v1/scim/v2/Groups (GET, POST) plus /v1/scim/v2/Users/{id} and
+    /v1/scim/v2/Groups/{id} (PUT, PATCH), the request bodies use the `application/scim+json` media
+    type, and the User PATCH body is the RFC 7644 Operations[] array with op (add/remove/replace)
+    and path. Groups are explicitly documented as "Colloquial for Group in the SCIM protocol",
+    mapped to FireHydrant Teams. SCIM is also named as an Enterprise-plan feature on
+    firehydrant.com/pricing and on firehydrant.com/security.
+  operations:
+  - getScimUsers
+  - createScimUser
+  - getScimGroups
+  - createScimGroup
+  spec_location: openapi/firehydrant-api-openapi.yml paths /v1/scim/v2/*
+  deviation: >-
+    No `schemas` array carrying urn:ietf:params:scim:schemas:* appears in the request/response
+    models in the published spec, and no /ServiceProviderConfig, /Schemas or /ResourceTypes
+    discovery endpoints are exposed. A SCIM client that negotiates capability before provisioning
+    will find nothing to read.
+- id: saml2
+  name: SAML 2.0
+  conforms: true
+  evidence: >-
+    "SAML 2.0 and SCIM Support — Leverage your identity provider's existing access controls and
+    lifecycle management tools" on https://firehydrant.com/security/. Not an API-surface standard;
+    recorded because it pairs with the SCIM provisioning surface.
+- id: soc2-type2
+  name: SOC 2 Type II
+  conforms: true
+  evidence: >-
+    "FireHydrant is SOC 2 Type II compliant... have achieved Type II compliance as of September
+    2021" — https://firehydrant.com/security/. Report available on request. Also listed on the
+    Freshworks trust center (trust.freshworks.com/?product=firehydrant).
+- id: iso27001
+  name: ISO/IEC 27001
+  conforms: true
+  evidence: Listed on https://trust.freshworks.com/?product=firehydrant (FireHydrant is a Freshworks company).
+- id: csa-star
+  name: CSA STAR
+  conforms: true
+  evidence: Listed on https://trust.freshworks.com/?product=firehydrant.
+- id: gdpr-data-residency
+  name: EU data residency
+  conforms: true
+  evidence: >-
+    "April Recap: EU Instance" — https://firehydrant.com/changelog/ (2026-05-13). FireHydrant runs a
+    separate EU instance.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No oauth2 securityScheme anywhere in the 373-operation spec. Authentication is a single apiKey
+    scheme sending an organization API key as `Authorization: Bearer fhb-...`. There is no OAuth
+    authorization-code flow, no scopes, and therefore no delegated third-party access model.
+- id: oidc
+  conforms: false
+  evidence: No openIdConnect securityScheme; no /.well-known/openid-configuration served on any host.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    No application/problem+json anywhere in the spec. Errors use a vendor ErrorEntity
+    (code/detail/messages/meta) in the spec and a flat single-key error object at runtime.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header support documented; zero operations carry deprecated:true.
+- id: idempotency-key
+  conforms: false
+  evidence: No Idempotency-Key header or parameter in the spec or the API reference.
+- id: json-api
+  conforms: false
+  evidence: >-
+    Responses use a vendor envelope — a `data` array plus a `pagination` object with
+    count/page/items/pages/last/prev/next — not JSON:API.
+- id: pagination
+  conforms: true
+  evidence: >-
+    Page-number pagination documented and implemented consistently — `page` and `per_page` query
+    params on 51 and 52 operations respectively, per_page default 20 and max 200, with a
+    `pagination` metadata object on every list response.
+- id: webhook-hmac-signing
+  conforms: true
+  evidence: >-
+    Webhooks are signed with an HMAC-SHA256 hex digest of the raw body under a shared secret,
+    presented in the `fh-signature` header — https://docs.firehydrant.com/docs/webhooks.

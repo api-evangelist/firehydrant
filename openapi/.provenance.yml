@@ -1,0 +1,42 @@
+generated: '2026-08-29'
+method: searched
+note: >-
+  This directory now holds TWO generations of FireHydrant contract and they are not equivalent.
+files:
+- file: firehydrant-api-openapi.yml
+  status: authoritative
+  method: searched
+  source: https://raw.githubusercontent.com/freshworks-oss/firehydrant-typescript-sdk/main/openapi.yaml
+  fetched: '2026-08-29'
+  http_status: 200
+  bytes: 704969
+  openapi: 3.0.1
+  info_title: FireHydrant API
+  servers: [https://api.firehydrant.io/]
+  paths: 228
+  operations: 373
+  schemas: 328
+  tags: 21
+  ownership_check: >-
+    PASSES. info.title is "FireHydrant API"; servers[] is https://api.firehydrant.io/, the host that
+    answers live with FireHydrant's own auth error; it is the exact spec FireHydrant's own Speakeasy
+    workflow generates its first-party TypeScript SDK from
+    (.speakeasy/workflow.yaml source registry.speakeasyapi.dev/firehydrant/firehydrant/firehydrant-oas);
+    and the repo's package.json names github.com/firehydrant/firehydrant-typescript-sdk. The
+    freshworks-oss org is FireHydrant's owner after the Freshworks acquisition — the same company
+    also runs the trust center at trust.freshworks.com/?product=firehydrant that this repo already
+    records. No spec is served from api.firehydrant.io directly (/openapi.json 401s behind auth) and
+    the ReadMe docs host answers a bot challenge, which is why earlier rounds missed it.
+- file: _original/firehydrant-openapi.yml
+  status: superseded
+  method: unknown
+  openapi: 3.1.0
+  info_title: FireHydrant REST API
+  operations: 37
+  note: >-
+    A 37-operation subset that predates this round. Its operationIds (ping, listIncidents,
+    createIncident, createChangeEvent, ...) do match real FireHydrant operations, but it covers about
+    10% of the published API and its info block was not harvested from FireHydrant. The 15 per-tag
+    files in this directory were split from it and inherit the same narrow coverage — they remain
+    valid OpenAPI and remain wired, but firehydrant-api-openapi.yml is the contract to read and to
+    re-refine from.

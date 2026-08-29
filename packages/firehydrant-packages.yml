@@ -1,0 +1,64 @@
+generated: '2026-08-29'
+method: searched
+source: https://github.com/freshworks-oss (FireHydrant is a Freshworks company; SDK repos are mirrored from github.com/firehydrant), registry.npmjs.org, proxy.golang.org, registry.terraform.io
+note: >-
+  FireHydrant's first-party client libraries are Speakeasy-generated from the FireHydrant
+  OpenAPI (registry.speakeasyapi.dev/firehydrant/firehydrant/firehydrant-oas). Since the
+  Freshworks acquisition the canonical repos live in the freshworks-oss GitHub org, while
+  package metadata still points at the original github.com/firehydrant org — both are the
+  same company. No Python, Java, Ruby, PHP or .NET client is published.
+packages:
+- language: typescript
+  registry: npm
+  name: firehydrant-typescript-sdk
+  url: https://www.npmjs.com/package/firehydrant-typescript-sdk
+  install: npm install firehydrant-typescript-sdk
+  repository: https://github.com/freshworks-oss/firehydrant-typescript-sdk
+  official: true
+  version: 1.3.0
+  published: '2026-02-24'
+- language: typescript
+  registry: npm
+  name: firehydrant-mcp
+  url: https://www.npmjs.com/package/firehydrant-mcp
+  install: npx firehydrant-mcp start --api-key ...
+  repository: https://github.com/freshworks-oss/firehydrant-mcp
+  official: true
+  version: 0.0.4
+  published: '2026-02-24'
+  note: Official FireHydrant MCP server, distributed as a local stdio package.
+- language: go
+  registry: go
+  name: github.com/firehydrant/firehydrant-go-sdk
+  url: https://pkg.go.dev/github.com/firehydrant/firehydrant-go-sdk
+  install: go get github.com/firehydrant/firehydrant-go-sdk
+  repository: https://github.com/freshworks-oss/firehydrant-go-sdk
+  official: true
+  version: v1.8.6
+  published: '2026-04-03'
+- language: go
+  registry: github-releases
+  name: fhcli
+  url: https://github.com/firehydrant/fhcli/releases
+  install: download the release archive and extract to /usr/local/bin
+  repository: https://github.com/freshworks-oss/fhcli
+  official: true
+  version: v0.0.15
+  published: '2025-08-01'
+  note: >-
+    FireHydrant CLI for submitting change events from CI/orchestration systems. Distributed
+    only as GitHub release archives (darwin, linux/amd64) — no package-manager registry, so
+    there is no registry metadata endpoint; version and date read from the GitHub releases API.
+- language: hcl
+  registry: terraform
+  name: firehydrant/firehydrant
+  url: https://registry.terraform.io/providers/firehydrant/firehydrant/latest
+  install: 'terraform { required_providers { firehydrant = { source = "firehydrant/firehydrant" } } }'
+  repository: https://github.com/freshworks-oss/terraform-provider-firehydrant
+  official: true
+  version: 0.15.2
+  published: '2026-06-10'
+  note: >-
+    Version read from registry.terraform.io/v1/providers/firehydrant/firehydrant. A v2 provider
+    (terraform-provider-firehydrant-v2) is published on GitHub but is not yet in the registry
+    under a separate name.

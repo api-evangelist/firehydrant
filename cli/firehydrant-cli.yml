@@ -1,0 +1,71 @@
+generated: '2026-08-29'
+method: searched
+source: https://docs.firehydrant.com/docs/firehydrant-cli
+name: fhcli
+full_name: FireHydrant CLI
+description: >-
+  A single-purpose Go command line tool for submitting CHANGE EVENTS to FireHydrant from an
+  existing CI or orchestration system — Docker image builds, Jenkins deploys, CI build statuses.
+  It is not a general-purpose client for the 373-operation REST API; it wraps the change-event
+  surface only.
+repository: https://github.com/freshworks-oss/fhcli
+releases: https://github.com/firehydrant/fhcli/releases
+version: v0.0.15
+published: '2025-08-01'
+language: go
+platforms:
+- darwin
+- linux/amd64
+install:
+- method: github-release
+  steps: >-
+    Download the release archive from https://github.com/firehydrant/fhcli/releases and extract it
+    to somewhere on PATH such as /usr/local/bin. On macOS the docs instruct downloading via
+    `sudo wget -qO- [RELEASE_URL] | sudo tar -xvz` rather than the browser, so Gatekeeper does not
+    block execution.
+- method: verify
+  steps: fhcli --version
+  note: No Homebrew tap, no package manager distribution, no install script.
+configuration:
+  env_var: FH_API_KEY
+  config_files:
+  - ~/firehydrant.cfg
+  - /etc/firehydrant.cfg
+  config_format: |
+    apiKey: fhb-123example
+    environment: production
+  flag: --apiKey
+  docs: https://docs.firehydrant.com/docs/api-keys
+commands:
+- name: init
+  description: Writes a starter configuration file to /tmp/firehydrant.cfg for editing.
+- name: event
+  description: Logs a change event in your FireHydrant instance.
+  flags:
+  - --labels
+  - --environment
+  - --service
+  example: >-
+    fhcli event "New deployment event via FHCLI example" --labels type=deployment,author="John Doe"
+    --environment us-east-1 --service iam-service
+- name: execute
+  description: >-
+    Wraps another command and records the change in FireHydrant when it runs — e.g. wrapping
+    `docker build` to record image creation.
+  flags:
+  - --service
+  - --identities
+  example: >-
+    fhcli execute --service=railsapp --identities "revision=$CIRCLE_SHA1,git=$CIRCLE_REPOSITORY_URL:$CIRCLE_SHA1"
+    -- docker build -t app .
+- name: help
+  description: Displays all available commands and arguments.
+key_flows:
+- name: Record a deploy from CI
+  commands: [event]
+- name: Attach change identities (git revision, image URL) to a build
+  commands: [execute]
+  note: >-
+    The --identities flag is what links a GitHub pull request to a Kubernetes pod spec inside
+    FireHydrant's change tracking.
+integration_page: https://firehydrant.com/integrations/fhcli/

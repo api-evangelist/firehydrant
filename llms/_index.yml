@@ -1,0 +1,19 @@
+generated: '2026-08-29'
+method: searched
+files:
+- file: firehydrant-llms.txt
+  source: https://firehydrant.com/llms.txt
+  http_status: 200
+  bytes: 3784
+  note: >-
+    Saved verbatim. FireHydrant publishes a real llms.txt on its marketing host, including an
+    explicit Bot Access Policy that allows training and retrieval for gptbot, claudebot,
+    google-extended, perplexitybot and every unspecified future bot.
+- file: firehydrant-docs-llms-full.txt
+  source: https://docs.firehydrant.com/llms.txt
+  http_status: 200
+  bytes: 101458
+  note: >-
+    The documentation host publishes a second, much larger llms.txt — a full index of every
+    guide, recipe and API reference page, each of which also serves a .md twin. Kept locally
+    for reference; matches the *-llms-full.txt gitignore pattern and carries no apis.yml pointer.
