@@ -59,6 +59,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Audit
+  tags_raw:
   - Audits
   properties:
   - type: OpenAPI
@@ -99,6 +101,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Environment
+  tags_raw:
   - Environments
   properties:
   - type: OpenAPI
@@ -243,6 +247,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Communications
+  tags_raw:
   - Communication
   properties:
   - type: OpenAPI
@@ -275,6 +281,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Integration
+  tags_raw:
   - Integrations
   properties:
   - type: OpenAPI
@@ -291,6 +299,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Metrics
+  tags_raw:
   - metrics
   properties:
   - type: OpenAPI
@@ -371,6 +381,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Task
+  tags_raw:
   - Tasks
   properties:
   - type: OpenAPI
@@ -387,6 +399,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -403,6 +417,8 @@ apis:
   humanURL: https://firehydrant.com
   baseURL: https://api.firehydrant.io/v1
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
