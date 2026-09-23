@@ -1,19 +1,249 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Conversations API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Conversations API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Conversations across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Conversations
+  description: Operations related to Conversations
 paths:
+  /v1/conversations/{conversation_id}/comments:
+    get:
+      tags:
+      - Conversations
+      summary: List comments for a conversation
+      description: ALPHA - List all of the comments that have been added to the organization
+      operationId: listConversationComments
+      parameters:
+      - name: before
+        in: query
+        description: An ISO8601 timestamp that allows filtering for comments posted before the provided time.
+        schema:
+          type: string
+          format: date-time
+      - name: after
+        in: query
+        description: An ISO8601 timestamp that allows filtering for comments posted after the provided time.
+        schema:
+          type: string
+          format: date-time
+      - name: sort
+        in: query
+        description: Allows sorting comments by the time they were posted, ascending or descending.
+        schema:
+          type: string
+          default: asc
+          enum:
+          - asc
+          - desc
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ALPHA - List all of the comments that have been added to the organization
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Conversations
+      summary: Create a comment for a conversation
+      description: ALPHA - Creates a comment for a project
+      operationId: createConversationComment
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1ConversationsConversationIdComments'
+        required: true
+      responses:
+        '201':
+          description: ALPHA - Creates a comment for a project
+          content: {}
+      x-codegen-request-body-name: postV1ConversationsConversationIdComments
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/conversations/{conversation_id}/comments/{comment_id}:
+    get:
+      tags:
+      - Conversations
+      summary: Get a conversation comment
+      description: ALPHA - Retrieves a single comment by ID
+      operationId: getConversationComment
+      parameters:
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ALPHA - Retrieves a single comment by ID
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Conversations
+      summary: Delete a conversation comment
+      description: ALPHA - Archive a comment
+      operationId: deleteConversationComment
+      parameters:
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ALPHA - Archive a comment
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Conversations
+      summary: Update a conversation comment
+      description: ALPHA - Update a comment's attributes
+      operationId: updateConversationComment
+      parameters:
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1ConversationsConversationIdCommentsCommentId'
+        required: true
+      responses:
+        '200':
+          description: ALPHA - Update a comment's attributes
+          content: {}
+      x-codegen-request-body-name: patchV1ConversationsConversationIdCommentsCommentId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/conversations/{conversation_id}/comments/{comment_id}/reactions:
+    get:
+      tags:
+      - Conversations
+      summary: List reactions for a conversation comment
+      description: ALPHA - List all of the reactions that have been added to a comment
+      operationId: listConversationCommentReactions
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ALPHA - List all of the reactions that have been added to a comment
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Conversations
+      summary: Create a reaction for a conversation comment
+      description: ALPHA - Create a reaction on a comment
+      operationId: createConversationCommentReaction
+      parameters:
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1ConversationsConversationIdCommentsCommentIdReactions'
+        required: true
+      responses:
+        '201':
+          description: ALPHA - Create a reaction on a comment
+          content: {}
+      x-codegen-request-body-name: postV1ConversationsConversationIdCommentsCommentIdReactions
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/conversations/{conversation_id}/comments/{comment_id}/reactions/{reaction_id}:
+    delete:
+      tags:
+      - Conversations
+      summary: Delete a reaction from a conversation comment
+      description: ALPHA - Archive a reaction
+      operationId: deleteConversationCommentReaction
+      parameters:
+      - name: reaction_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: conversation_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ALPHA - Archive a reaction
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /conversations/{conversation_id}/comments:
     post:
       summary: Create a comment on a conversation
@@ -40,8 +270,48 @@ paths:
           description: Created
       tags:
       - Conversations
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    postV1ConversationsConversationIdComments:
+      required:
+      - body
+      type: object
+      properties:
+        body:
+          type: string
+          description: Text body of comment
+      description: ALPHA - Creates a comment for a project
+    patchV1ConversationsConversationIdCommentsCommentId:
+      type: object
+      properties:
+        body:
+          type: string
+          description: Text body of comment
+      description: ALPHA - Update a comment's attributes
+    postV1ConversationsConversationIdCommentsCommentIdReactions:
+      required:
+      - reaction
+      type: object
+      properties:
+        reaction:
+          type: string
+          description: CLDR short name of Unicode emojis
+      description: ALPHA - Create a reaction on a comment
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

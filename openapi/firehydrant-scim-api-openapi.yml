@@ -1,0 +1,400 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant SCIM API
+  version: 0.0.1
+  description: Operations related to SCIM
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: SCIM
+  description: Operations related to SCIM
+paths:
+  /v1/scim/v2/Groups:
+    get:
+      tags:
+      - SCIM
+      summary: List teams via SCIM
+      description: SCIM endpoint that lists all Teams (Colloquial for Group in the SCIM protocol)
+      operationId: getScimGroups
+      parameters:
+      - name: startIndex
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: count
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: filter
+        in: query
+        description: "This is a string used to query groups by displayName.\n        Proper example syntax for this would be `?filter=displayName eq \"My Team Name\"`.\n        Currently we only support the `eq` operator"
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SCIM endpoint that lists all Teams (Colloquial for Group in the SCIM protocol)
+          content: {}
+    post:
+      tags:
+      - SCIM
+      summary: Create a team via SCIM
+      description: SCIM endpoint to create a new Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role.
+      operationId: createScimGroup
+      requestBody:
+        content:
+          application/scim+json:
+            schema:
+              $ref: '#/components/schemas/postV1ScimV2Groups'
+        required: true
+      responses:
+        '201':
+          description: SCIM endpoint to create a new Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role.
+          content: {}
+      x-codegen-request-body-name: postV1ScimV2Groups
+  /v1/scim/v2/Groups/{id}:
+    get:
+      tags:
+      - SCIM
+      summary: Get a SCIM group
+      description: SCIM endpoint that lists a Team (Colloquial for Group in the SCIM protocol)
+      operationId: getScimGroup
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SCIM endpoint that lists a Team (Colloquial for Group in the SCIM protocol)
+          content: {}
+    put:
+      tags:
+      - SCIM
+      summary: Update a SCIM group
+      description: SCIM endpoint to update a Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role, any missing members will be removed from the team.
+      operationId: updateScimGroup
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/scim+json:
+            schema:
+              $ref: '#/components/schemas/putV1ScimV2GroupsId'
+        required: true
+      responses:
+        '200':
+          description: SCIM endpoint to update a Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role, any missing members will be removed from the team.
+          content: {}
+      x-codegen-request-body-name: putV1ScimV2GroupsId
+    delete:
+      tags:
+      - SCIM
+      summary: Delete a SCIM group
+      description: SCIM endpoint to delete a Team (Colloquial for Group in the SCIM protocol).
+      operationId: deleteScimGroup
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: SCIM endpoint to delete a Team (Colloquial for Group in the SCIM protocol).
+          content: {}
+  /v1/scim/v2/Users:
+    get:
+      tags:
+      - SCIM
+      summary: List users via SCIM
+      description: SCIM endpoint that lists users. This endpoint will display a list of Users currently in the system.
+      operationId: getScimUsers
+      parameters:
+      - name: filter
+        in: query
+        description: "This is a string used to query users by either userName or email.\n        Proper example syntax for this would be `?filter=userName eq john` or `?filter=userName eq \"john@firehydrant.com\"`.\n        Currently we only support the `eq` operator"
+        schema:
+          type: string
+      - name: startIndex
+        in: query
+        description: This is an integer which represents a pagination offset
+        schema:
+          type: integer
+          format: int32
+      - name: count
+        in: query
+        description: This is an integer which represents the number of items per page in the response
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: SCIM endpoint that lists users. This endpoint will display a list of Users currently in the system.
+          content: {}
+    post:
+      tags:
+      - SCIM
+      summary: Create a user via SCIM
+      description: SCIM endpoint to create and provision a new User. This endpoint will provision the User, which allows them to accept their account throught their IDP or via the Forgot Password flow.
+      operationId: createScimUser
+      requestBody:
+        content:
+          application/scim+json:
+            schema:
+              $ref: '#/components/schemas/postV1ScimV2Users'
+        required: true
+      responses:
+        '201':
+          description: SCIM endpoint to create and provision a new User. This endpoint will provision the User, which allows them to accept their account throught their IDP or via the Forgot Password flow.
+          content: {}
+      x-codegen-request-body-name: postV1ScimV2Users
+  /v1/scim/v2/Users/{id}:
+    get:
+      tags:
+      - SCIM
+      summary: Get a SCIM user
+      description: SCIM endpoint that lists a User
+      operationId: getScimUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: SCIM endpoint that lists a User
+          content: {}
+    put:
+      tags:
+      - SCIM
+      summary: Replace a SCIM user
+      description: PUT SCIM endpoint to update a User. This endpoint is used to replace a resource's attributes.
+      operationId: replaceScimUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/scim+json:
+            schema:
+              $ref: '#/components/schemas/putV1ScimV2UsersId'
+        required: true
+      responses:
+        '200':
+          description: PUT SCIM endpoint to update a User. This endpoint is used to replace a resource's attributes.
+          content: {}
+      x-codegen-request-body-name: putV1ScimV2UsersId
+    delete:
+      tags:
+      - SCIM
+      summary: Delete a SCIM user
+      description: SCIM endpoint to delete a User. This endpoint will deactivate a confirmed User record in our system.
+      operationId: deleteScimUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: SCIM endpoint to delete a User. This endpoint will deactivate a confirmed User record in our system.
+          content: {}
+    patch:
+      tags:
+      - SCIM
+      summary: Update a SCIM user
+      description: PATCH SCIM endpoint to update a User. This endpoint is used to update a resource's attributes.
+      operationId: updateScimUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/scim+json:
+            schema:
+              $ref: '#/components/schemas/patchV1ScimV2UsersId'
+        required: true
+      responses:
+        '200':
+          description: PATCH SCIM endpoint to update a User. This endpoint is used to update a resource's attributes.
+          content: {}
+      x-codegen-request-body-name: patchV1ScimV2UsersId
+components:
+  schemas:
+    putV1ScimV2UsersId:
+      type: object
+      properties:
+        userName:
+          type: string
+          description: A service provider's unique identifier for the user
+        name:
+          required:
+          - familyName
+          - givenName
+          type: object
+          properties:
+            givenName:
+              type: string
+              description: The family name of the User, or last name in most Western languages
+            familyName:
+              type: string
+              description: The given name of the User, or first name in most Western languages
+          description: The components of the user's name
+        emails:
+          type: array
+          description: Email addresses for the User
+          items:
+            required:
+            - value
+            type: object
+            properties:
+              value:
+                type: string
+                description: String that represents an email address for the User
+              primary:
+                type: boolean
+                description: Boolean which signifies if an email is intended as the primary email for the User
+        roles:
+          type: array
+          description: Roles for the User
+          items:
+            type: string
+        active:
+          type: boolean
+          description: Boolean that represents whether user is active
+      description: PUT SCIM endpoint to update a User. This endpoint is used to replace a resource's attributes.
+    patchV1ScimV2UsersId:
+      required:
+      - Operations
+      type: object
+      properties:
+        trail:
+          type: string
+          description: An optional trail to log the request
+        Operations:
+          type: array
+          description: An array of operations to perform on the user
+          items:
+            required:
+            - op
+            - path
+            type: object
+            properties:
+              op:
+                type: string
+                description: The operation to perform on the user. Options are add, remove, replace
+              path:
+                type: string
+                description: The path to the attribute to be modified
+      description: PATCH SCIM endpoint to update a User. This endpoint is used to update a resource's attributes.
+    postV1ScimV2Users:
+      required:
+      - emails
+      - name
+      - userName
+      type: object
+      properties:
+        userName:
+          type: string
+          description: A service provider's unique identifier for the user
+        name:
+          required:
+          - familyName
+          - givenName
+          type: object
+          properties:
+            familyName:
+              type: string
+              description: The family name of the User, or last name in most Western languages
+            givenName:
+              type: string
+              description: The given name of the User, or first name in most Western languages
+          description: The components of the user's name
+        emails:
+          type: array
+          description: Email addresses for the User
+          items:
+            required:
+            - primary
+            - value
+            type: object
+            properties:
+              value:
+                type: string
+                description: String that represents an email address for the User
+              primary:
+                type: boolean
+                description: Boolean which signifies if an email is intended as the primary email for the User
+        roles:
+          type: array
+          description: Roles for the User. Options are owner, member or collaborator
+          items:
+            type: string
+        password:
+          type: string
+          description: This attribute is intended to be used as a means to set, replace, or compare (i.e., filter for equality) a password
+      description: SCIM endpoint to create and provision a new User. This endpoint will provision the User, which allows them to accept their account throught their IDP or via the Forgot Password flow.
+    putV1ScimV2GroupsId:
+      required:
+      - displayName
+      - members
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The name of the team being updated
+        members:
+          type: array
+          items:
+            required:
+            - value
+            type: object
+            properties:
+              value:
+                type: string
+                description: String that represents the user's UUID to assign to the team
+      description: SCIM endpoint to update a Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role, any missing members will be removed from the team.
+    postV1ScimV2Groups:
+      required:
+      - displayName
+      - members
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The name of the team being created
+        members:
+          type: array
+          items:
+            required:
+            - value
+            type: object
+            properties:
+              value:
+                type: string
+                description: String that represents the user's UUID to assign to the team
+      description: SCIM endpoint to create a new Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role.
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

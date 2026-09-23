@@ -1,0 +1,1029 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Tasks API
+  version: 0.0.1
+  description: Operations related to Tasks
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Tasks
+  description: Operations related to Tasks
+paths:
+  /v1/checklist_templates:
+    get:
+      tags:
+      - Tasks
+      summary: List checklist templates
+      description: List all of the checklist templates that have been added to the organization
+      operationId: listChecklistTemplates
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: A query to search checklist templates by their name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List all of the checklist templates that have been added to the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistTemplateEntityPaginated'
+    post:
+      tags:
+      - Tasks
+      summary: Create a checklist template
+      description: Creates a checklist template for the organization
+      operationId: createChecklistTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1ChecklistTemplates'
+        required: true
+      responses:
+        '201':
+          description: Creates a checklist template for the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistTemplateEntity'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEntity'
+      x-codegen-request-body-name: postV1ChecklistTemplates
+  /v1/checklist_templates/{id}:
+    get:
+      tags:
+      - Tasks
+      summary: Get a checklist template
+      description: Retrieves a single checklist template by ID
+      operationId: getChecklistTemplate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single checklist template by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistTemplateEntity'
+    delete:
+      tags:
+      - Tasks
+      summary: Archive a checklist template
+      operationId: deleteChecklistTemplate
+      parameters:
+      - name: id
+        in: path
+        description: Checklist Template UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Archive a checklist template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistTemplateEntity'
+    patch:
+      tags:
+      - Tasks
+      summary: Update a checklist template
+      description: Update a checklist templates attributes
+      operationId: updateChecklistTemplate
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1ChecklistTemplatesId'
+        required: true
+      responses:
+        '200':
+          description: Update a checklist templates attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChecklistTemplateEntity'
+      x-codegen-request-body-name: patchV1ChecklistTemplatesId
+  /v1/incidents/{incident_id}/tasks:
+    get:
+      tags:
+      - Tasks
+      summary: List tasks for an incident
+      description: Retrieve a list of all tasks for a specific incident
+      operationId: listIncidentTasks
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a list of all tasks for a specific incident
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskEntityPaginated'
+    post:
+      tags:
+      - Tasks
+      summary: Create a task for an incident
+      description: Create a task
+      operationId: createIncidentTask
+      parameters:
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1IncidentsIncidentIdTasks'
+        required: true
+      responses:
+        '201':
+          description: Create a task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskEntity'
+      x-codegen-request-body-name: postV1IncidentsIncidentIdTasks
+  /v1/incidents/{incident_id}/tasks/{task_id}:
+    get:
+      tags:
+      - Tasks
+      summary: Get a task for an incident
+      description: Retrieve a single task for an incident
+      operationId: getIncidentTask
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single task for an incident
+          content: {}
+    delete:
+      tags:
+      - Tasks
+      summary: Delete a task from an incident
+      description: Delete a task
+      operationId: deleteIncidentTask
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a task
+          content: {}
+    patch:
+      tags:
+      - Tasks
+      summary: Update a task for an incident
+      description: Update a task's attributes
+      operationId: updateIncidentTask
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1IncidentsIncidentIdTasksTaskId'
+        required: true
+      responses:
+        '200':
+          description: Update a task's attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskEntity'
+      x-codegen-request-body-name: patchV1IncidentsIncidentIdTasksTaskId
+  /v1/incidents/{incident_id}/tasks/{task_id}/convert:
+    post:
+      tags:
+      - Tasks
+      summary: Convert a task to a follow-up
+      operationId: convertIncidentTaskToFollowup
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1IncidentsIncidentIdTasksTaskIdConvert'
+        required: true
+      responses:
+        '201':
+          description: Convert a task to a follow-up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskEntityPaginated'
+      x-codegen-request-body-name: postV1IncidentsIncidentIdTasksTaskIdConvert
+  /v1/task_lists:
+    get:
+      tags:
+      - Tasks
+      summary: List task lists
+      description: Lists all task lists for your organization
+      operationId: listTaskLists
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Lists all task lists for your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListEntity'
+    post:
+      tags:
+      - Tasks
+      summary: Create a task list
+      description: Creates a new task list
+      operationId: createTaskList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1TaskLists'
+        required: true
+      responses:
+        '201':
+          description: Creates a new task list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListEntity'
+      x-codegen-request-body-name: postV1TaskLists
+  /v1/task_lists/{task_list_id}:
+    get:
+      tags:
+      - Tasks
+      summary: Get a task list
+      description: Retrieves a single task list by ID
+      operationId: getTaskList
+      parameters:
+      - name: task_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single task list by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListEntity'
+    delete:
+      tags:
+      - Tasks
+      summary: Delete a task list
+      operationId: deleteTaskList
+      parameters:
+      - name: task_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Delete a task list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListEntity'
+    patch:
+      tags:
+      - Tasks
+      summary: Update a task list
+      description: Updates a task list's attributes and task list items
+      operationId: updateTaskList
+      parameters:
+      - name: task_list_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TaskListsTaskListId'
+        required: true
+      responses:
+        '200':
+          description: Updates a task list's attributes and task list items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListEntity'
+      x-codegen-request-body-name: patchV1TaskListsTaskListId
+  /v1/ticketing/tickets:
+    get:
+      tags:
+      - Tasks
+      summary: List tickets
+      description: List all of the tickets that have been added to the organiation
+      operationId: listTickets
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: tag_match_strategy
+        in: query
+        description: A matching strategy for the tags provided
+        schema:
+          type: string
+          enum:
+          - any
+          - match_all
+          - exclude
+      - name: assigned_user
+        in: query
+        description: Filter tickets assigned to this user id
+        schema:
+          type: string
+      - name: state
+        in: query
+        description: Filter tickets by state
+        schema:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - cancelled
+          - done
+      responses:
+        '200':
+          description: List all of the tickets that have been added to the organiation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_TicketEntity'
+    post:
+      tags:
+      - Tasks
+      summary: Create a ticket
+      description: Creates a ticket for a project
+      operationId: createTicket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1TicketingTickets'
+        required: true
+      responses:
+        '201':
+          description: Creates a ticket for a project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_TicketEntity'
+      x-codegen-request-body-name: postV1TicketingTickets
+components:
+  schemas:
+    TaskEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        assignee:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        due_at:
+          type: string
+          format: date-time
+      description: TaskEntity model
+    ChecklistTemplateEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistCheckEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        connected_services:
+          type: array
+          description: List of services that use this checklist
+          items:
+            $ref: '#/components/schemas/ServiceEntityChecklist'
+      description: ChecklistTemplateEntity model
+    ServiceEntityChecklist:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        completed_checks:
+          type: integer
+          format: int32
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        service_checklist_updated_at:
+          type: string
+          format: date-time
+    TaskEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: TaskEntityPaginated model
+    postV1TaskLists:
+      required:
+      - name
+      - task_list_items
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        task_list_items:
+          type: array
+          items:
+            required:
+            - summary
+            type: object
+            properties:
+              summary:
+                type: string
+                description: A summary of the task
+              description:
+                type: string
+                description: A long-form description for the task if additional context is helpful
+      description: Creates a new task list
+    patchV1TaskListsTaskListId:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        task_list_items:
+          type: array
+          items:
+            required:
+            - summary
+            type: object
+            properties:
+              summary:
+                type: string
+                description: A summary of the task
+              description:
+                type: string
+                description: A long-form description for the task if additional context is helpful
+      description: Updates a task list's attributes and task list items
+    TaskListItemEntity:
+      type: object
+      properties:
+        summary:
+          type: string
+        description:
+          type: string
+    postV1IncidentsIncidentIdTasks:
+      required:
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the task.
+        state:
+          type: string
+          description: 'The state of the task. One of: open, in_progress, cancelled, done'
+        description:
+          type: string
+          description: A description of what the task is for.
+        assignee_id:
+          type: string
+          description: The ID of the user assigned to the task.
+        due_at:
+          type: string
+          description: The due date of the task. Relative values are supported such as '5m'
+      description: Create a task
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    Attachments_LinkEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_text:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        editable:
+          type: boolean
+          description: Link can be edited
+        deletable:
+          type: boolean
+          description: Link can be deleted
+      description: Attachments_LinkEntity model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    postV1IncidentsIncidentIdTasksTaskIdConvert:
+      type: object
+      properties:
+        summary:
+          type: string
+        project_id:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the ticket
+          items:
+            type: string
+      description: Convert a task to a follow-up
+    ChecklistCheckEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: boolean
+    patchV1IncidentsIncidentIdTasksTaskId:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the task.
+        description:
+          type: string
+          description: A description of what the task is for.
+        state:
+          type: string
+          description: 'The state of the task. One of: open, in_progress, cancelled, done'
+        assignee_id:
+          type: string
+          description: The ID of the user assigned to the task.
+        due_at:
+          type: string
+          description: The due date of the task. Relative values are supported such as '5m'
+      description: Update a task's attributes
+    ErrorEntity:
+      type: object
+      properties:
+        detail:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+        meta:
+          type: object
+          properties: {}
+          description: An object with additional error metadata
+        code:
+          type: string
+          description: A stable code on which to match errors
+      description: ErrorEntity model
+    Ticketing_PriorityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      description: Ticketing_PriorityEntity model
+    patchV1ChecklistTemplatesId:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        checks:
+          type: array
+          description: An array of checks for the checklist template
+          items:
+            required:
+            - name
+            type: object
+            properties:
+              id:
+                type: string
+                description: Specify the check ID when updating an already existing check
+              description:
+                type: string
+                description: The description of the check
+              name:
+                type: string
+                description: The name of the check
+        team_id:
+          type: string
+          description: The ID of the Team that owns the checklist template
+        connected_services:
+          type: array
+          description: Array of service IDs to attach checklist template to
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+              remove:
+                type: boolean
+                description: Set to `true` to remove checklist from service
+        remove_remaining_connected_services:
+          type: boolean
+          description: If set to true, any services tagged on the checklist that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the services
+      description: Update a checklist templates attributes
+    TaskListEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        task_list_items:
+          $ref: '#/components/schemas/TaskListItemEntity'
+      description: TaskListEntity model
+    postV1ChecklistTemplates:
+      required:
+      - checks
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        checks:
+          type: array
+          description: An array of checks for the checklist template
+          items:
+            required:
+            - name
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the check
+              description:
+                type: string
+                description: The description of the check
+        description:
+          type: string
+        team_id:
+          type: string
+          description: The ID of the Team that owns the checklist template
+        connected_services:
+          type: array
+          description: Array of service IDs to attach checklist template to
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+      description: Creates a checklist template for the organization
+    postV1TicketingTickets:
+      required:
+      - summary
+      type: object
+      properties:
+        summary:
+          type: string
+        related_to:
+          type: string
+          description: Which incident this ticket is related to, in the format of 'incident/UUID'
+        project_id:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        type:
+          type: string
+        priority_id:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the ticket
+          items:
+            type: string
+        remote_url:
+          type: string
+          description: The remote URL for an existing ticket in a supported and configured ticketing integration
+      description: Creates a ticket for a project
+    Ticketing_TicketEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - cancelled
+          - done
+        type:
+          type: string
+          enum:
+          - incident
+          - task
+          - follow_up
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorEntity'
+        priority:
+          $ref: '#/components/schemas/Ticketing_PriorityEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tag_list:
+          type: array
+          items:
+            type: string
+        incident_id:
+          type: string
+          description: ID of incident that this ticket is related to
+        incident_name:
+          type: string
+          description: Name of incident that this ticket is related to
+        incident_current_milestone:
+          type: string
+          description: Milestone of incident that this ticket is related to
+        task_id:
+          type: string
+          description: ID of task that this ticket is related to
+        due_at:
+          type: string
+          format: date-time
+        link:
+          $ref: '#/components/schemas/Attachments_LinkEntity'
+      description: Ticketing_TicketEntity model
+    ChecklistTemplateEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistTemplateEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: ChecklistTemplateEntityPaginated model
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

@@ -1,19 +1,359 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Teams API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Teams API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Teams across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Teams
+  description: Operations related to Teams
 paths:
+  /v1/schedules:
+    get:
+      tags:
+      - Teams
+      summary: List schedules
+      description: List all known schedules in FireHydrant as pulled from external sources
+      operationId: listSchedules
+      parameters:
+      - name: query
+        in: query
+        description: Filter schedules with a query on their name
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all known schedules in FireHydrant as pulled from external sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleEntityPaginated'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams:
+    get:
+      tags:
+      - Teams
+      summary: List teams
+      description: List all of the teams in the organization
+      operationId: listTeams
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: A query to search teams by their name or description
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search teams by their name
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs
+        schema:
+          type: string
+      - name: default_incident_role
+        in: query
+        description: Filter by teams that have or do not have members with a default incident role asssigned. Value may be 'present', 'blank', or the ID of an incident role.
+        schema:
+          type: string
+      - name: lite
+        in: query
+        description: Boolean to determine whether to return a slimified version of the teams object
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List all of the teams in the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamEntityPaginated'
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Teams
+      summary: Create a team
+      description: Create a new team
+      operationId: createTeam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1Teams'
+        required: true
+      responses:
+        '201':
+          description: Create a new team
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamEntity'
+      x-codegen-request-body-name: postV1Teams
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}:
+    get:
+      tags:
+      - Teams
+      summary: Get a team
+      description: Retrieve a single team from its ID
+      operationId: getTeam
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: lite
+        in: query
+        description: Boolean to determine whether to return a slimified version of the teams object
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Retrieve a single team from its ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamEntity'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Teams
+      summary: Archive a team
+      description: Archives an team which will hide it from lists and metrics
+      operationId: archiveTeam
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Archives an team which will hide it from lists and metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamEntity'
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Teams
+      summary: Update a team
+      description: Update a single team from its ID
+      operationId: updateTeam
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TeamsTeamId'
+        required: true
+      responses:
+        '200':
+          description: Update a single team from its ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamEntity'
+      x-codegen-request-body-name: patchV1TeamsTeamId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/on_call_schedules:
+    get:
+      tags:
+      - Teams
+      summary: List on-call schedules for a team
+      description: List all Signals on-call schedules for a team.
+      operationId: listTeamOnCallSchedules
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: A query string for searching through the list of on-call schedules.
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all Signals on-call schedules for a team.
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Teams
+      summary: Create an on-call schedule for a team
+      description: Create a Signals on-call schedule for a team.
+      operationId: createTeamOnCallSchedule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1TeamsTeamIdOnCallSchedules'
+        required: true
+      responses:
+        '201':
+          description: Create a Signals on-call schedule for a team.
+          content: {}
+      x-codegen-request-body-name: postV1TeamsTeamIdOnCallSchedules
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/on_call_schedules/{schedule_id}/shifts/{id}:
+    get:
+      tags:
+      - Teams
+      summary: Get an on-call shift for a team schedule
+      description: Get a Signals on-call shift by ID
+      operationId: getTeamScheduleShift
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a Signals on-call shift by ID
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Teams
+      summary: Delete an on-call shift from a team schedule
+      description: Delete a Signals on-call shift by ID
+      operationId: deleteTeamScheduleShift
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a Signals on-call shift by ID
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Teams
+      summary: Update an on-call shift in a team schedule
+      description: Update a Signals on-call shift by ID
+      operationId: updateTeamScheduleShift
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TeamsTeamIdOnCallSchedulesScheduleIdShiftsId'
+        required: true
+      responses:
+        '200':
+          description: Update a Signals on-call shift by ID
+          content: {}
+      x-codegen-request-body-name: patchV1TeamsTeamIdOnCallSchedulesScheduleIdShiftsId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /teams:
     get:
       summary: List teams
@@ -23,6 +363,8 @@ paths:
           description: Teams
       tags:
       - Teams
+      security:
+      - bearerAuth: []
     post:
       summary: Create a team
       operationId: createTeam
@@ -44,6 +386,11 @@ paths:
           description: Team created
       tags:
       - Teams
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
   /teams/{team_id}:
     get:
       summary: Retrieve a team
@@ -59,8 +406,1261 @@ paths:
           description: Team
       tags:
       - Teams
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    Incidents_StatusPageEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        external_id:
+          type: string
+        name:
+          type: string
+        display_name:
+          type: string
+        integration:
+          $ref: '#/components/schemas/IntegrationEntity'
+      description: Incidents_StatusPageEntity model
+    IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_name:
+          type: string
+        integration_slug:
+          type: string
+        display_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    IncidentRoleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        discarded_at:
+          type: string
+          format: date-time
+      description: IncidentRoleEntity model
+    SeverityMatrix_ImpactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        affects_id:
+          type: string
+        position:
+          type: integer
+          format: int32
+      description: SeverityMatrix_ImpactEntity model
+    Incidents_ContextObjectEntity:
+      type: object
+      properties:
+        object_type:
+          type: string
+        object_id:
+          type: string
+        context_tag:
+          type: string
+        context_description:
+          type: string
+    postV1TeamsTeamIdOnCallSchedules:
+      required:
+      - name
+      - strategy
+      - time_zone
+      type: object
+      properties:
+        name:
+          type: string
+          description: The on-call schedule's name.
+        description:
+          type: string
+          description: A detailed description of the on-call schedule.
+        time_zone:
+          type: string
+          description: The time zone in which the on-call schedule operates. This value must be a valid IANA time zone name.
+        slack_user_group_id:
+          type: string
+          description: The ID of a Slack user group for syncing purposes. If provided, we will automatically sync whoever is on call to the user group in Slack.
+        members:
+          type: array
+          description: An ordered list of objects that specify members of the on-call schedule's rotation.
+          items:
+            type: object
+            properties:
+              user_id:
+                type: string
+                description: 'The ID of a user who should be added to the schedule''s rotation. You can add a user to the schedule
+
+                  multiple times to construct more complex rotations, and you can specify a `null` user ID to create
+
+                  unassigned slots in the rotation.
+
+                  '
+        strategy:
+          required:
+          - type
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of strategy. Must be one of "daily", "weekly", or "custom".
+              enum:
+              - daily
+              - weekly
+              - custom
+            handoff_time:
+              type: string
+              description: An ISO8601 time string specifying when on-call shifts should hand off. This value is only used if the strategy type is "daily" or "weekly".
+            handoff_day:
+              type: string
+              description: The day of the week on which on-call shifts should hand off, as its long-form name (e.g. "monday", "tuesday", etc). This value is only used if the strategy type is "weekly".
+              enum:
+              - monday
+              - tuesday
+              - wednesday
+              - thursday
+              - friday
+              - saturday
+              - sunday
+            shift_duration:
+              type: string
+              description: An ISO8601 duration string specifying how long each shift should last. This value is only used if the strategy type is "custom".
+          description: An object that specifies how the schedule's on-call shifts should be generated.
+        restrictions:
+          type: array
+          description: A list of objects that restrict the schedule to speccific on-call periods.
+          items:
+            required:
+            - end_day
+            - end_time
+            - start_day
+            - start_time
+            type: object
+            properties:
+              start_day:
+                type: string
+                description: The day of the week on which the restriction should start, as its long-form name (e.g. "monday", "tuesday", etc).
+                enum:
+                - monday
+                - tuesday
+                - wednesday
+                - thursday
+                - friday
+                - saturday
+                - sunday
+              start_time:
+                type: string
+                description: An ISO8601 time string specifying when the restriction should start.
+              end_day:
+                type: string
+                description: The day of the week on which the restriction should end, as its long-form name (e.g. "monday", "tuesday", etc).
+                enum:
+                - monday
+                - tuesday
+                - wednesday
+                - thursday
+                - friday
+                - saturday
+                - sunday
+              end_time:
+                type: string
+                description: An ISO8601 time string specifying when the restriction should end.
+        start_time:
+          type: string
+          description: An ISO8601 time string specifying when the schedule's first shift should start. This value is only used if the schedule's strategy is "custom".
+        color:
+          type: string
+          description: A hex color code that will be used to represent the schedule in the UI and iCal subscriptions.
+        member_ids:
+          type: array
+          description: This parameter is deprecated; use `members` instead.
+          items:
+            type: string
+      description: Create a Signals on-call schedule for a team.
+    FHTypes_GenericEntity:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        label:
+          type: string
+    ChecklistTemplateEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistCheckEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        connected_services:
+          type: array
+          description: List of services that use this checklist
+          items:
+            $ref: '#/components/schemas/ServiceEntityChecklist'
+      description: ChecklistTemplateEntity model
+    Conversations_API_Entities_Channel:
+      type: object
+      properties:
+        name:
+          type: string
+    Rules_RuleEntity:
+      type: object
+      properties:
+        logic:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the logic for applying the rule.
+        user_data:
+          $ref: '#/components/schemas/FHTypes_GenericEntity'
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        slack_user_id:
+          type: string
+        slack_linked?:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_enabled_notification_types:
+          type: array
+          items:
+            type: string
+      description: UserEntity model
+    ServiceEntityChecklist:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        completed_checks:
+          type: integer
+          format: int32
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        service_checklist_updated_at:
+          type: string
+          format: date-time
+    TeamEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+        slack_channel:
+          $ref: '#/components/schemas/Integrations_Slack_SlackChannelEntity'
+        ms_teams_channel:
+          $ref: '#/components/schemas/Integrations_MicrosoftTeamsV2_ChannelEntity'
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipEntity'
+        owned_checklist_templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistTemplateEntity'
+        owned_functionalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntityLite'
+        owned_services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        owned_runbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlimRunbookEntity'
+        responding_services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        functionalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntityLite'
+      description: TeamEntity model
+    SlimRunbookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        attachment_rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        categories:
+          type: string
+          description: categories the runbook applies to
+    SeverityMatrix_ConditionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          description: Position is used to determine ordering of conditions in API responses and dropdowns. The condition with the lowest position (typically 0) will be considered the Default Condition
+          format: int32
+      description: SeverityMatrix_ConditionEntity model
+    FunctionalityEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        links:
+          type: array
+          description: List of links attached to this functionality.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+    patchV1TeamsTeamIdOnCallSchedulesScheduleIdShiftsId:
+      type: object
+      properties:
+        start_time:
+          type: string
+          description: The start time of the shift in ISO8601 format.
+        end_time:
+          type: string
+          description: The end time of the shift in ISO8601 format.
+        user_id:
+          type: string
+          description: The ID of the user who is on-call for the shift. If not provided, the shift will be unassigned.
+        coverage_request:
+          type: string
+          description: A description of why coverage is needed for this shift. If the shift is re-assigned, this will automatically be cleared unless provided again.
+      description: Update a Signals on-call shift by ID
+    Event_NoteEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        status_pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_StatusPageEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+      description: Event_NoteEntity model
+    TeamEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: TeamEntityPaginated model
+    IncidentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the Incident
+        name:
+          type: string
+          description: Name of the incident
+        created_at:
+          type: string
+          description: The time the incident was opened
+          format: date-time
+        started_at:
+          type: string
+          description: The time the incident started
+          format: date-time
+        discarded_at:
+          type: string
+          description: The time the incident was archived
+          format: date-time
+        summary:
+          type: string
+        customer_impact_summary:
+          type: string
+        description:
+          type: string
+        current_milestone:
+          type: string
+          description: The type/slug of the current milestone. Will be one of the currently configured milestones for the given incident.
+        number:
+          type: integer
+          description: Incident number
+          format: int32
+        priority:
+          type: string
+        severity:
+          type: string
+        severity_color:
+          type: string
+        severity_impact:
+          type: string
+        severity_condition:
+          type: string
+        tag_list:
+          type: array
+          items:
+            type: string
+        severity_impact_object:
+          $ref: '#/components/schemas/SeverityMatrix_ImpactEntity'
+        severity_condition_object:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+        private_id:
+          type: string
+        organization_id:
+          type: string
+        milestones:
+          type: array
+          description: 'DEPRECATED: Please use lifecycle phases instead'
+          items:
+            $ref: '#/components/schemas/Incidents_MilestoneEntity'
+        lifecycle_phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecyclePhaseEntity'
+        lifecycle_measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecycleMeasurementEntity'
+        active:
+          type: boolean
+        labels:
+          type: object
+          properties: {}
+          description: A key/value of labels
+        role_assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_RoleAssignmentEntity'
+        status_pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_StatusPageEntity'
+        incident_url:
+          type: string
+        private_status_page_url:
+          type: string
+        organization:
+          $ref: '#/components/schemas/OrganizationEntity'
+        customers_impacted:
+          type: integer
+          format: int32
+        monetary_impact:
+          type: integer
+          format: int32
+        monetary_impact_cents:
+          type: integer
+          format: int32
+        last_update:
+          type: string
+        last_note:
+          $ref: '#/components/schemas/Event_NoteEntity'
+        report_id:
+          type: string
+        ai_incident_summary:
+          type: string
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        functionalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        channel_name:
+          type: string
+        channel_reference:
+          type: string
+        channel_id:
+          type: string
+        channel_status:
+          type: string
+          description: 'inoperative: 0, operational: 1, archived: 2'
+        incident_tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticketing_TicketEntity'
+        ticket:
+          $ref: '#/components/schemas/Ticketing_TicketEntity'
+        impacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_ImpactEntity'
+        conference_bridges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_ConferenceBridgeEntity'
+        incident_channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_ChannelEntity'
+        retro_exports:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        context_object:
+          $ref: '#/components/schemas/Incidents_ContextObjectEntity'
+        team_assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_TeamAssignmentEntityLite'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFields_FieldValue'
+        field_requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentEntity_FieldRequirementEntity'
+      description: IncidentEntity model
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    postV1Teams:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        slack_channel_id:
+          type: string
+          description: The Slack channel ID that this team is associated with
+        ms_teams_channel:
+          required:
+          - channel_id
+          - ms_team_id
+          type: object
+          properties:
+            channel_id:
+              type: string
+            ms_team_id:
+              type: string
+          description: MS Teams channel identity for channel associated with this team
+        memberships:
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                type: string
+              schedule_id:
+                type: string
+              incident_role_id:
+                type: string
+                description: An incident role ID that this user will automatically assigned if this team is assigned to an incident
+      description: Create a new team
+    Attachments_LinkEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_text:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        editable:
+          type: boolean
+          description: Link can be edited
+        deletable:
+          type: boolean
+          description: Link can be deleted
+      description: Attachments_LinkEntity model
+    ScheduleEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: ScheduleEntityPaginated model
+    Incidents_ImpactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - environment
+          - functionality
+          - service
+        impact:
+          $ref: '#/components/schemas/SuccinctEntity'
+        condition:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+    Incidents_RoleAssignmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        incident_role:
+          $ref: '#/components/schemas/IncidentRoleEntity'
+        user:
+          $ref: '#/components/schemas/UserEntity'
+      description: Incidents_RoleAssignmentEntity model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    ServiceEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+      description: ServiceEntityLite model
+    Incidents_MilestoneEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          description: The milestone's type. This will be one of the currently configured milestones for the given incident.
+        duration:
+          type: string
+          description: How long the incident spent in this milestones, in ISO 8601 Duration Format. This will be null if the milestone is the incident's current milestone.
+        occurred_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    LinksEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+    CustomFields_FieldValue:
+      type: object
+      properties:
+        name:
+          type: string
+        value_type:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        field_id:
+          type: string
+        value_array:
+          type: string
+        value_string:
+          type: string
+        value:
+          type: string
+    ChecklistCheckEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: boolean
+    Incidents_ChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        source_name:
+          type: string
+        source_id:
+          type: string
+        url:
+          type: string
+        icon_url:
+          type: string
+        status:
+          type: string
+      description: Incidents_ChannelEntity model
+    Ticketing_PriorityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      description: Ticketing_PriorityEntity model
+    Integrations_MicrosoftTeamsV2_ChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        channel_id:
+          type: string
+        channel_name:
+          type: string
+        ms_team_id:
+          type: string
+        team_name:
+          type: string
+        channel_url:
+          type: string
+        status:
+          type: string
+        incident:
+          $ref: '#/components/schemas/IncidentEntity'
+    Incidents_LifecycleMeasurementEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        starts_at_milestone:
+          type: string
+        ends_at_milestone:
+          type: string
+        value:
+          type: string
+        calculated_at:
+          type: string
+          format: date-time
+    Incidents_TeamAssignmentEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        team:
+          $ref: '#/components/schemas/TeamEntityLite'
+    Incidents_LifecyclePhaseEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        position:
+          type: integer
+          format: int32
+        milestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecycleMilestoneEntity'
+    Incidents_LifecycleMilestoneEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        position:
+          type: integer
+          format: int32
+        occurred_at:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        updated_at:
+          type: string
+          format: date-time
+    Conversations_API_Entities_Reference:
+      type: object
+      properties:
+        id:
+          type: string
+        resource_class:
+          type: string
+        resource_id:
+          type: string
+        field:
+          type: string
+        comments_url:
+          type: string
+        channel:
+          $ref: '#/components/schemas/Conversations_API_Entities_Channel'
+    MembershipEntity:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        schedule:
+          $ref: '#/components/schemas/ScheduleEntity'
+        signals_on_call_schedule:
+          $ref: '#/components/schemas/SuccinctEntity'
+        default_incident_role:
+          $ref: '#/components/schemas/IncidentRoleEntity'
+    OrganizationEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+    Incidents_ConferenceBridgeEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+    SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    ScheduleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        integration:
+          type: string
+        discarded:
+          type: boolean
+    Ticketing_TicketEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - cancelled
+          - done
+        type:
+          type: string
+          enum:
+          - incident
+          - task
+          - follow_up
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorEntity'
+        priority:
+          $ref: '#/components/schemas/Ticketing_PriorityEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tag_list:
+          type: array
+          items:
+            type: string
+        incident_id:
+          type: string
+          description: ID of incident that this ticket is related to
+        incident_name:
+          type: string
+          description: Name of incident that this ticket is related to
+        incident_current_milestone:
+          type: string
+          description: Milestone of incident that this ticket is related to
+        task_id:
+          type: string
+          description: ID of task that this ticket is related to
+        due_at:
+          type: string
+          format: date-time
+        link:
+          $ref: '#/components/schemas/Attachments_LinkEntity'
+      description: Ticketing_TicketEntity model
+    patchV1TeamsTeamId:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        slack_channel_id:
+          type: string
+          description: The Slack channel ID that this team is associated with
+        ms_teams_channel:
+          required:
+          - channel_id
+          - ms_team_id
+          type: object
+          properties:
+            channel_id:
+              type: string
+            ms_team_id:
+              type: string
+          description: MS Teams channel identity for channel associated with this team
+        memberships:
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                type: string
+              schedule_id:
+                type: string
+              incident_role_id:
+                type: string
+                description: An incident role ID that this user will automatically assigned if this team is assigned to an incident
+      description: Update a single team from its ID
+    Integrations_Slack_SlackChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slack_channel_id:
+          type: string
+    IncidentEntity_FieldRequirementEntity:
+      type: object
+      properties:
+        field_id:
+          type: string
+          description: A unique identifier for the field.
+        required_at_milestone_id:
+          type: string
+          description: The milestone at which this field is required. If null, this field is always required.
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

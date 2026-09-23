@@ -1,19 +1,1029 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Signals API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Signals API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Signals across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Signals
+  description: Operations related to Signals
 paths:
+  /v1/signals/analytics/grouped_metrics:
+    get:
+      tags:
+      - Signals
+      summary: List grouped signal alert metrics
+      description: Generate a report of grouped metrics for Signals alerts
+      operationId: getSignalGroupedMetrics
+      parameters:
+      - name: signal_rules
+        in: query
+        description: A comma separated list of signal rule IDs
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: users
+        in: query
+        description: A comma separated list of user IDs
+        schema:
+          type: string
+      - name: group_by
+        in: query
+        description: String that determines how records are grouped
+        schema:
+          type: string
+          enum:
+          - signal_rules
+          - teams
+          - services
+          - environments
+          - tags
+      - name: sort_by
+        in: query
+        description: String that determines how records are sorted
+        schema:
+          type: string
+          enum:
+          - total_opened_alerts
+          - total_acked_alerts
+          - total_incidents
+          - acked_percentage
+          - incidents_percentage
+      - name: sort_direction
+        in: query
+        description: String that determines how records are sorted
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: start_date
+        in: query
+        description: The start date to return metrics from
+        schema:
+          type: string
+          format: date-time
+      - name: end_date
+        in: query
+        description: The end date to return metrics from
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Generate a report of grouped metrics for Signals alerts
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/analytics/mttx:
+    get:
+      tags:
+      - Signals
+      summary: Get MTTX analytics for signals
+      description: Get mean-time-to-acknowledged (MTTA) and mean-time-to-resolved (MTTR) metrics for Signals alerts
+      operationId: getSignalsMttxAnalytics
+      parameters:
+      - name: signal_rules
+        in: query
+        description: A comma separated list of signal rule IDs
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: users
+        in: query
+        description: A comma separated list of user IDs
+        schema:
+          type: string
+      - name: group_by
+        in: query
+        description: String that determines how records are grouped
+        schema:
+          type: string
+          enum:
+          - signal_rules
+          - teams
+          - services
+          - environments
+          - tags
+      - name: sort_by
+        in: query
+        description: String that determines how records are sorted
+        schema:
+          type: string
+          enum:
+          - total_opened_alerts
+          - total_acked_alerts
+          - total_incidents
+          - acked_percentage
+          - incidents_percentage
+      - name: sort_direction
+        in: query
+        description: String that determines how records are sorted
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: start_date
+        in: query
+        description: The start date to return metrics from
+        schema:
+          type: string
+          format: date-time
+      - name: end_date
+        in: query
+        description: The end date to return metrics from
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Get mean-time-to-acknowledged (MTTA) and mean-time-to-resolved (MTTR) metrics for Signals alerts
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/analytics/timeseries:
+    get:
+      tags:
+      - Signals
+      summary: List timeseries metrics for signal alerts
+      description: Generate a timeseries-based report of metrics for Signals alerts
+      operationId: getSignalsAnalyticsTimeseries
+      parameters:
+      - name: bucket
+        in: query
+        description: String that determines how records are grouped
+        schema:
+          type: string
+          enum:
+          - month
+          - week
+          - day
+      - name: signal_rules
+        in: query
+        description: A comma separated list of signal rule IDs
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: users
+        in: query
+        description: A comma separated list of user IDs
+        schema:
+          type: string
+      - name: group_by
+        in: query
+        description: String that determines how records are grouped
+        schema:
+          type: string
+          enum:
+          - signal_rules
+          - teams
+          - services
+          - environments
+          - tags
+      - name: sort_by
+        in: query
+        description: String that determines how records are sorted
+        schema:
+          type: string
+          enum:
+          - total_opened_alerts
+          - total_acked_alerts
+          - total_incidents
+          - acked_percentage
+          - incidents_percentage
+      - name: sort_direction
+        in: query
+        description: String that determines how records are sorted
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: start_date
+        in: query
+        description: The start date to return metrics from
+        schema:
+          type: string
+          format: date-time
+      - name: end_date
+        in: query
+        description: The end date to return metrics from
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Generate a timeseries-based report of metrics for Signals alerts
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/debugger:
+    post:
+      tags:
+      - Signals
+      operationId: debugSignal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1SignalsDebugger'
+        required: true
+      responses:
+        '201':
+          description: created Debugger
+          content: {}
+      x-codegen-request-body-name: postV1SignalsDebugger
+      summary: Debug a signal
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/email_targets:
+    get:
+      tags:
+      - Signals
+      summary: List email targets for signals
+      description: List all Signals email targets for a team.
+      operationId: listSignalEmailTargets
+      parameters:
+      - name: query
+        in: query
+        description: A query string to search the list of targets by.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List all Signals email targets for a team.
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Signals
+      summary: Create an email target for signals
+      description: Create a Signals email target for a team.
+      operationId: createSignalEmailTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1SignalsEmailTargets'
+        required: true
+      responses:
+        '201':
+          description: Create a Signals email target for a team.
+          content: {}
+      x-codegen-request-body-name: postV1SignalsEmailTargets
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/email_targets/{id}:
+    get:
+      tags:
+      - Signals
+      summary: Get a signal email target
+      description: Get a Signals email target by ID
+      operationId: getSignalEmailTarget
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a Signals email target by ID
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Signals
+      summary: Delete a signal email target
+      description: Delete a Signals email target by ID
+      operationId: deleteSignalEmailTarget
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a Signals email target by ID
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Signals
+      summary: Update a signal email target
+      description: Update a Signals email target by ID
+      operationId: updateSignalEmailTarget
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1SignalsEmailTargetsId'
+        required: true
+      responses:
+        '200':
+          description: Update a Signals email target by ID
+          content: {}
+      x-codegen-request-body-name: patchV1SignalsEmailTargetsId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/event_sources:
+    get:
+      tags:
+      - Signals
+      operationId: listSignalEventSources
+      parameters:
+      - name: team_id
+        in: query
+        description: Team ID to send signals to directly
+        schema:
+          type: string
+      - name: escalation_policy_id
+        in: query
+        description: Escalation policy ID to send signals to directly. `team_id` is required if this is provided.
+        schema:
+          type: string
+      - name: on_call_schedule_id
+        in: query
+        description: On-call schedule ID to send signals to directly. `team_id` is required if this is provided.
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: User ID to send signals to directly
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get EventSource(s)
+          content: {}
+      summary: List event sources for signals
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/ingest_url:
+    get:
+      tags:
+      - Signals
+      summary: Get signal ingestion URL
+      description: Retrieve the url for ingesting signals for your organization
+      operationId: getSignalIngestUrl
+      parameters:
+      - name: team_id
+        in: query
+        description: Team ID to send signals to directly
+        schema:
+          type: string
+      - name: escalation_policy_id
+        in: query
+        description: Escalation policy ID to send signals to directly. `team_id` is required if this is provided.
+        schema:
+          type: string
+      - name: on_call_schedule_id
+        in: query
+        description: On-call schedule ID to send signals to directly. `team_id` is required if this is provided.
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: User ID to send signals to directly
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve the url for ingesting signals for your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signals_API_IngestKeyEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/transposers:
+    get:
+      tags:
+      - Signals
+      operationId: listSignalTransposers
+      responses:
+        '200':
+          description: get Transposer(s)
+          content: {}
+      summary: List signal transposers
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/webhook_targets:
+    get:
+      tags:
+      - Signals
+      summary: List webhook targets for signals
+      description: List all Signals webhook targets.
+      operationId: listSignalWebhookTargets
+      parameters:
+      - name: query
+        in: query
+        description: A query string for searching through the list of webhook targets.
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all Signals webhook targets.
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Signals
+      summary: Create a webhook target for signals
+      description: Create a Signals webhook target.
+      operationId: createSignalWebhookTarget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1SignalsWebhookTargets'
+        required: true
+      responses:
+        '201':
+          description: Create a Signals webhook target.
+          content: {}
+      x-codegen-request-body-name: postV1SignalsWebhookTargets
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals/webhook_targets/{id}:
+    get:
+      tags:
+      - Signals
+      summary: Get a webhook target
+      description: Get a Signals webhook target by ID
+      operationId: getSignalsWebhookTarget
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a Signals webhook target by ID
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Signals
+      summary: Delete a webhook target
+      description: Delete a Signals webhook target by ID
+      operationId: deleteSignalsWebhookTarget
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a Signals webhook target by ID
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Signals
+      summary: Update a webhook target
+      description: Update a Signals webhook target by ID
+      operationId: updateSignalsWebhookTarget
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1SignalsWebhookTargetsId'
+        required: true
+      responses:
+        '200':
+          description: Update a Signals webhook target by ID
+          content: {}
+      x-codegen-request-body-name: patchV1SignalsWebhookTargetsId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/signals_on_call:
+    get:
+      tags:
+      - Signals
+      summary: List on-call schedules
+      description: List all Signals on-call schedules for the entire organization.
+      operationId: listSignalsOnCall
+      parameters:
+      - name: team_id
+        in: query
+        description: An optional comma separated list of team IDs to filter currently on-call users by
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List all Signals on-call schedules for the entire organization.
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/escalation_policies:
+    get:
+      tags:
+      - Signals
+      summary: List escalation policies for a team
+      description: List all Signals escalation policies for a team.
+      operationId: listTeamEscalationPolicies
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: A query string for searching through the list of escalation policies.
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all Signals escalation policies for a team.
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Signals
+      summary: Create an escalation policy for a team
+      description: Create a Signals escalation policy for a team.
+      operationId: createTeamEscalationPolicy
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1TeamsTeamIdEscalationPolicies'
+        required: true
+      responses:
+        '201':
+          description: Create a Signals escalation policy for a team.
+          content: {}
+      x-codegen-request-body-name: postV1TeamsTeamIdEscalationPolicies
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/escalation_policies/{id}:
+    get:
+      tags:
+      - Signals
+      summary: Get an escalation policy for a team
+      description: Get a Signals escalation policy by ID
+      operationId: getTeamEscalationPolicy
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a Signals escalation policy by ID
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Signals
+      summary: Delete an escalation policy for a team
+      description: Delete a Signals escalation policy by ID
+      operationId: deleteTeamEscalationPolicy
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a Signals escalation policy by ID
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Signals
+      summary: Update an escalation policy for a team
+      description: Update a Signals escalation policy by ID
+      operationId: updateTeamEscalationPolicy
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TeamsTeamIdEscalationPoliciesId'
+        required: true
+      responses:
+        '200':
+          description: Update a Signals escalation policy by ID
+          content: {}
+      x-codegen-request-body-name: patchV1TeamsTeamIdEscalationPoliciesId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/on_call_schedules/{schedule_id}:
+    get:
+      tags:
+      - Signals
+      summary: Get an on-call schedule for a team
+      description: Get a Signals on-call schedule by ID
+      operationId: getTeamOnCallSchedule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a Signals on-call schedule by ID
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Signals
+      summary: Delete an on-call schedule for a team
+      description: Delete a Signals on-call schedule by ID
+      operationId: deleteTeamOnCallSchedule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a Signals on-call schedule by ID
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Signals
+      summary: Update an on-call schedule for a team
+      description: Update a Signals on-call schedule by ID
+      operationId: updateTeamOnCallSchedule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TeamsTeamIdOnCallSchedulesScheduleId'
+        required: true
+      responses:
+        '200':
+          description: Update a Signals on-call schedule by ID
+          content: {}
+      x-codegen-request-body-name: patchV1TeamsTeamIdOnCallSchedulesScheduleId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/on_call_schedules/{schedule_id}/shifts:
+    post:
+      tags:
+      - Signals
+      summary: Create a shift for an on-call schedule
+      description: Create a Signals on-call shift in a schedule.
+      operationId: createTeamOnCallScheduleShift
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: schedule_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1TeamsTeamIdOnCallSchedulesScheduleIdShifts'
+        required: true
+      responses:
+        '201':
+          description: Create a Signals on-call shift in a schedule.
+          content: {}
+      x-codegen-request-body-name: postV1TeamsTeamIdOnCallSchedulesScheduleIdShifts
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/signal_rules:
+    get:
+      tags:
+      - Signals
+      summary: List signal rules for a team
+      description: List all Signals rules for a team.
+      operationId: listTeamSignalRules
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: A query string for searching through the list of alerting rules.
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all Signals rules for a team.
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Signals
+      summary: Create a signal rule for a team
+      description: Create a Signals rule for a team.
+      operationId: createTeamSignalRule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1TeamsTeamIdSignalRules'
+        required: true
+      responses:
+        '201':
+          description: Create a Signals rule for a team.
+          content: {}
+      x-codegen-request-body-name: postV1TeamsTeamIdSignalRules
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/teams/{team_id}/signal_rules/{id}:
+    get:
+      tags:
+      - Signals
+      summary: Get a signal rule
+      description: Get a Signals rule by ID.
+      operationId: getTeamSignalRule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a Signals rule by ID.
+          content: {}
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Signals
+      summary: Delete a signal rule
+      description: Delete a Signals rule by ID
+      operationId: deleteTeamSignalRule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a Signals rule by ID
+          content: {}
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Signals
+      summary: Update a signal rule
+      description: Update a Signals rule by ID
+      operationId: updateTeamSignalRule
+      parameters:
+      - name: team_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TeamsTeamIdSignalRulesId'
+        required: true
+      responses:
+        '200':
+          description: Update a Signals rule by ID
+          content: {}
+      x-codegen-request-body-name: patchV1TeamsTeamIdSignalRulesId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /signals/events:
     post:
       summary: Ingest a Signals alert event
@@ -55,8 +1065,585 @@ paths:
           description: Accepted
       tags:
       - Signals
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    patchV1TeamsTeamIdEscalationPoliciesId:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The escalation policy's name.
+        description:
+          type: string
+          description: A detailed description of the escalation policy.
+        repetitions:
+          type: integer
+          description: The number of times that the escalation policy should repeat before an alert is dropped.
+          format: int32
+          default: 0
+        default:
+          type: boolean
+          description: Whether this escalation policy should be the default for the team.
+          default: false
+        steps:
+          type: array
+          description: A list of steps that define how an alert should escalate through the policy.
+          items:
+            required:
+            - timeout
+            type: object
+            properties:
+              targets:
+                type: array
+                description: A list of targets that the step will notify. You can specify up to 15 targets per step.
+                items:
+                  required:
+                  - id
+                  - type
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: The type of target that the step will notify.
+                      enum:
+                      - OnCallSchedule
+                      - User
+                      - SlackChannel
+                      - EntireTeam
+                      - Webhook
+                    id:
+                      type: string
+                      description: The ID of the target that the step will notify.
+              timeout:
+                type: string
+                description: An ISO8601 duration string specifying how long to wait before moving on to the next step. For the last step, this value specifies how long to wait before the escalation policy should repeat, if it repeats.
+        handoff_step:
+          required:
+          - target_id
+          - target_type
+          type: object
+          properties:
+            target_type:
+              type: string
+              description: The type of target to which the policy will hand off.
+              enum:
+              - EscalationPolicy
+              - Team
+            target_id:
+              type: string
+              description: The ID of the target to which the policy will hand off.
+          description: A step that defines where an alert should be sent when the policy is exhausted and the alert is still unacknowledged.
+      description: Update a Signals escalation policy by ID
+    patchV1SignalsWebhookTargetsId:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The webhook target's name.
+        description:
+          type: string
+          description: An optional detailed description of the webhook target.
+        url:
+          type: string
+          description: The URL that the webhook target will notify.
+        signing_key:
+          type: string
+          description: 'An optional secret we will provide in the `FH-Signature` header
+
+            when sending a payload to the webhook target. This key will not be
+
+            shown in any response once configured.
+
+            '
+      description: Update a Signals webhook target by ID
+    patchV1TeamsTeamIdSignalRulesId:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The rule's name.
+        expression:
+          type: string
+          description: The CEL expression that defines the rule.
+        target_type:
+          type: string
+          description: The type of target that the rule will notify when matched.
+          enum:
+          - EscalationPolicy
+          - OnCallSchedule
+          - User
+          - Webhook
+        target_id:
+          type: string
+          description: The ID of the target that the rule will notify when matched.
+        incident_type_id:
+          type: string
+          description: The ID of an incident type that should be used when an alert is promoted to an incident
+        notification_priority_override:
+          type: string
+          description: 'A notification priority that will be set on the resulting alert (default: HIGH)'
+          enum:
+          - HIGH
+          - MEDIUM
+          - LOW
+          - ''
+      description: Update a Signals rule by ID
+    postV1TeamsTeamIdOnCallSchedulesScheduleIdShifts:
+      required:
+      - end_time
+      - start_time
+      type: object
+      properties:
+        start_time:
+          type: string
+          description: The start time of the shift in ISO8601 format.
+        end_time:
+          type: string
+          description: The end time of the shift in ISO8601 format.
+        user_id:
+          type: string
+          description: The ID of the user who is on-call for the shift. If not provided, the shift will be unassigned.
+      description: Create a Signals on-call shift in a schedule.
+    postV1SignalsDebugger:
+      required:
+      - expression
+      - signals
+      type: object
+      properties:
+        expression:
+          type: string
+          description: CEL expression
+        signals:
+          type: array
+          description: List of signals to evaluate rule expression against
+          items:
+            type: object
+            properties:
+              summary:
+                type: string
+              body:
+                type: string
+              level:
+                type: string
+              images:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    src:
+                      type: string
+                    alt:
+                      type: string
+              links:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    href:
+                      type: string
+                    text:
+                      type: string
+    postV1SignalsWebhookTargets:
+      required:
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+          description: The webhook target's name.
+        description:
+          type: string
+          description: An optional detailed description of the webhook target.
+        url:
+          type: string
+          description: The URL that the webhook target will notify.
+        signing_key:
+          type: string
+          description: 'An optional secret we will provide in the `FH-Signature` header
+
+            when sending a payload to the webhook target. This key will not be
+
+            shown in any response once configured.
+
+            '
+      description: Create a Signals webhook target.
+    Signals_API_IngestKeyEntity:
+      type: object
+      properties:
+        url:
+          type: string
+      description: Signals_API_IngestKeyEntity model
+    postV1TeamsTeamIdEscalationPolicies:
+      required:
+      - name
+      - steps
+      type: object
+      properties:
+        name:
+          type: string
+          description: The escalation policy's name.
+        description:
+          type: string
+          description: A detailed description of the escalation policy.
+        repetitions:
+          type: integer
+          description: The number of times that the escalation policy should repeat before an alert is dropped.
+          format: int32
+          default: 0
+        default:
+          type: boolean
+          description: Whether this escalation policy should be the default for the team.
+          default: false
+        steps:
+          type: array
+          description: A list of steps that define how an alert should escalate through the policy.
+          items:
+            required:
+            - targets
+            - timeout
+            type: object
+            properties:
+              targets:
+                type: array
+                description: A list of targets that the step will notify. You can specify up to 15 targets per step.
+                items:
+                  required:
+                  - id
+                  - type
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: The type of target that the step will notify.
+                      enum:
+                      - OnCallSchedule
+                      - User
+                      - SlackChannel
+                      - EntireTeam
+                      - Webhook
+                    id:
+                      type: string
+                      description: The ID of the target that the step will notify.
+              timeout:
+                type: string
+                description: An ISO8601 duration string specifying how long to wait before moving on to the next step. For the last step, this value specifies how long to wait before the escalation policy should repeat, if it repeats.
+        handoff_step:
+          required:
+          - target_id
+          - target_type
+          type: object
+          properties:
+            target_type:
+              type: string
+              description: The type of target to which the policy will hand off.
+              enum:
+              - EscalationPolicy
+              - Team
+            target_id:
+              type: string
+              description: The ID of the target to which the policy will hand off.
+          description: A step that defines where an alert should be sent when the policy is exhausted and the alert is still unacknowledged.
+      description: Create a Signals escalation policy for a team.
+    patchV1TeamsTeamIdOnCallSchedulesScheduleId:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The on-call schedule's name.
+        description:
+          type: string
+          description: A detailed description of the on-call schedule.
+        time_zone:
+          type: string
+          description: The time zone in which the on-call schedule operates. This value must be a valid IANA time zone name.
+        slack_user_group_id:
+          type: string
+          description: The ID of a Slack user group for syncing purposes. If provided, we will automatically sync whoever is on call to the user group in Slack.
+        members:
+          type: array
+          description: An ordered list of objects that specify members of the on-call schedule's rotation.
+          items:
+            type: object
+            properties:
+              user_id:
+                type: string
+                description: 'The ID of a user who should be added to the schedule''s rotation. You can add a user to the schedule
+
+                  multiple times to construct more complex rotations, and you can specify a `null` user ID to create
+
+                  unassigned slots in the rotation.
+
+                  '
+        strategy:
+          required:
+          - type
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of strategy. Must be one of "daily", "weekly", or "custom".
+              enum:
+              - daily
+              - weekly
+              - custom
+            handoff_time:
+              type: string
+              description: An ISO8601 time string specifying when on-call shifts should hand off. This value is only used if the strategy type is "daily" or "weekly".
+            handoff_day:
+              type: string
+              description: The day of the week on which on-call shifts should hand off, as its long-form name (e.g. "monday", "tuesday", etc). This value is only used if the strategy type is "weekly".
+              enum:
+              - monday
+              - tuesday
+              - wednesday
+              - thursday
+              - friday
+              - saturday
+              - sunday
+            shift_duration:
+              type: string
+              description: An ISO8601 duration string specifying how long each shift should last. This value is only used if the strategy type is "custom".
+          description: An object that specifies how the schedule's on-call shifts should be generated.
+        restrictions:
+          type: array
+          description: A list of objects that restrict the schedule to speccific on-call periods.
+          items:
+            required:
+            - end_day
+            - end_time
+            - start_day
+            - start_time
+            type: object
+            properties:
+              start_day:
+                type: string
+                description: The day of the week on which the restriction should start, as its long-form name (e.g. "monday", "tuesday", etc).
+                enum:
+                - monday
+                - tuesday
+                - wednesday
+                - thursday
+                - friday
+                - saturday
+                - sunday
+              start_time:
+                type: string
+                description: An ISO8601 time string specifying when the restriction should start.
+              end_day:
+                type: string
+                description: The day of the week on which the restriction should end, as its long-form name (e.g. "monday", "tuesday", etc).
+                enum:
+                - monday
+                - tuesday
+                - wednesday
+                - thursday
+                - friday
+                - saturday
+                - sunday
+              end_time:
+                type: string
+                description: An ISO8601 time string specifying when the restriction should end.
+        effective_at:
+          type: string
+          description: 'An ISO8601 time string specifying when the updated schedule should take effect. This
+
+            value must be provided if editing an attribute that would affect how the schedule''s
+
+            shifts are generated, such as the time zone, members, strategy, or restrictions.
+
+            '
+        color:
+          type: string
+          description: A hex color code that will be used to represent the schedule in the UI and iCal subscriptions.
+        member_ids:
+          type: array
+          description: This parameter is deprecated; use `members` instead.
+          items:
+            type: string
+      description: Update a Signals on-call schedule by ID
+    postV1SignalsEmailTargets:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: The email target's name.
+        slug:
+          type: string
+          description: The email address that will be listening to events.
+        description:
+          type: string
+          description: A detailed description of the email target.
+        target:
+          required:
+          - id
+          - type
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of target that the inbound email will notify when matched.
+              enum:
+              - Team
+              - EntireTeam
+              - EscalationPolicy
+              - OnCallSchedule
+              - User
+              - SlackChannel
+              - Webhook
+            id:
+              type: string
+              description: The ID of the target that the inbound email will notify when matched.
+          description: 'The target that the email target will notify. This object must contain a `type`
+
+            field that specifies the type of target and an `id` field that specifies the ID of
+
+            the target. The `type` field must be one of "escalation_policy", "on_call_schedule",
+
+            "team", "user", or "slack_channel".
+
+            '
+        allowed_senders:
+          type: array
+          description: A list of email addresses that are allowed to send events to the target. Must be exact match.
+          items:
+            type: string
+        rules:
+          type: array
+          description: A list of CEL expressions that should be evaluated and matched to determine if the target should be notified.
+          items:
+            type: string
+        rule_matching_strategy:
+          type: string
+          description: Whether or not all rules must match, or if only one rule must match.
+          enum:
+          - all
+          - any
+        status_cel:
+          type: string
+          description: The CEL expression that defines the status of an incoming email that is sent to the target.
+        level_cel:
+          type: string
+          description: The CEL expression that defines the level of an incoming email that is sent to the target.
+      description: Create a Signals email target for a team.
+    patchV1SignalsEmailTargetsId:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The email target's name.
+        slug:
+          type: string
+          description: The email address that will be listening to events.
+        description:
+          type: string
+          description: A detailed description of the email target.
+        target:
+          required:
+          - id
+          - type
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of target that the inbound email will notify when matched.
+              enum:
+              - Team
+              - EntireTeam
+              - EscalationPolicy
+              - OnCallSchedule
+              - User
+              - SlackChannel
+              - Webhook
+            id:
+              type: string
+              description: The ID of the target that the inbound email will notify when matched.
+          description: 'The target that the email target will notify. This object must contain a `type`
+
+            field that specifies the type of target and an `id` field that specifies the ID of
+
+            the target. The `type` field must be one of "escalation_policy", "on_call_schedule",
+
+            "team", "user", or "slack_channel".
+
+            '
+        allowed_senders:
+          type: array
+          description: A list of email addresses that are allowed to send events to the target. Must be exact match.
+          items:
+            type: string
+        status_cel:
+          type: string
+          description: The CEL expression that defines the status of an incoming email that is sent to the target.
+        level_cel:
+          type: string
+          description: The CEL expression that defines the level of an incoming email that is sent to the target.
+        rules:
+          type: array
+          description: A list of CEL expressions that should be evaluated and matched to determine if the target should be notified.
+          items:
+            type: string
+        rule_matching_strategy:
+          type: string
+          description: Whether or not all rules must match, or if only one rule must match.
+          enum:
+          - all
+          - any
+      description: Update a Signals email target by ID
+    postV1TeamsTeamIdSignalRules:
+      required:
+      - expression
+      - name
+      - target_id
+      - target_type
+      type: object
+      properties:
+        name:
+          type: string
+          description: The rule's name.
+        expression:
+          type: string
+          description: The CEL expression that defines the rule.
+        target_type:
+          type: string
+          description: The type of target that the rule will notify when matched.
+          enum:
+          - EscalationPolicy
+          - OnCallSchedule
+          - User
+          - Webhook
+        target_id:
+          type: string
+          description: The ID of the target that the rule will notify when matched.
+        incident_type_id:
+          type: string
+          description: The ID of an incident type that should be used when an alert is promoted to an incident
+        notification_priority_override:
+          type: string
+          description: 'A notification priority that will be set on the resulting alert (default: HIGH)'
+          enum:
+          - HIGH
+          - MEDIUM
+          - LOW
+          - ''
+      description: Create a Signals rule for a team.
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

@@ -1,0 +1,196 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Webhooks API
+  version: 0.0.1
+  description: Operations related to Webhooks
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Webhooks
+  description: Operations related to Webhooks
+paths:
+  /v1/webhooks:
+    get:
+      tags:
+      - Webhooks
+      summary: List webhooks
+      description: Lists webhooks
+      operationId: listWebhooks
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Lists webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhooks_Entities_WebhookEntity'
+    post:
+      tags:
+      - Webhooks
+      summary: Create a webhook
+      description: Create a new webhook
+      operationId: createWebhook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1Webhooks'
+        required: true
+      responses:
+        '201':
+          description: Create a new webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhooks_Entities_WebhookEntity'
+      x-codegen-request-body-name: postV1Webhooks
+  /v1/webhooks/{webhook_id}:
+    get:
+      tags:
+      - Webhooks
+      summary: Get a webhook
+      description: Retrieve a specific webhook
+      operationId: getWebhook
+      parameters:
+      - name: webhook_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a specific webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhooks_Entities_WebhookEntity'
+    delete:
+      tags:
+      - Webhooks
+      summary: Delete a webhook
+      description: Delete a specific webhook
+      operationId: deleteWebhook
+      parameters:
+      - name: webhook_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a specific webhook
+          content: {}
+    patch:
+      tags:
+      - Webhooks
+      summary: Update a webhook
+      description: Update a specific webhook
+      operationId: updateWebhook
+      parameters:
+      - name: webhook_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1WebhooksWebhookId'
+        required: true
+      responses:
+        '200':
+          description: Update a specific webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Webhooks_Entities_WebhookEntity'
+      x-codegen-request-body-name: patchV1WebhooksWebhookId
+  /v1/webhooks/{webhook_id}/deliveries:
+    get:
+      tags:
+      - Webhooks
+      operationId: listWebhookDeliveries
+      parameters:
+      - name: webhook_id
+        in: path
+        description: ID of a webhook
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Delivery(s)
+          content: {}
+      summary: List webhook deliveries
+components:
+  schemas:
+    Webhooks_Entities_WebhookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        state:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        subscriptions:
+          type: string
+      description: Webhooks_Entities_WebhookEntity model
+    postV1Webhooks:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+      description: Create a new webhook
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    patchV1WebhooksWebhookId:
+      type: object
+      properties:
+        url:
+          type: string
+        state:
+          type: string
+          enum:
+          - active
+          - inactive
+      description: Update a specific webhook
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

@@ -1,0 +1,185 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Users API
+  version: 0.0.1
+  description: Operations related to Users
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Users
+  description: Operations related to Users
+paths:
+  /v1/current_user:
+    get:
+      tags:
+      - Users
+      description: Retrieve the current user
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Retrieve the current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUserEntity'
+      summary: Get the currently authenticated user
+  /v1/users:
+    get:
+      tags:
+      - Users
+      summary: List users
+      description: Retrieve a list of all users in an organization
+      operationId: listUsers
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: Text string of a query to filter users by name or email
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Text string of a query to filter users by name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a list of all users in an organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntityPaginated'
+  /v1/users/{id}:
+    get:
+      tags:
+      - Users
+      summary: Get a user
+      description: Retrieve a single user by ID
+      operationId: getUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single user by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+components:
+  schemas:
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    UserEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: UserEntityPaginated model
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        slack_user_id:
+          type: string
+        slack_linked?:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_enabled_notification_types:
+          type: array
+          items:
+            type: string
+      description: UserEntity model
+    CurrentUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        organization_id:
+          type: string
+        organization_name:
+          type: string
+        account_id:
+          type: integer
+          format: int32
+      description: CurrentUserEntity model
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

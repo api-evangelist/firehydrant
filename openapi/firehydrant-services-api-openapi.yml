@@ -1,19 +1,616 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Services API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Services API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Services across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Services
+  description: Operations related to Services
 paths:
+  /v1/catalogs/{catalog_id}/ingest:
+    post:
+      tags:
+      - Services
+      summary: Ingest service catalog data
+      description: Accepts catalog data in the configured format and asyncronously processes the data to incorporate changes into service catalog.
+      operationId: ingestCatalogData
+      parameters:
+      - name: catalog_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1CatalogsCatalogIdIngest'
+        required: true
+      responses:
+        '201':
+          description: Accepts catalog data in the configured format and asyncronously processes the data to incorporate changes into service catalog.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Imports_ImportEntity'
+      x-codegen-request-body-name: postV1CatalogsCatalogIdIngest
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/catalogs/{catalog_id}/refresh:
+    get:
+      tags:
+      - Services
+      summary: Refresh a service catalog
+      description: Schedules an async task to re-import catalog info and update catalog data accordingly.
+      operationId: refreshCatalog
+      parameters:
+      - name: catalog_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Schedules an async task to re-import catalog info and update catalog data accordingly.
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/infrastructures:
+    get:
+      tags:
+      - Services
+      summary: List catalog entries
+      description: Lists functionality, service and environment objects
+      operationId: listInfrastructures
+      parameters:
+      - name: query
+        in: query
+        description: A query to search infrastructures by their name
+        schema:
+          type: string
+      - name: omit_for
+        in: query
+        description: Omit for any infrastructure that is added to an incident using the format "incident/{incident_id}"
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Restrict infrastructure search to given type.
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Lists functionality, service and environment objects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfrastructureSearchEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/service_dependencies:
+    post:
+      tags:
+      - Services
+      summary: Create a dependency relationship between services
+      description: Creates a service dependency relationship between two services
+      operationId: createServiceDependency
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1ServiceDependencies'
+        required: true
+      responses:
+        '201':
+          description: Creates a service dependency relationship between two services
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDependencyEntity'
+      x-codegen-request-body-name: postV1ServiceDependencies
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/service_dependencies/{service_dependency_id}:
+    get:
+      tags:
+      - Services
+      summary: Get a service dependency
+      description: Retrieves a single service dependency by ID
+      operationId: getServiceDependency
+      parameters:
+      - name: service_dependency_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single service dependency by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDependencyEntity'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Services
+      summary: Delete a service dependency
+      description: Deletes a single service dependency
+      operationId: deleteServiceDependency
+      parameters:
+      - name: service_dependency_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Deletes a single service dependency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDependencyEntity'
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Services
+      summary: Update a service dependency
+      description: Update the notes of the service dependency
+      operationId: updateServiceDependency
+      parameters:
+      - name: service_dependency_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1ServiceDependenciesServiceDependencyId'
+        required: true
+      responses:
+        '200':
+          description: Update the notes of the service dependency
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceDependencyEntity'
+      x-codegen-request-body-name: patchV1ServiceDependenciesServiceDependencyId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services:
+    get:
+      tags:
+      - Services
+      summary: List services
+      description: List all of the services that have been added to the organization.
+      operationId: listServices
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: labels
+        in: query
+        description: A comma separated list of label key / values in the format of 'key=value,key2=value2'. To filter change events that have a key (with no specific value), omit the value
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: A query to search services by their name or description
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search services by their name
+        schema:
+          type: string
+      - name: tiers
+        in: query
+        description: A query to search services by their tier
+        schema:
+          type: string
+      - name: impacted
+        in: query
+        description: A query to search services by if they are impacted with active incidents
+        schema:
+          type: string
+      - name: owner
+        in: query
+        description: A query to search services by their owner
+        schema:
+          type: string
+      - name: responding_teams
+        in: query
+        description: A comma separated list of team ids
+        schema:
+          type: string
+      - name: functionalities
+        in: query
+        description: A comma separated list of functionality ids
+        schema:
+          type: string
+      - name: available_downstream_dependencies_for_id
+        in: query
+        description: A query to find services that are available to be downstream dependencies for the passed service ID
+        schema:
+          type: string
+      - name: available_upstream_dependencies_for_id
+        in: query
+        description: A query to find services that are available to be upstream dependencies for the passed service ID
+        schema:
+          type: string
+      - name: lite
+        in: query
+        description: Boolean to determine whether to return a slimified version of the services object
+        schema:
+          type: boolean
+      - name: include
+        in: query
+        description: Use in conjunction with lite param to specify additional attributes to include
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: List all of the services that have been added to the organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntityPaginated'
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Services
+      summary: Create a service
+      description: Creates a service for the organization, you may also create or attach functionalities to the service on create.
+      operationId: createService
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1Services'
+        required: true
+      responses:
+        '201':
+          description: Creates a service for the organization, you may also create or attach functionalities to the service on create.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntity'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEntity'
+      x-codegen-request-body-name: postV1Services
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/service_links:
+    post:
+      tags:
+      - Services
+      summary: Create multiple services and link them to external services
+      description: Creates a service with the appropriate integration for each external service ID passed
+      operationId: createServiceLinks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1ServicesServiceLinks'
+        required: true
+      responses:
+        '201':
+          description: Creates a service with the appropriate integration for each external service ID passed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceLinkEntity'
+      x-codegen-request-body-name: postV1ServicesServiceLinks
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/{service_id}:
+    get:
+      tags:
+      - Services
+      summary: Get a service
+      description: Retrieves a single service by ID
+      operationId: getService
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single service by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntity'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Services
+      summary: Delete a service
+      description: Deletes the service from FireHydrant.
+      operationId: deleteService
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Deletes the service from FireHydrant.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntity'
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Services
+      summary: Update a service
+      description: 'Update a services attributes, you may also add or remove functionalities from the service as well.
+
+        Note: You may not remove or add individual label key/value pairs. You must include the entire object to override label values.'
+      operationId: updateService
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1ServicesServiceId'
+        required: true
+      responses:
+        '200':
+          description: 'Update a services attributes, you may also add or remove functionalities from the service as well.
+
+            Note: You may not remove or add individual label key/value pairs. You must include the entire object to override label values.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntity'
+      x-codegen-request-body-name: patchV1ServicesServiceId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/{service_id}/available_downstream_dependencies:
+    get:
+      tags:
+      - Services
+      summary: List available downstream service dependencies
+      description: Retrieves all services that are available to be downstream dependencies
+      operationId: listServiceAvailableDownstreamDependencies
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves all services that are available to be downstream dependencies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntityLite'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/{service_id}/available_upstream_dependencies:
+    get:
+      tags:
+      - Services
+      summary: List available upstream service dependencies
+      description: Retrieves all services that are available to be upstream dependencies
+      operationId: listServiceAvailableUpstreamDependencies
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves all services that are available to be upstream dependencies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceEntityLite'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/{service_id}/checklist_response/{checklist_id}:
+    post:
+      tags:
+      - Services
+      summary: Create a checklist response for a service
+      description: Creates a response for a checklist item
+      operationId: createServiceChecklistResponse
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: checklist_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1ServicesServiceIdChecklistResponseChecklistId'
+        required: true
+      responses:
+        '201':
+          description: Creates a response for a checklist item
+          content: {}
+      x-codegen-request-body-name: postV1ServicesServiceIdChecklistResponseChecklistId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/{service_id}/dependencies:
+    get:
+      tags:
+      - Services
+      summary: List dependencies for a service
+      description: Retrieves a service's dependencies
+      operationId: getServiceDependencies
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: flatten
+        in: query
+        description: If true, returns all dependencies in one array. If false, splits dependencies into different arrays for child and parent dependencies
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Retrieves a service's dependencies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceWithAllDependenciesEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/services/{service_id}/service_links/{remote_id}:
+    delete:
+      tags:
+      - Services
+      summary: Delete a service link
+      description: Deletes a service link from FireHydrant.
+      operationId: deleteServiceLink
+      parameters:
+      - name: service_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: remote_id
+        in: path
+        description: 'The external service ID which can be found in the JSON
+
+          from GET services/:service_id endpoint under
+
+          functionalities > external_resources > remote_id
+
+          '
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deletes a service link from FireHydrant.
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/users/{id}/services:
+    get:
+      tags:
+      - Services
+      summary: List services for a user's teams
+      description: Retrieves a list of services owned by the teams a user is on
+      operationId: listUserServices
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Retrieves a list of services owned by the teams a user is on
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamEntityPaginated'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /services:
     get:
       summary: List services
@@ -36,6 +633,8 @@ paths:
           description: Services
       tags:
       - Services
+      security:
+      - bearerAuth: []
     post:
       summary: Create a service
       operationId: createService
@@ -63,6 +662,11 @@ paths:
           description: Service created
       tags:
       - Services
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
   /services/{service_id}:
     get:
       summary: Retrieve a service
@@ -78,6 +682,8 @@ paths:
           description: Service
       tags:
       - Services
+      security:
+      - bearerAuth: []
     patch:
       summary: Update a service
       operationId: updateService
@@ -98,6 +704,8 @@ paths:
           description: Updated service
       tags:
       - Services
+      security:
+      - bearerAuth: []
     delete:
       summary: Delete a service
       operationId: deleteService
@@ -112,8 +720,1676 @@ paths:
           description: Deleted
       tags:
       - Services
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    Incidents_StatusPageEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        external_id:
+          type: string
+        name:
+          type: string
+        display_name:
+          type: string
+        integration:
+          $ref: '#/components/schemas/IntegrationEntity'
+      description: Incidents_StatusPageEntity model
+    IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_name:
+          type: string
+        integration_slug:
+          type: string
+        display_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    IncidentRoleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        discarded_at:
+          type: string
+          format: date-time
+      description: IncidentRoleEntity model
+    SeverityMatrix_ImpactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        affects_id:
+          type: string
+        position:
+          type: integer
+          format: int32
+      description: SeverityMatrix_ImpactEntity model
+    postV1ServicesServiceIdChecklistResponseChecklistId:
+      required:
+      - check_id
+      - status
+      type: object
+      properties:
+        check_id:
+          type: string
+        status:
+          type: boolean
+          description: Status of the check. 'true' if it's complete, 'false' if incomplete, or blank if not yet interacted with
+      description: Creates a response for a checklist item
+    Incidents_ContextObjectEntity:
+      type: object
+      properties:
+        object_type:
+          type: string
+        object_id:
+          type: string
+        context_tag:
+          type: string
+        context_description:
+          type: string
+    FHTypes_GenericEntity:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        label:
+          type: string
+    patchV1ServicesServiceId:
+      type: object
+      properties:
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        checklists:
+          type: array
+          description: Array of checklist IDs to attach to the service
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+              remove:
+                type: boolean
+                description: Set to `true` to remove checklist from service
+        description:
+          type: string
+        external_resources:
+          type: array
+          description: An array of external resources to attach to this service.
+          items:
+            required:
+            - remote_id
+            type: object
+            properties:
+              remote_id:
+                type: string
+              connection_type:
+                type: string
+                description: 'The integration slug for the external resource. Can be one of: github, opsgenie, pager_duty, victorops. Not required if the resource has already been imported.'
+              remove:
+                type: boolean
+                description: If you are trying to remove an external resource from a service, set this to 'true'.
+        functionalities:
+          type: array
+          description: An array of functionalities
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: If you are trying to reuse a functionality, you may set the ID to attach it to the service
+              remove:
+                type: boolean
+                description: If you are trying to remove a functionality from a service, set this to 'true'
+              summary:
+                type: string
+                description: If you are trying to create a new functionality and attach it to this service, set the summary key
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: A hash of label keys and values
+        links:
+          type: array
+          description: An array of links to associate with this service. This will remove all links not present in the patch. Only acts if 'links' key is included in the payload.
+          items:
+            required:
+            - href_url
+            - name
+            type: object
+            properties:
+              href_url:
+                type: string
+                description: URL
+              name:
+                type: string
+                description: Short name used to display and identify this link
+              icon_url:
+                type: string
+                description: An optional URL to an icon representing this link
+              remove:
+                type: boolean
+                description: If you are trying to remove a link, set this to 'true'
+              id:
+                type: string
+                description: If updating an existing link, specify it's id.
+        name:
+          type: string
+        owner:
+          required:
+          - id
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the service
+        remove_owner:
+          type: boolean
+          description: If you are trying to remove a team as an owner from a service, set this to 'true'
+        remove_remaining_checklists:
+          type: boolean
+          description: If set to true, any checklists tagged on the service that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the checklists
+        remove_remaining_external_resources:
+          type: boolean
+          description: If set to true, any external_resources tagged on the service that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the external_resources
+        remove_remaining_functionalities:
+          type: boolean
+          description: If set to true, any functionalities tagged on the service that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the functionalities
+        remove_remaining_teams:
+          type: boolean
+          description: If set to true, any teams tagged on the service that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the teams
+        service_tier:
+          type: integer
+          description: Integer representing service tier
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        teams:
+          type: array
+          description: An array of teams to attach to this service.
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+              remove:
+                type: boolean
+                description: If you are trying to remove a team from a service, set this to 'true'
+      description: 'Update a services attributes, you may also add or remove functionalities from the service as well.
+
+        Note: You may not remove or add individual label key/value pairs. You must include the entire object to override label values.
+
+        '
+    ChecklistTemplateEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        checks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistCheckEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        connected_services:
+          type: array
+          description: List of services that use this checklist
+          items:
+            $ref: '#/components/schemas/ServiceEntityChecklist'
+      description: ChecklistTemplateEntity model
+    Imports_ImportEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+          - preprocessing
+          - ready_for_import
+          - importing
+          - completed
+        updated_at:
+          type: string
+          format: date-time
+      description: Imports_ImportEntity model
+    postV1CatalogsCatalogIdIngest:
+      required:
+      - data
+      - encoding
+      type: object
+      properties:
+        encoding:
+          type: string
+          description: Encoding for submitted data
+          enum:
+          - text/yaml
+          - application/x-yaml
+          - application/json
+        data:
+          type: string
+          description: Service data
+      description: Accepts catalog data in the configured format and asyncronously processes the data to incorporate changes into service catalog.
+    Conversations_API_Entities_Channel:
+      type: object
+      properties:
+        name:
+          type: string
+    ServiceEntityChecklist:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        completed_checks:
+          type: integer
+          format: int32
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        service_checklist_updated_at:
+          type: string
+          format: date-time
+    Rules_RuleEntity:
+      type: object
+      properties:
+        logic:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the logic for applying the rule.
+        user_data:
+          $ref: '#/components/schemas/FHTypes_GenericEntity'
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        slack_user_id:
+          type: string
+        slack_linked?:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_enabled_notification_types:
+          type: array
+          items:
+            type: string
+      description: UserEntity model
+    ServiceLinkEntity:
+      type: object
+      properties:
+        status_code:
+          type: integer
+          format: int32
+        service:
+          $ref: '#/components/schemas/ServiceEntity'
+      description: ServiceLinkEntity model
+    ServiceEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        checklists:
+          type: array
+          description: List of checklists associated with a service
+          items:
+            $ref: '#/components/schemas/ChecklistTemplateEntity'
+        completed_checks:
+          type: integer
+          format: int32
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+        functionalities:
+          type: array
+          description: List of functionalities attached to the service
+          items:
+            $ref: '#/components/schemas/FunctionalityEntity'
+        last_import:
+          $ref: '#/components/schemas/Imports_ImportableResourceEntity'
+        links:
+          type: array
+          description: List of links attached to this service.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        managed_by:
+          type: string
+          description: If set, this field indicates that the service is managed by an integration and thus cannot be set manually
+        managed_by_settings:
+          type: object
+          properties: {}
+          description: Indicates the settings of the catalog that manages this service
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        service_checklist_updated_at:
+          type: string
+          format: date-time
+        teams:
+          type: array
+          description: List of teams attached to the service
+          items:
+            $ref: '#/components/schemas/TeamEntityLite'
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+      description: ServiceEntity model
+    TeamEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+        slack_channel:
+          $ref: '#/components/schemas/Integrations_Slack_SlackChannelEntity'
+        ms_teams_channel:
+          $ref: '#/components/schemas/Integrations_MicrosoftTeamsV2_ChannelEntity'
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipEntity'
+        owned_checklist_templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistTemplateEntity'
+        owned_functionalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntityLite'
+        owned_services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        owned_runbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SlimRunbookEntity'
+        responding_services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        functionalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntityLite'
+      description: TeamEntity model
+    FunctionalityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        links:
+          type: array
+          description: List of links attached to this functionality.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        services:
+          type: array
+          description: Services this functionality provides
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+        teams:
+          type: array
+          description: List of teams attached to the functionality
+          items:
+            $ref: '#/components/schemas/TeamEntityLite'
+      description: FunctionalityEntity model
+    SlimRunbookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        attachment_rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        categories:
+          type: string
+          description: categories the runbook applies to
+    SeverityMatrix_ConditionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          description: Position is used to determine ordering of conditions in API responses and dropdowns. The condition with the lowest position (typically 0) will be considered the Default Condition
+          format: int32
+      description: SeverityMatrix_ConditionEntity model
+    FunctionalityEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        links:
+          type: array
+          description: List of links attached to this functionality.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+    Imports_ImportErrorEntity_ResourceEntity:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        resource_type:
+          type: string
+        name:
+          type: string
+    postV1Services:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: A hash of label keys and values
+        service_tier:
+          type: integer
+          description: Integer representing service tier. Lower values represent higher criticality. If not specified the default value will be 5.
+          format: int32
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+        functionalities:
+          type: array
+          description: An array of functionalities
+          items:
+            type: object
+            properties:
+              summary:
+                type: string
+                description: If you are trying to create a new functionality and attach it to this service, set the summary key
+              id:
+                type: string
+                description: If you are trying to reuse a functionality, you may set the ID to attach it to the service
+        links:
+          type: array
+          description: An array of links to associate with this service
+          items:
+            required:
+            - href_url
+            - name
+            type: object
+            properties:
+              name:
+                type: string
+                description: Short name used to display and identify this link
+              href_url:
+                type: string
+                description: URL
+              icon_url:
+                type: string
+                description: An optional URL to an icon representing this link
+        owner:
+          required:
+          - id
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the service
+        teams:
+          type: array
+          description: An array of teams to attach to this service.
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        external_resources:
+          type: array
+          description: An array of external resources to attach to this service.
+          items:
+            required:
+            - remote_id
+            type: object
+            properties:
+              remote_id:
+                type: string
+              connection_type:
+                type: string
+                description: 'The integration slug for the external resource. Can be one of: github, opsgenie, pager_duty, victorops. Not required if the resource has already been imported.'
+      description: Creates a service for the organization, you may also create or attach functionalities to the service on create.
+    ServiceEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: ServiceEntityPaginated model
+    ServiceChildDependencyEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        service:
+          $ref: '#/components/schemas/ServiceEntity'
+        type:
+          type: string
+    TeamEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: TeamEntityPaginated model
+    Event_NoteEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        status_pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_StatusPageEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+      description: Event_NoteEntity model
+    IncidentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the Incident
+        name:
+          type: string
+          description: Name of the incident
+        created_at:
+          type: string
+          description: The time the incident was opened
+          format: date-time
+        started_at:
+          type: string
+          description: The time the incident started
+          format: date-time
+        discarded_at:
+          type: string
+          description: The time the incident was archived
+          format: date-time
+        summary:
+          type: string
+        customer_impact_summary:
+          type: string
+        description:
+          type: string
+        current_milestone:
+          type: string
+          description: The type/slug of the current milestone. Will be one of the currently configured milestones for the given incident.
+        number:
+          type: integer
+          description: Incident number
+          format: int32
+        priority:
+          type: string
+        severity:
+          type: string
+        severity_color:
+          type: string
+        severity_impact:
+          type: string
+        severity_condition:
+          type: string
+        tag_list:
+          type: array
+          items:
+            type: string
+        severity_impact_object:
+          $ref: '#/components/schemas/SeverityMatrix_ImpactEntity'
+        severity_condition_object:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+        private_id:
+          type: string
+        organization_id:
+          type: string
+        milestones:
+          type: array
+          description: 'DEPRECATED: Please use lifecycle phases instead'
+          items:
+            $ref: '#/components/schemas/Incidents_MilestoneEntity'
+        lifecycle_phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecyclePhaseEntity'
+        lifecycle_measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecycleMeasurementEntity'
+        active:
+          type: boolean
+        labels:
+          type: object
+          properties: {}
+          description: A key/value of labels
+        role_assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_RoleAssignmentEntity'
+        status_pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_StatusPageEntity'
+        incident_url:
+          type: string
+        private_status_page_url:
+          type: string
+        organization:
+          $ref: '#/components/schemas/OrganizationEntity'
+        customers_impacted:
+          type: integer
+          format: int32
+        monetary_impact:
+          type: integer
+          format: int32
+        monetary_impact_cents:
+          type: integer
+          format: int32
+        last_update:
+          type: string
+        last_note:
+          $ref: '#/components/schemas/Event_NoteEntity'
+        report_id:
+          type: string
+        ai_incident_summary:
+          type: string
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        functionalities:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        channel_name:
+          type: string
+        channel_reference:
+          type: string
+        channel_id:
+          type: string
+        channel_status:
+          type: string
+          description: 'inoperative: 0, operational: 1, archived: 2'
+        incident_tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticketing_TicketEntity'
+        ticket:
+          $ref: '#/components/schemas/Ticketing_TicketEntity'
+        impacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_ImpactEntity'
+        conference_bridges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_ConferenceBridgeEntity'
+        incident_channels:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_ChannelEntity'
+        retro_exports:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        context_object:
+          $ref: '#/components/schemas/Incidents_ContextObjectEntity'
+        team_assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_TeamAssignmentEntityLite'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFields_FieldValue'
+        field_requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentEntity_FieldRequirementEntity'
+      description: IncidentEntity model
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    Attachments_LinkEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_text:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        editable:
+          type: boolean
+          description: Link can be edited
+        deletable:
+          type: boolean
+          description: Link can be deleted
+      description: Attachments_LinkEntity model
+    ServiceDependencyEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        service:
+          $ref: '#/components/schemas/ServiceEntity'
+        connected_service:
+          $ref: '#/components/schemas/ServiceEntity'
+      description: ServiceDependencyEntity model
+    ExternalResourceEntity:
+      type: object
+      properties:
+        connection_type:
+          type: string
+        connection_name:
+          type: string
+        connection_id:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+    Incidents_ImpactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - environment
+          - functionality
+          - service
+        impact:
+          $ref: '#/components/schemas/SuccinctEntity'
+        condition:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+    Imports_ImportErrorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        data:
+          type: object
+          properties: {}
+          description: Additional error data
+        resource:
+          $ref: '#/components/schemas/Imports_ImportErrorEntity_ResourceEntity'
+    Incidents_RoleAssignmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        incident_role:
+          $ref: '#/components/schemas/IncidentRoleEntity'
+        user:
+          $ref: '#/components/schemas/UserEntity'
+      description: Incidents_RoleAssignmentEntity model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    ServiceEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+      description: ServiceEntityLite model
+    Imports_ImportableResourceEntity:
+      type: object
+      properties:
+        import_errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Imports_ImportErrorEntity'
+        imported_at:
+          type: string
+          format: date-time
+        remote_id:
+          type: string
+        state:
+          type: string
+          enum:
+          - selected
+          - skipped
+          - imported
+          - errored
+    Incidents_MilestoneEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          description: The milestone's type. This will be one of the currently configured milestones for the given incident.
+        duration:
+          type: string
+          description: How long the incident spent in this milestones, in ISO 8601 Duration Format. This will be null if the milestone is the incident's current milestone.
+        occurred_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    ServiceWithAllDependenciesEntity:
+      type: object
+      properties:
+        child_service_dependencies:
+          type: array
+          description: Services that depend on this service
+          items:
+            $ref: '#/components/schemas/ServiceChildDependencyEntity'
+        parent_service_dependencies:
+          type: array
+          description: Services that this service is dependent on
+          items:
+            $ref: '#/components/schemas/ServiceParentDependencyEntity'
+        service_dependencies:
+          type: array
+          description: 'All dependencies. Can be one of: ServiceChildDependencyEntity, ServiceParentDependencyEntity'
+          items:
+            type: object
+            properties: {}
+      description: ServiceWithAllDependenciesEntity model
+    LinksEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+    patchV1ServiceDependenciesServiceDependencyId:
+      type: object
+      properties:
+        notes:
+          type: string
+          description: A note to describe the service dependency relationship
+      description: Update the notes of the service dependency
+    postV1ServiceDependencies:
+      required:
+      - connected_service_id
+      - service_id
+      type: object
+      properties:
+        service_id:
+          type: string
+        connected_service_id:
+          type: string
+        notes:
+          type: string
+          description: A note to describe the service dependency relationship
+      description: Creates a service dependency relationship between two services
+    ChecklistCheckEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: boolean
+    ErrorEntity:
+      type: object
+      properties:
+        detail:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+        meta:
+          type: object
+          properties: {}
+          description: An object with additional error metadata
+        code:
+          type: string
+          description: A stable code on which to match errors
+      description: ErrorEntity model
+    CustomFields_FieldValue:
+      type: object
+      properties:
+        name:
+          type: string
+        value_type:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        field_id:
+          type: string
+        value_array:
+          type: string
+        value_string:
+          type: string
+        value:
+          type: string
+    Incidents_ChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        source_name:
+          type: string
+        source_id:
+          type: string
+        url:
+          type: string
+        icon_url:
+          type: string
+        status:
+          type: string
+      description: Incidents_ChannelEntity model
+    ServiceParentDependencyEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        service:
+          $ref: '#/components/schemas/ServiceEntity'
+        type:
+          type: string
+    Integrations_MicrosoftTeamsV2_ChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        channel_id:
+          type: string
+        channel_name:
+          type: string
+        ms_team_id:
+          type: string
+        team_name:
+          type: string
+        channel_url:
+          type: string
+        status:
+          type: string
+        incident:
+          $ref: '#/components/schemas/IncidentEntity'
+    Ticketing_PriorityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      description: Ticketing_PriorityEntity model
+    Incidents_TeamAssignmentEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        team:
+          $ref: '#/components/schemas/TeamEntityLite'
+    Incidents_LifecycleMeasurementEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        starts_at_milestone:
+          type: string
+        ends_at_milestone:
+          type: string
+        value:
+          type: string
+        calculated_at:
+          type: string
+          format: date-time
+    Incidents_LifecyclePhaseEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        position:
+          type: integer
+          format: int32
+        milestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecycleMilestoneEntity'
+    Incidents_LifecycleMilestoneEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        position:
+          type: integer
+          format: int32
+        occurred_at:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        updated_at:
+          type: string
+          format: date-time
+    Conversations_API_Entities_Reference:
+      type: object
+      properties:
+        id:
+          type: string
+        resource_class:
+          type: string
+        resource_id:
+          type: string
+        field:
+          type: string
+        comments_url:
+          type: string
+        channel:
+          $ref: '#/components/schemas/Conversations_API_Entities_Channel'
+    MembershipEntity:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserEntity'
+        schedule:
+          $ref: '#/components/schemas/ScheduleEntity'
+        signals_on_call_schedule:
+          $ref: '#/components/schemas/SuccinctEntity'
+        default_incident_role:
+          $ref: '#/components/schemas/IncidentRoleEntity'
+    OrganizationEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+    postV1ServicesServiceLinks:
+      required:
+      - connection_id
+      - external_service_ids
+      - integration
+      type: object
+      properties:
+        external_service_ids:
+          type: string
+          description: ID of the service
+        connection_id:
+          type: string
+          description: ID for the integration. This can be found by going to the edit page for the integration
+        integration:
+          type: string
+          description: The name of the service
+          enum:
+          - pager_duty
+          - opsgenie
+          - victorops
+      description: Creates a service with the appropriate integration for each external service ID passed
+    Incidents_ConferenceBridgeEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+    SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    ScheduleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        integration:
+          type: string
+        discarded:
+          type: boolean
+    InfrastructureSearchEntity:
+      type: object
+      properties:
+        type:
+          type: string
+        infrastructure:
+          type: string
+      description: InfrastructureSearchEntity model
+    Ticketing_TicketEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - cancelled
+          - done
+        type:
+          type: string
+          enum:
+          - incident
+          - task
+          - follow_up
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorEntity'
+        priority:
+          $ref: '#/components/schemas/Ticketing_PriorityEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tag_list:
+          type: array
+          items:
+            type: string
+        incident_id:
+          type: string
+          description: ID of incident that this ticket is related to
+        incident_name:
+          type: string
+          description: Name of incident that this ticket is related to
+        incident_current_milestone:
+          type: string
+          description: Milestone of incident that this ticket is related to
+        task_id:
+          type: string
+          description: ID of task that this ticket is related to
+        due_at:
+          type: string
+          format: date-time
+        link:
+          $ref: '#/components/schemas/Attachments_LinkEntity'
+      description: Ticketing_TicketEntity model
+    Integrations_Slack_SlackChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slack_channel_id:
+          type: string
+    IncidentEntity_FieldRequirementEntity:
+      type: object
+      properties:
+        field_id:
+          type: string
+          description: A unique identifier for the field.
+        required_at_milestone_id:
+          type: string
+          description: The milestone at which this field is required. If null, this field is always required.
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

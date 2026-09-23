@@ -1,0 +1,171 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Communication API
+  version: 0.0.1
+  description: Operations related to Communication
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Communication
+  description: Operations related to Communication
+paths:
+  /v1/status_update_templates:
+    get:
+      tags:
+      - Communication
+      summary: List status update templates
+      description: List all status update templates for your organization
+      operationId: listStatusUpdateTemplates
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all status update templates for your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateTemplateEntity'
+    post:
+      tags:
+      - Communication
+      summary: Create a status update template
+      description: Create a status update template for your organization
+      operationId: createStatusUpdateTemplate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1StatusUpdateTemplates'
+        required: true
+      responses:
+        '201':
+          description: Create a status update template for your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateTemplateEntity'
+      x-codegen-request-body-name: postV1StatusUpdateTemplates
+  /v1/status_update_templates/{status_update_template_id}:
+    get:
+      tags:
+      - Communication
+      summary: Get a status update template
+      description: Get a single status update template by ID
+      operationId: getStatusUpdateTemplate
+      parameters:
+      - name: status_update_template_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a single status update template by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateTemplateEntity'
+    delete:
+      tags:
+      - Communication
+      summary: Delete a status update template
+      description: Delete a single status update template
+      operationId: deleteStatusUpdateTemplate
+      parameters:
+      - name: status_update_template_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Delete a single status update template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateTemplateEntity'
+    patch:
+      x-speakeasy-test: false
+      tags:
+      - Communication
+      summary: Update a status update template
+      description: Update a single status update template
+      operationId: updateStatusUpdateTemplate
+      parameters:
+      - name: status_update_template_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1StatusUpdateTemplatesStatusUpdateTemplateId'
+        required: true
+      responses:
+        '200':
+          description: Update a single status update template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusUpdateTemplateEntity'
+      x-codegen-request-body-name: patchV1StatusUpdateTemplatesStatusUpdateTemplateId
+components:
+  schemas:
+    StatusUpdateTemplateEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        discarded_at:
+          type: string
+          format: date-time
+      description: StatusUpdateTemplateEntity model
+    postV1StatusUpdateTemplates:
+      required:
+      - body
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        body:
+          type: string
+      description: Create a status update template for your organization
+    patchV1StatusUpdateTemplatesStatusUpdateTemplateId:
+      type: object
+      properties:
+        name:
+          type: string
+        body:
+          type: string
+      description: Update a single status update template
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

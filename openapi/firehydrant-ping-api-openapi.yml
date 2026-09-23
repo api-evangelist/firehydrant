@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Ping API
+  title: FireHydrant REST Ping API
   description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
   version: '1.0'
   contact:

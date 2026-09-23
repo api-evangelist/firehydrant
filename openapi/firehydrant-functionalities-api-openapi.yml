@@ -1,19 +1,189 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Functionalities API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Functionalities API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Functionalities across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Functionalities
+  description: Operations related to Functionalities
 paths:
+  /v1/functionalities:
+    get:
+      tags:
+      - Functionalities
+      summary: List functionalities
+      description: List all of the functionalities that have been added to the organiation
+      operationId: listFunctionalities
+      parameters:
+      - name: query
+        in: query
+        description: A query to search functionalities by their name or description
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search functionalities by their name
+        schema:
+          type: string
+      - name: impacted
+        in: query
+        description: A query to search services by if they are impacted with active incidents
+        schema:
+          type: string
+      - name: labels
+        in: query
+        description: A comma separated list of label key / values in the format of 'key=value,key2=value2'. To filter change events that have a key (with no specific value), omit the value
+        schema:
+          type: string
+      - name: owner
+        in: query
+        description: A query to search functionalities by their owning team ID
+        schema:
+          type: string
+      - name: lite
+        in: query
+        description: Boolean to determine whether to return a slimified version of the functionalities object
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all of the functionalities that have been added to the organiation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionalityEntityPaginated'
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Functionalities
+      summary: Create a functionality
+      description: Creates a functionality for the organization
+      operationId: createFunctionality
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1Functionalities'
+        required: true
+      responses:
+        '201':
+          description: Creates a functionality for the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionalityEntity'
+      x-codegen-request-body-name: postV1Functionalities
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/functionalities/{functionality_id}:
+    get:
+      tags:
+      - Functionalities
+      summary: Get a functionality
+      description: Retrieves a single functionality by ID
+      operationId: getFunctionality
+      parameters:
+      - name: functionality_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single functionality by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionalityEntity'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Functionalities
+      summary: Archive a functionality
+      operationId: deleteFunctionality
+      parameters:
+      - name: functionality_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Archive a functionality
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionalityEntity'
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Functionalities
+      summary: Update a functionality
+      description: Update a functionalities attributes
+      operationId: updateFunctionality
+      parameters:
+      - name: functionality_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1FunctionalitiesFunctionalityId'
+        required: true
+      responses:
+        '200':
+          description: Update a functionalities attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionalityEntity'
+      x-codegen-request-body-name: patchV1FunctionalitiesFunctionalityId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/functionalities/{functionality_id}/services:
+    get:
+      tags:
+      - Functionalities
+      operationId: getFunctionalityServices
+      parameters:
+      - name: functionality_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Service(s)
+          content: {}
+      summary: List services for a functionality
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /functionalities:
     get:
       summary: List functionalities
@@ -23,6 +193,8 @@ paths:
           description: Functionalities
       tags:
       - Functionalities
+      security:
+      - bearerAuth: []
     post:
       summary: Create a functionality
       operationId: createFunctionality
@@ -44,8 +216,397 @@ paths:
           description: Created
       tags:
       - Functionalities
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    ServiceEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+      description: ServiceEntityLite model
+    patchV1FunctionalitiesFunctionalityId:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        services:
+          type: array
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of a service
+              remove:
+                type: boolean
+                description: Set to true if you want to remove the given service from the functionality
+        links:
+          type: array
+          description: An array of links to associate with this functionality. This will remove all links not present in the patch. Only acts if 'links' key is included in the payload.
+          items:
+            required:
+            - href_url
+            - name
+            type: object
+            properties:
+              href_url:
+                type: string
+                description: URL
+              name:
+                type: string
+                description: Short name used to display and identify this link
+              icon_url:
+                type: string
+                description: An optional URL to an icon representing this link
+              remove:
+                type: boolean
+                description: If you are trying to remove a link, set this to 'true'
+              id:
+                type: string
+                description: If updating an existing link, specify it's id.
+        owner:
+          required:
+          - id
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the functionality
+        remove_owner:
+          type: boolean
+          description: If you are trying to remove a team as an owner from a functionality, set this to 'true'
+        teams:
+          type: array
+          description: An array of teams to attach to this functionality.
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+              remove:
+                type: boolean
+                description: If you are trying to remove a team from a functionality, set this to 'true'
+        remove_remaining_teams:
+          type: boolean
+          description: If set to true, any teams tagged on the service that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the teams
+        external_resources:
+          type: array
+          description: An array of external resources to attach to this service.
+          items:
+            required:
+            - remote_id
+            type: object
+            properties:
+              remote_id:
+                type: string
+              connection_type:
+                type: string
+                description: 'The integration slug for the external resource. Can be one of: github, opsgenie, pager_duty, statuspage, victorops. Not required if the resource has already been imported.'
+              remove:
+                type: boolean
+                description: If you are trying to remove an external resource from a service, set this to 'true'.
+        remove_remaining_external_resources:
+          type: boolean
+          description: If set to true, any external_resources tagged on the service that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the external_resources
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: A hash of label keys and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        remove_remaining_services:
+          type: boolean
+          description: Set this to true if you want to remove all of the services that are not included in the services array from the functionality
+          default: false
+      description: Update a functionalities attributes
+    FunctionalityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        links:
+          type: array
+          description: List of links attached to this functionality.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        services:
+          type: array
+          description: Services this functionality provides
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+        teams:
+          type: array
+          description: List of teams attached to the functionality
+          items:
+            $ref: '#/components/schemas/TeamEntityLite'
+      description: FunctionalityEntity model
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    postV1Functionalities:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        services:
+          type: array
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of a service
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: A hash of label keys and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        external_resources:
+          type: array
+          description: An array of external resources to attach to this service.
+          items:
+            required:
+            - remote_id
+            type: object
+            properties:
+              remote_id:
+                type: string
+              connection_type:
+                type: string
+                description: 'The integration slug for the external resource. Can be one of: github, opsgenie, pager_duty, statuspage, victorops. Not required if the resource has already been imported.'
+        links:
+          type: array
+          description: An array of links to associate with this service
+          items:
+            required:
+            - href_url
+            - name
+            type: object
+            properties:
+              name:
+                type: string
+                description: Short name used to display and identify this link
+              href_url:
+                type: string
+                description: URL
+              icon_url:
+                type: string
+                description: An optional URL to an icon representing this link
+        owner:
+          required:
+          - id
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the service
+        teams:
+          type: array
+          description: An array of teams to attach to this service.
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+      description: Creates a functionality for the organization
+    LinksEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    ExternalResourceEntity:
+      type: object
+      properties:
+        connection_type:
+          type: string
+        connection_name:
+          type: string
+        connection_id:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+    FunctionalityEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: FunctionalityEntityPaginated model
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

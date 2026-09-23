@@ -1,19 +1,152 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Environments API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Environments API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Environments across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Environments
+  description: Operations related to Environments
 paths:
+  /v1/environments:
+    get:
+      tags:
+      - Environments
+      summary: List environments
+      description: List all of the environments that have been added to the organiation
+      operationId: listEnvironments
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: A query to search environments by their name or description
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search environments by their name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List all of the environments that have been added to the organiation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentEntryEntityPaginated'
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Environments
+      summary: Create an environment
+      description: Creates an environment for the organization
+      operationId: createEnvironment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1Environments'
+        required: true
+      responses:
+        '201':
+          description: Creates an environment for the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentEntryEntity'
+      x-codegen-request-body-name: postV1Environments
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/environments/{environment_id}:
+    get:
+      tags:
+      - Environments
+      summary: Get an environment
+      description: Retrieves a single environment by ID
+      operationId: getEnvironment
+      parameters:
+      - name: environment_id
+        in: path
+        description: Environment UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single environment by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentEntryEntity'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Environments
+      summary: Archive an environment
+      operationId: deleteEnvironment
+      parameters:
+      - name: environment_id
+        in: path
+        description: Environment UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Archive an environment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentEntryEntity'
+      security:
+      - api_key: []
+    patch:
+      tags:
+      - Environments
+      summary: Update an environment
+      description: Update a environments attributes
+      operationId: updateEnvironment
+      parameters:
+      - name: environment_id
+        in: path
+        description: Environment UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1EnvironmentsEnvironmentId'
+        required: true
+      responses:
+        '200':
+          description: Update a environments attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnvironmentEntryEntity'
+      x-codegen-request-body-name: patchV1EnvironmentsEnvironmentId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /environments:
     get:
       summary: List environments
@@ -23,6 +156,8 @@ paths:
           description: Environments
       tags:
       - Environments
+      security:
+      - bearerAuth: []
     post:
       summary: Create an environment
       operationId: createEnvironment
@@ -44,6 +179,11 @@ paths:
           description: Environment created
       tags:
       - Environments
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
   /environments/{environment_id}:
     get:
       summary: Retrieve an environment
@@ -59,8 +199,134 @@ paths:
           description: Environment
       tags:
       - Environments
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    EnvironmentEntryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the Environment
+        name:
+          type: string
+          description: Name of the Environment
+        slug:
+          type: string
+          description: Slug of the Environment
+        description:
+          type: string
+          description: Description of the Environment
+        updated_at:
+          type: string
+          description: The time the environment was updated
+          format: date-time
+        created_at:
+          type: string
+          description: The time the environment was created
+          format: date-time
+        active_incidents:
+          type: string
+          description: List of active incident guids
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+      description: EnvironmentEntryEntity model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    EnvironmentEntryEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentEntryEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: EnvironmentEntryEntityPaginated model
+    patchV1EnvironmentsEnvironmentId:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      description: Update a environments attributes
+    ExternalResourceEntity:
+      type: object
+      properties:
+        connection_type:
+          type: string
+        connection_name:
+          type: string
+        connection_id:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+    postV1Environments:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      description: Creates an environment for the organization
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

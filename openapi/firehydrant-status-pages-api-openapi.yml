@@ -1,0 +1,780 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Status Pages API
+  version: 0.0.1
+  description: Operations related to Status Pages
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Status Pages
+  description: Operations related to Status Pages
+paths:
+  /v1/incidents/{incident_id}/status_pages/{status_page_id}:
+    delete:
+      tags:
+      - Status Pages
+      summary: Remove a status page from an incident
+      description: Remove a status page incident attached to an incident
+      operationId: deleteIncidentStatusPage
+      parameters:
+      - name: status_page_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Remove a status page incident attached to an incident
+          content: {}
+  /v1/nunc/subscriptions:
+    post:
+      tags:
+      - Status Pages
+      summary: Create a status page subscription
+      description: Subscribe to status page updates
+      operationId: createStatusPageSubscription
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1NuncSubscriptions'
+        required: true
+      responses:
+        '201':
+          description: Subscribe to status page updates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nunc_NuncSubscription'
+      x-codegen-request-body-name: postV1NuncSubscriptions
+  /v1/nunc/subscriptions/{unsubscribe_token}:
+    delete:
+      tags:
+      - Status Pages
+      summary: Unsubscribe from status page notifications
+      description: Unsubscribe from status page updates
+      operationId: deleteNuncSubscription
+      parameters:
+      - name: unsubscribe_token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Unsubscribe from status page updates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Nunc_NuncSubscription'
+  /v1/nunc_connections:
+    get:
+      tags:
+      - Status Pages
+      summary: List status pages
+      description: Lists the information displayed as part of your FireHydrant hosted status pages.
+      operationId: listStatusPages
+      responses:
+        '200':
+          description: Lists the information displayed as part of your FireHydrant hosted status pages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntityPaginated'
+    post:
+      tags:
+      - Status Pages
+      summary: Create a status page
+      description: Create a new FireHydrant hosted status page for customer facing statuses.
+      operationId: createStatusPage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - components[infrastructure_id]
+              - components[infrastructure_type]
+              - conditions[condition_id]
+              - conditions[nunc_condition]
+              - domain
+              type: object
+              properties:
+                domain:
+                  type: string
+                company_name:
+                  type: string
+                company_website:
+                  type: string
+                company_tos_url:
+                  type: string
+                greeting_title:
+                  type: string
+                greeting_body:
+                  type: string
+                operational_message:
+                  type: string
+                title:
+                  type: string
+                conditions[nunc_condition]:
+                  type: array
+                  description: Status page condition to map your severity matrix condition to
+                  items:
+                    type: string
+                conditions[condition_id]:
+                  type: array
+                  description: Severity matrix condition id
+                  items:
+                    type: string
+                components[infrastructure_type]:
+                  type: array
+                  items:
+                    type: string
+                components[infrastructure_id]:
+                  type: array
+                  items:
+                    type: string
+                primary_color:
+                  type: string
+                secondary_color:
+                  type: string
+                exposed_fields:
+                  type: array
+                  items:
+                    type: string
+                enable_histogram:
+                  type: boolean
+                ui_version:
+                  type: integer
+                  format: int32
+        required: true
+      responses:
+        '201':
+          description: Create a new FireHydrant hosted status page for customer facing statuses.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+  /v1/nunc_connections/{nunc_connection_id}:
+    get:
+      tags:
+      - Status Pages
+      summary: Get a status page
+      description: Retrieve the information displayed as part of your FireHydrant hosted status page.
+      operationId: getStatusPage
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve the information displayed as part of your FireHydrant hosted status page.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+    put:
+      x-speakeasy-test: false
+      tags:
+      - Status Pages
+      summary: Update a status page
+      description: Update your company's information and other components in the specified FireHydrant hosted status page.
+      operationId: updateStatusPage
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - components[infrastructure_id]
+              - components[infrastructure_type]
+              - conditions[condition_id]
+              - conditions[nunc_condition]
+              type: object
+              properties:
+                company_name:
+                  type: string
+                company_website:
+                  type: string
+                company_tos_url:
+                  type: string
+                greeting_title:
+                  type: string
+                greeting_body:
+                  type: string
+                operational_message:
+                  type: string
+                title:
+                  type: string
+                conditions[nunc_condition]:
+                  type: array
+                  description: Status page condition to map your severity matrix condition to
+                  items:
+                    type: string
+                conditions[condition_id]:
+                  type: array
+                  description: Severity matrix condition id
+                  items:
+                    type: string
+                components[infrastructure_type]:
+                  type: array
+                  items:
+                    type: string
+                components[infrastructure_id]:
+                  type: array
+                  items:
+                    type: string
+                primary_color:
+                  type: string
+                secondary_color:
+                  type: string
+                exposed_fields:
+                  type: array
+                  items:
+                    type: string
+                enable_histogram:
+                  type: boolean
+                ui_version:
+                  type: integer
+                  format: int32
+        required: true
+      responses:
+        '200':
+          description: Update your company's information and other components in the specified FireHydrant hosted status page.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+    delete:
+      tags:
+      - Status Pages
+      summary: Delete a status page
+      description: Delete a FireHydrant hosted status page, stopping updates of your incidents to it.
+      operationId: deleteStatusPage
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Delete a FireHydrant hosted status page, stopping updates of your incidents to it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+  /v1/nunc_connections/{nunc_connection_id}/component_groups:
+    post:
+      tags:
+      - Status Pages
+      summary: Create a component group for a status page
+      description: Add a component group to be displayed on a FireHydrant status page
+      operationId: createStatusPageComponentGroup
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - name
+              type: object
+              properties:
+                name:
+                  type: string
+                component_group_id:
+                  type: string
+                position:
+                  type: integer
+                  format: int32
+        required: true
+      responses:
+        '201':
+          description: Add a component group to be displayed on a FireHydrant status page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+  /v1/nunc_connections/{nunc_connection_id}/component_groups/{group_id}:
+    delete:
+      tags:
+      - Status Pages
+      summary: Delete a status page component group
+      description: Delete a component group displayed on a FireHydrant status page
+      operationId: deleteStatusPageComponentGroup
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a component group displayed on a FireHydrant status page
+          content: {}
+    patch:
+      x-speakeasy-test: false
+      tags:
+      - Status Pages
+      summary: Update a status page component group
+      description: Update a component group to be displayed on a FireHydrant status page
+      operationId: updateStatusPageComponentGroup
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                component_group_id:
+                  type: string
+                position:
+                  type: integer
+                  format: int32
+      responses:
+        '200':
+          description: Update a component group to be displayed on a FireHydrant status page
+          content: {}
+  /v1/nunc_connections/{nunc_connection_id}/images/{type}:
+    x-speakeasy-test: false
+    put:
+      tags:
+      - Status Pages
+      summary: Upload an image for a status page
+      description: Add or replace an image attached to a FireHydrant status page
+      operationId: updateStatusPageImage
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Add or replace an image attached to a FireHydrant status page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+    delete:
+      tags:
+      - Status Pages
+      summary: Delete an image from a status page
+      description: Delete an image attached to a FireHydrant status page
+      operationId: deleteStatusPageImage
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Delete an image attached to a FireHydrant status page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+  /v1/nunc_connections/{nunc_connection_id}/links:
+    post:
+      tags:
+      - Status Pages
+      summary: Create a link for a status page
+      description: Add a link to be displayed on a FireHydrant status page
+      operationId: createStatusPageLink
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Add a link to be displayed on a FireHydrant status page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncConnectionEntity'
+  /v1/nunc_connections/{nunc_connection_id}/links/{link_id}:
+    delete:
+      tags:
+      - Status Pages
+      summary: Delete a status page link
+      description: Delete a link displayed on a FireHydrant status page
+      operationId: deleteStatusPageLink
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: link_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Delete a link displayed on a FireHydrant status page
+          content: {}
+    patch:
+      x-speakeasy-test: false
+      tags:
+      - Status Pages
+      summary: Update a status page link
+      description: Update a link to be displayed on a FireHydrant status page
+      operationId: updateStatusPageLink
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: link_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1NuncConnectionsNuncConnectionIdLinksLinkId'
+        required: true
+      responses:
+        '200':
+          description: Update a link to be displayed on a FireHydrant status page
+          content: {}
+      x-codegen-request-body-name: patchV1NuncConnectionsNuncConnectionIdLinksLinkId
+  /v1/nunc_connections/{nunc_connection_id}/subscribers:
+    get:
+      tags:
+      - Status Pages
+      summary: List status page subscribers
+      description: Retrieves the list of subscribers for a status page.
+      operationId: listStatusPageSubscribers
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves the list of subscribers for a status page.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncEmailSubscribersEntity'
+    post:
+      tags:
+      - Status Pages
+      summary: Add subscribers to a status page
+      description: Subscribes a comma-separated string of emails to status page updates
+      operationId: createStatusPageSubscribers
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - emails
+              type: object
+              properties:
+                emails:
+                  type: string
+                  description: A comma-separated list of emails to subscribe.
+        required: true
+      responses:
+        '201':
+          description: Subscribes a comma-separated string of emails to status page updates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncEmailSubscribersEntity'
+    delete:
+      tags:
+      - Status Pages
+      summary: Remove subscribers from a status page
+      description: Unsubscribes one or more status page subscribers.
+      operationId: deleteStatusPageSubscribers
+      parameters:
+      - name: nunc_connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: subscriber_ids
+        in: query
+        description: A list of subscriber IDs to unsubscribe.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Unsubscribes one or more status page subscribers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NuncEmailSubscribersEntity'
+components:
+  schemas:
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    NuncEmailSubscribersEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of the subscriber
+        email:
+          type: string
+          description: Email of the subscriber
+        created_at:
+          type: string
+          description: The time the subscriber was created
+          format: date-time
+      description: NuncEmailSubscribersEntity model
+    NuncConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        domain:
+          type: string
+        company_name:
+          type: string
+        company_website:
+          type: string
+        cname:
+          type: string
+        greeting_title:
+          type: string
+        greeting_body:
+          type: string
+        operational_message:
+          type: string
+        company_tos_url:
+          type: string
+        primary_color:
+          type: string
+        secondary_color:
+          type: string
+        button_background_color:
+          type: string
+        button_text_color:
+          type: string
+        link_color:
+          type: string
+        title:
+          type: string
+        exposed_fields:
+          type: string
+        conditions:
+          $ref: '#/components/schemas/NuncConditionEntity'
+        components:
+          $ref: '#/components/schemas/NuncComponentEntity'
+        component_groups:
+          $ref: '#/components/schemas/NuncComponentGroupEntity'
+        logo:
+          $ref: '#/components/schemas/MediaImageEntity'
+        cover_image:
+          $ref: '#/components/schemas/MediaImageEntity'
+        favicon:
+          $ref: '#/components/schemas/MediaImageEntity'
+        open_graph_image:
+          $ref: '#/components/schemas/MediaImageEntity'
+        dark_logo:
+          $ref: '#/components/schemas/MediaImageEntity'
+        enable_histogram:
+          type: boolean
+        ui_version:
+          type: integer
+          format: int32
+        links:
+          type: array
+          description: List of links attached to this status page.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+      description: NuncConnectionEntity model
+    patchV1NuncConnectionsNuncConnectionIdLinksLinkId:
+      type: object
+      properties:
+        display_text:
+          type: string
+        icon_url:
+          type: string
+        href_url:
+          type: string
+      description: Update a link to be displayed on a FireHydrant status page
+    postV1NuncSubscriptions:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
+      description: Subscribe to status page updates
+    LinksEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+    NuncConditionEntity:
+      type: object
+      properties:
+        nunc_condition:
+          type: string
+        condition_name:
+          type: string
+        condition_id:
+          type: string
+    Nunc_NuncSubscription:
+      type: object
+      properties:
+        response:
+          type: string
+      description: Nunc_NuncSubscription model
+    NuncComponentEntity:
+      type: object
+      properties:
+        infrastructure_type:
+          type: string
+        infrastructure_id:
+          type: string
+        label:
+          type: string
+        position:
+          type: integer
+          format: int32
+        component_group_id:
+          type: string
+    MediaImageEntity:
+      type: object
+      properties:
+        original_url:
+          type: string
+        versions_urls:
+          type: object
+          properties: {}
+          description: An object with keys that can have different versions of an image
+    NuncConnectionEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NuncConnectionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: NuncConnectionEntityPaginated model
+    NuncComponentGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        component_group_id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

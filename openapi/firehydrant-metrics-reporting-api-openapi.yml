@@ -1,0 +1,1240 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Metrics/Reporting API
+  version: 0.0.1
+  description: Operations related to Metrics/Reporting
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Metrics/Reporting
+  description: Operations related to Metrics/Reporting
+paths:
+  /v1/lifecycles/measurement_definitions:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List measurement definitions
+      description: List all of the measurement definitions in the organization
+      operationId: listMeasurementDefinitions
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all of the measurement definitions in the organization
+          content: {}
+    post:
+      tags:
+      - Metrics/Reporting
+      summary: Create a measurement definition
+      description: Create a new measurement definition
+      operationId: createMeasurementDefinition
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - ends_at_milestone_id
+              - name
+              - starts_at_milestone_id
+              type: object
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                starts_at_milestone_id:
+                  type: string
+                ends_at_milestone_id:
+                  type: string
+        required: true
+      responses:
+        '201':
+          description: Create a new measurement definition
+          content: {}
+  /v1/lifecycles/measurement_definitions/{measurement_definition_id}:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: Get a measurement definition
+      description: Retrieve a single measurement definition from its ID
+      operationId: getMeasurementDefinition
+      parameters:
+      - name: measurement_definition_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single measurement definition from its ID
+          content: {}
+    delete:
+      tags:
+      - Metrics/Reporting
+      summary: Archive a measurement definition
+      description: Archives a measurement definition which will hide it from lists and metrics
+      operationId: deleteMeasurementDefinition
+      parameters:
+      - name: measurement_definition_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Archives a measurement definition which will hide it from lists and metrics
+          content: {}
+    patch:
+      tags:
+      - Metrics/Reporting
+      summary: Update a measurement definition
+      description: Update a single measurement definition from its ID
+      operationId: updateMeasurementDefinition
+      parameters:
+      - name: measurement_definition_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                description:
+                  type: string
+                starts_at_milestone_id:
+                  type: string
+                ends_at_milestone_id:
+                  type: string
+      responses:
+        '200':
+          description: Update a single measurement definition from its ID
+          content: {}
+  /v1/metrics/incidents:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List incident metrics and analytics
+      description: Returns a report with time bucketed analytics data
+      operationId: listIncidentMetrics
+      parameters:
+      - name: start_date
+        in: query
+        description: The start date to return metrics from
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: The end date to return metrics from
+        schema:
+          type: string
+          format: date
+      - name: bucket_size
+        in: query
+        schema:
+          type: string
+          enum:
+          - week
+          - day
+          - month
+          - all_time
+      - name: by
+        in: query
+        schema:
+          type: string
+          enum:
+          - total
+          - severity
+          - priority
+          - functionality
+          - service
+          - environment
+          - user
+          - user_involvement
+      - name: sort_field
+        in: query
+        schema:
+          type: string
+          enum:
+          - mttd
+          - mtta
+          - mttm
+          - mttr
+          - count
+          - total_time
+      - name: sort_direction
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: sort_limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: conditions
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a report with time bucketed analytics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_MetricsEntity'
+  /v1/metrics/milestone_funnel:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List milestone funnel metrics
+      description: Returns a report with time bucketed milestone data
+      operationId: getMilestoneFunnelMetrics
+      parameters:
+      - name: conditions
+        in: query
+        description: A JSON string that defines 'logic' and 'user_data'
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs or 'is_empty' to filter for incidents with no impacted environments
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs or 'is_empty' to filter for incidents with no impacted services
+        schema:
+          type: string
+      - name: functionalities
+        in: query
+        description: A comma separated list of functionality IDs or 'is_empty' to filter for incidents with no impacted functionalities
+        schema:
+          type: string
+      - name: excluded_infrastructure_ids
+        in: query
+        description: A comma separated list of infrastructure IDs. Returns incidents that do not have the following infrastructure ids associated with them.
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: assigned_teams
+        in: query
+        description: A comma separated list of IDs for assigned teams or 'is_empty' to filter for incidents with no active team assignments
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Incident status
+        schema:
+          type: string
+      - name: start_date
+        in: query
+        description: Filters for incidents that started on or after this date
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: Filters for incidents that started on or before this date
+        schema:
+          type: string
+          format: date
+      - name: resolved_at_or_after
+        in: query
+        description: Filters for incidents that were resolved at or after this time. Combine this with the `current_milestones` parameter if you wish to omit incidents that were re-opened and are still active.
+        schema:
+          type: string
+          format: date-time
+      - name: resolved_at_or_before
+        in: query
+        description: Filters for incidents that were resolved at or before this time. Combine this with the `current_milestones` parameter if you wish to omit incidents that were re-opened and are still active.
+        schema:
+          type: string
+          format: date-time
+      - name: created_at_or_after
+        in: query
+        description: Filters for incidents that were created at or after this time
+        schema:
+          type: string
+          format: date-time
+      - name: created_at_or_before
+        in: query
+        description: Filters for incidents that were created at or before this time
+        schema:
+          type: string
+          format: date-time
+      - name: query
+        in: query
+        description: A text query for an incident that searches on name, summary, and desciption
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search incidents by their name
+        schema:
+          type: string
+      - name: saved_search_id
+        in: query
+        description: The id of a previously saved search.
+        schema:
+          type: string
+      - name: priorities
+        in: query
+        description: A text value of priority
+        schema:
+          type: string
+      - name: priority_not_set
+        in: query
+        description: Flag for including incidents where priority has not been set
+        schema:
+          type: boolean
+      - name: severities
+        in: query
+        description: A text value of severity
+        schema:
+          type: string
+      - name: severity_not_set
+        in: query
+        description: Flag for including incidents where severity has not been set
+        schema:
+          type: boolean
+      - name: current_milestones
+        in: query
+        description: A comma separated list of current milestones
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: tag_match_strategy
+        in: query
+        description: A matching strategy for the tags provided
+        schema:
+          type: string
+          enum:
+          - any
+          - match_all
+          - exclude
+      - name: archived
+        in: query
+        description: Return archived incidents
+        schema:
+          type: boolean
+      - name: updated_after
+        in: query
+        description: Filters for incidents that were updated after this date
+        schema:
+          type: string
+          format: date-time
+      - name: updated_before
+        in: query
+        description: Filters for incidents that were updated before this date
+        schema:
+          type: string
+          format: date-time
+      - name: incident_type_id
+        in: query
+        description: A comma separated list of incident type IDs
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                group_by:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - started_day
+                    - started_week
+                    - started_month
+                    - all_time
+      responses:
+        '200':
+          description: Returns a report with time bucketed milestone data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity'
+  /v1/metrics/retrospectives:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List retrospective metrics for a date range
+      description: Returns a report with retrospective analytics data
+      operationId: listRetrospectiveMetrics
+      parameters:
+      - name: start_date
+        in: query
+        description: The start date to return metrics from
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: The end date to return metrics from
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Returns a report with retrospective analytics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_RetrospectiveEntity'
+  /v1/metrics/ticket_funnel:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List ticket funnel metrics
+      description: Returns a report with task and follow up creation and completion data
+      operationId: getTicketFunnelMetrics
+      parameters:
+      - name: conditions
+        in: query
+        description: A JSON string that defines 'logic' and 'user_data'
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs or 'is_empty' to filter for incidents with no impacted environments
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs or 'is_empty' to filter for incidents with no impacted services
+        schema:
+          type: string
+      - name: functionalities
+        in: query
+        description: A comma separated list of functionality IDs or 'is_empty' to filter for incidents with no impacted functionalities
+        schema:
+          type: string
+      - name: excluded_infrastructure_ids
+        in: query
+        description: A comma separated list of infrastructure IDs. Returns incidents that do not have the following infrastructure ids associated with them.
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: assigned_teams
+        in: query
+        description: A comma separated list of IDs for assigned teams or 'is_empty' to filter for incidents with no active team assignments
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Incident status
+        schema:
+          type: string
+      - name: start_date
+        in: query
+        description: Filters for incidents that started on or after this date
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: Filters for incidents that started on or before this date
+        schema:
+          type: string
+          format: date
+      - name: resolved_at_or_after
+        in: query
+        description: Filters for incidents that were resolved at or after this time. Combine this with the `current_milestones` parameter if you wish to omit incidents that were re-opened and are still active.
+        schema:
+          type: string
+          format: date-time
+      - name: resolved_at_or_before
+        in: query
+        description: Filters for incidents that were resolved at or before this time. Combine this with the `current_milestones` parameter if you wish to omit incidents that were re-opened and are still active.
+        schema:
+          type: string
+          format: date-time
+      - name: created_at_or_after
+        in: query
+        description: Filters for incidents that were created at or after this time
+        schema:
+          type: string
+          format: date-time
+      - name: created_at_or_before
+        in: query
+        description: Filters for incidents that were created at or before this time
+        schema:
+          type: string
+          format: date-time
+      - name: query
+        in: query
+        description: A text query for an incident that searches on name, summary, and desciption
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search incidents by their name
+        schema:
+          type: string
+      - name: saved_search_id
+        in: query
+        description: The id of a previously saved search.
+        schema:
+          type: string
+      - name: priorities
+        in: query
+        description: A text value of priority
+        schema:
+          type: string
+      - name: priority_not_set
+        in: query
+        description: Flag for including incidents where priority has not been set
+        schema:
+          type: boolean
+      - name: severities
+        in: query
+        description: A text value of severity
+        schema:
+          type: string
+      - name: severity_not_set
+        in: query
+        description: Flag for including incidents where severity has not been set
+        schema:
+          type: boolean
+      - name: current_milestones
+        in: query
+        description: A comma separated list of current milestones
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: tag_match_strategy
+        in: query
+        description: A matching strategy for the tags provided
+        schema:
+          type: string
+          enum:
+          - any
+          - match_all
+          - exclude
+      - name: archived
+        in: query
+        description: Return archived incidents
+        schema:
+          type: boolean
+      - name: updated_after
+        in: query
+        description: Filters for incidents that were updated after this date
+        schema:
+          type: string
+          format: date-time
+      - name: updated_before
+        in: query
+        description: Filters for incidents that were updated before this date
+        schema:
+          type: string
+          format: date-time
+      - name: incident_type_id
+        in: query
+        description: A comma separated list of incident type IDs
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                group_by:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - started_day
+                    - started_week
+                    - started_month
+                    - all_time
+      responses:
+        '200':
+          description: Returns a report with task and follow up creation and completion data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity'
+  /v1/metrics/user_involvements:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List user involvement metrics
+      description: Returns a report with time bucketed analytics data
+      operationId: listUserInvolvementMetrics
+      parameters:
+      - name: start_date
+        in: query
+        description: The start date to return metrics from
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: The end date to return metrics from
+        schema:
+          type: string
+          format: date
+      - name: bucket_size
+        in: query
+        schema:
+          type: string
+      - name: by
+        in: query
+        schema:
+          type: string
+      - name: sort_field
+        in: query
+        schema:
+          type: string
+          enum:
+          - user_count
+          - incident_count
+          - time_spent
+      - name: sort_direction
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: sort_limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Returns a report with time bucketed analytics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_MetricsEntity'
+  /v1/metrics/{infra_type}:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List metrics for all services, environments, functionalities, or customers
+      description: Returns metrics for all components of a given type
+      operationId: listInfrastructureMetrics
+      parameters:
+      - name: infra_type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - environments
+          - functionalities
+          - services
+          - customers
+      - name: start_date
+        in: query
+        description: The start date to return metrics from; defaults to 30 days ago
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: The end date to return metrics from, defaults to today
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Returns metrics for all components of a given type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_InfrastructureListEntity'
+  /v1/metrics/{infra_type}/{infra_id}:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: Get metrics for a specific catalog entry
+      description: Return metrics for a specific component
+      operationId: getInfrastructureMetrics
+      parameters:
+      - name: infra_type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - environments
+          - functionalities
+          - services
+          - customers
+      - name: infra_id
+        in: path
+        description: Component UUID
+        required: true
+        schema:
+          type: string
+      - name: start_date
+        in: query
+        description: The start date to return metrics from; defaults to 30 days ago
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: The end date to return metrics from, defaults to today
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Return metrics for a specific component
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_InfrastructureMetricsEntity'
+  /v1/reports/mean_time:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: Get mean time metrics for incidents
+      description: Returns a report with time bucketed analytics data
+      operationId: getMeanTimeReport
+      parameters:
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Incident status
+        schema:
+          type: string
+      - name: start_date
+        in: query
+        description: The start date to return incidents from
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: The end date to return incidents from
+        schema:
+          type: string
+          format: date
+      - name: query
+        in: query
+        description: A text query for an incident that searches on name, summary, and desciption
+        schema:
+          type: string
+      - name: saved_search_id
+        in: query
+        description: The id of a previously saved search.
+        schema:
+          type: string
+      - name: priorities
+        in: query
+        description: A comma separated list of priorities
+        schema:
+          type: string
+      - name: priority_not_set
+        in: query
+        description: Flag for including incidents where priority has not been set
+        schema:
+          type: boolean
+      - name: severities
+        in: query
+        description: A comma separated list of severities
+        schema:
+          type: string
+      - name: severity_not_set
+        in: query
+        description: Flag for including incidents where severity has not been set
+        schema:
+          type: boolean
+      - name: current_milestones
+        in: query
+        description: A comma separated list of current milestones
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns a report with time bucketed analytics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportEntity'
+  /v1/saved_searches/{resource_type}:
+    get:
+      tags:
+      - Metrics/Reporting
+      summary: List saved searches
+      description: Lists save searches
+      operationId: listSavedSearches
+      parameters:
+      - name: resource_type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - change_events
+          - incidents
+          - services
+          - scheduled_maintenances
+          - ticket_tasks
+          - ticket_follow_ups
+          - analytics
+          - impact_analytics
+          - alerts
+          - incident_events
+      - name: user_id
+        in: query
+        description: The user ID used to filter saved searches.
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: Filter saved searches with a query on their name
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Lists save searches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchEntity'
+    post:
+      tags:
+      - Metrics/Reporting
+      summary: Create a saved search
+      description: Create a new saved search for a particular resource type
+      operationId: createSavedSearch
+      parameters:
+      - name: resource_type
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - change_events
+          - incidents
+          - services
+          - scheduled_maintenances
+          - ticket_tasks
+          - ticket_follow_ups
+          - analytics
+          - impact_analytics
+          - alerts
+          - incident_events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1SavedSearchesResourceType'
+        required: true
+      responses:
+        '201':
+          description: Create a new saved search for a particular resource type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchEntity'
+      x-codegen-request-body-name: postV1SavedSearchesResourceType
+components:
+  schemas:
+    Metrics_MilestonesFunnelEntity_DataBucketFilterParamsEntity:
+      type: object
+      properties:
+        start_date:
+          type: string
+          description: The start datetime for the period
+          format: date-time
+        end_date:
+          type: string
+          description: The end datetime for the period not inclusive
+          format: date
+    Reports_DataPointEntity:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: integer
+          format: int32
+    postV1SavedSearchesResourceType:
+      required:
+      - filter_values
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        is_private:
+          type: boolean
+        filter_values:
+          type: object
+          additionalProperties: true
+      description: Create a new saved search for a particular resource type
+    Metrics_TicketFunnelMetricsEntity_GroupingsEntity:
+      type: object
+      properties:
+        bucket_size:
+          type: string
+          description: The bucket size for the data
+    Metrics_TicketFunnelMetricsEntity_DataBucketFilterParamsEntity:
+      type: object
+      properties:
+        start_date:
+          type: string
+          description: The start datetime for the period
+          format: date-time
+        end_date:
+          type: string
+          description: The end datetime for the period not inclusive
+          format: date
+    ReportEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reports_BucketEntity'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        bucket_period:
+          type: string
+      description: ReportEntity model
+    Reports_BucketEntity:
+      type: object
+      properties:
+        bucket:
+          type: string
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reports_DataPointEntity'
+    Metrics_RetrospectiveEntity_SummaryEntity:
+      type: object
+      properties:
+        completed:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        incomplete:
+          type: integer
+          format: int32
+        mean:
+          type: number
+          format: float
+        shortest:
+          type: number
+          format: float
+        longest:
+          type: number
+          format: float
+        completion_percentage:
+          type: number
+          format: float
+    Metrics_MilestonesFunnelEntity_DataBucketMilestoneCountEntity:
+      type: object
+      properties:
+        milestone_id:
+          type: string
+          description: The UUID of the milestone
+        count:
+          type: integer
+          description: The frequency count of that milestone for the period
+          format: int32
+    SavedSearchEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        resource_type:
+          type: string
+        user_id:
+          type: string
+        is_private:
+          type: boolean
+          description: Whether or not this saved search is private
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        filter_values:
+          type: object
+          properties: {}
+          description: An unstructured key/value pair of saved values for searching
+      description: SavedSearchEntity model
+    Metrics_TicketFunnelMetricsEntity_DataBucketEntity:
+      type: object
+      properties:
+        time_bucket:
+          type: string
+          description: The start datetime for the period
+          format: date-time
+        filter_params:
+          $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_DataBucketFilterParamsEntity'
+        tasks_created:
+          type: integer
+          description: The number of tasks created
+          format: int32
+        tasks_done:
+          type: integer
+          description: The number of tasks completed
+          format: int32
+        follow_ups_created:
+          type: integer
+          description: The number of follow ups created
+          format: int32
+        follow_ups_done:
+          type: integer
+          description: The number of follow ups completed
+          format: int32
+    Metrics_MetricsEntity:
+      type: object
+      properties:
+        type:
+          type: string
+        by:
+          type: string
+          description: 'The field by which the metrics are grouped. Can be one of: total, severity, priority, functionality, service, environment, or user.'
+        bucket_size:
+          type: integer
+          description: 'The size of returned buckets. Can be one of: day, week, month, or all_time.'
+          format: int32
+        display_information:
+          type: object
+          properties: {}
+        keys:
+          type: array
+          items:
+            type: string
+        buckets:
+          type: array
+          items:
+            type: object
+            properties: {}
+        sort:
+          $ref: '#/components/schemas/Metrics_MetricsEntity_SortEntity'
+      description: Metrics_MetricsEntity model
+    Metrics_RetrospectiveEntity_DataEntity:
+      type: object
+      properties:
+        x:
+          type: string
+        y:
+          type: number
+          format: float
+    Metrics_MilestonesFunnelEntity_DataBucketEntity:
+      type: object
+      properties:
+        time_bucket:
+          type: string
+          description: The start datetime for the period
+          format: date-time
+        filter_params:
+          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketFilterParamsEntity'
+        milestone_counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketMilestoneCountEntity'
+    Metrics_TicketFunnelMetricsEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_DataBucketEntity'
+        groupings:
+          $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_GroupingsEntity'
+      description: Metrics_TicketFunnelMetricsEntity model
+    Metrics_InfrastructureMetricsEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The UUID of the component
+        name:
+          type: string
+          description: The name of the component
+        mttd:
+          type: integer
+          description: Mean Time To Detection (seconds) for all incidents for this component in this time period
+          format: int32
+        mtta:
+          type: integer
+          description: Mean Time To Acknowledgement (seconds) for all incidents for this component in this time period
+          format: int32
+        mttm:
+          type: integer
+          description: Mean Time To Mitigation (seconds) for all incidents for this component in this time period
+          format: int32
+        mttr:
+          type: integer
+          description: Mean Time To Resolution (seconds) for all incidents for this component in this time period
+          format: int32
+        count:
+          type: integer
+          description: Number of incidents in this time period for this component
+          format: int32
+        total_time:
+          type: integer
+          description: Total time (seconds) the component was impacted (MTTR x Incident Count)
+          format: int32
+      description: Metrics_InfrastructureMetricsEntity model
+    Metrics_MilestonesFunnelEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketEntity'
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_ColumnEntity'
+        groupings:
+          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_GroupingsEntity'
+        meta:
+          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_MetaEntity'
+      description: Metrics_MilestonesFunnelEntity model
+    Metrics_InfrastructureListEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of infrastructure metrics
+          items:
+            $ref: '#/components/schemas/Metrics_InfrastructureMetricsEntity'
+      description: Metrics_InfrastructureListEntity model
+    Metrics_MilestonesFunnelEntity_ColumnEntity:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The slug of the milestone
+        label:
+          type: string
+          description: The name of the milestone
+        tooltip:
+          type: string
+          description: The description of the milestone
+        id:
+          type: string
+          description: The UUID of the milestone
+    Metrics_MilestonesFunnelEntity_MetaEntity:
+      type: object
+      properties:
+        deleted_milestones:
+          type: array
+          items:
+            type: string
+        added_milestones:
+          type: array
+          items:
+            type: string
+    Metrics_MilestonesFunnelEntity_GroupingsEntity:
+      type: object
+      properties:
+        bucket_size:
+          type: string
+          description: The bucket size for the data
+    Metrics_RetrospectiveEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_RetrospectiveEntity_DataEntity'
+        summary:
+          $ref: '#/components/schemas/Metrics_RetrospectiveEntity_SummaryEntity'
+      description: Metrics_RetrospectiveEntity model
+    Metrics_MetricsEntity_SortEntity:
+      type: object
+      properties:
+        field:
+          type: string
+        direction:
+          type: string
+        limit:
+          type: integer
+          format: int32
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

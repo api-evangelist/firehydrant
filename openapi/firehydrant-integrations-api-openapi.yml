@@ -1,0 +1,1771 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Integrations API
+  version: 0.0.1
+  description: Operations related to Integrations
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Integrations
+  description: Operations related to Integrations
+paths:
+  /v1/integrations:
+    get:
+      tags:
+      - Integrations
+      operationId: listIntegrations
+      responses:
+        '200':
+          description: get Integration(s)
+          content: {}
+      summary: List all available integrations
+  /v1/integrations/aws/cloudtrail_batches:
+    get:
+      tags:
+      - Integrations
+      summary: List AWS CloudTrail batches
+      description: Lists CloudTrail batches for the authenticated organization.
+      operationId: listAwsCloudtrailBatches
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: connection_id
+        in: query
+        description: AWS connection ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Lists CloudTrail batches for the authenticated organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Aws_CloudtrailBatchEntityPaginated'
+  /v1/integrations/aws/cloudtrail_batches/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get an AWS CloudTrail batch
+      description: Retrieve a single CloudTrail batch.
+      operationId: getAwsCloudTrailBatch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single CloudTrail batch.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Aws_CloudtrailBatchEntity'
+    patch:
+      tags:
+      - Integrations
+      summary: Update an AWS CloudTrail batch
+      description: Update a CloudTrail batch with new information.
+      operationId: updateAwsCloudTrailBatch
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1IntegrationsAwsCloudtrailBatchesId'
+        required: true
+      responses:
+        '200':
+          description: Update a CloudTrail batch with new information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Aws_CloudtrailBatchEntity'
+      x-codegen-request-body-name: patchV1IntegrationsAwsCloudtrailBatchesId
+  /v1/integrations/aws/cloudtrail_batches/{id}/events:
+    get:
+      tags:
+      - Integrations
+      operationId: getAwsCloudtrailBatchEvents
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Event(s)
+          content: {}
+      summary: List events for an AWS CloudTrail batch
+  /v1/integrations/aws/connections:
+    get:
+      tags:
+      - Integrations
+      summary: List AWS integration connections
+      description: Lists the available and configured AWS integration connections for the authenticated organization.
+      operationId: listAwsConnections
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: aws_account_id
+        in: query
+        description: AWS account ID containing the role to be assumed
+        schema:
+          type: string
+      - name: target_arn
+        in: query
+        description: ARN of the role to be assumed
+        schema:
+          type: string
+      - name: external_id
+        in: query
+        description: The external ID supplied when assuming the role
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Lists the available and configured AWS integration connections for the authenticated organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Aws_ConnectionEntityPaginated'
+  /v1/integrations/aws/connections/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get an AWS connection
+      description: Retrieves the information about the AWS connection.
+      operationId: getAwsConnection
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves the information about the AWS connection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
+    patch:
+      tags:
+      - Integrations
+      summary: Update an AWS connection
+      description: Update the AWS connection with the provided data.
+      operationId: updateAwsConnection
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1IntegrationsAwsConnectionsId'
+        required: true
+      responses:
+        '200':
+          description: Update the AWS connection with the provided data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
+      x-codegen-request-body-name: patchV1IntegrationsAwsConnectionsId
+  /v1/integrations/confluence_cloud/connections/{id}/space/search:
+    get:
+      tags:
+      - Integrations
+      summary: List Confluence spaces
+      description: Lists available space keys for the Confluence integration connection.
+      operationId: listConfluenceSpaces
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: keyword
+        in: query
+        description: Space Key
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Lists available space keys for the Confluence integration connection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_ConfluenceCloud_SpaceKeyEntity'
+  /v1/integrations/connections:
+    get:
+      tags:
+      - Integrations
+      operationId: listIntegrationConnections
+      parameters:
+      - name: integration_slug
+        in: query
+        description: Only return installed integrations with the supplied slugs (types).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Connection(s)
+          content: {}
+      summary: List integration connections
+  /v1/integrations/connections/{slug}:
+    post:
+      tags:
+      - Integrations
+      operationId: createIntegrationConnection
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: created Connection
+          content: {}
+      summary: Create a new integration connection
+  /v1/integrations/connections/{slug}/{connection_id}:
+    patch:
+      tags:
+      - Integrations
+      operationId: updateIntegrationConnection
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: patched Connection
+          content: {}
+      summary: Update an integration connection
+  /v1/integrations/connections/{slug}/{connection_id}/refresh:
+    patch:
+      tags:
+      - Integrations
+      operationId: refreshIntegrationConnection
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: connection_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: patched Refresh
+          content: {}
+      summary: Refresh an integration connection
+  /v1/integrations/field_maps/{field_map_id}:
+    patch:
+      tags:
+      - Integrations
+      summary: Update a field mapping configuration
+      description: Update field map
+      operationId: updateIntegrationFieldMap
+      parameters:
+      - name: field_map_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Update field map
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldMapping_FieldMapEntity'
+  /v1/integrations/field_maps/{field_map_id}/available_fields:
+    get:
+      tags:
+      - Integrations
+      summary: List available fields for field mapping
+      description: Get a description of the fields to which data can be mapped
+      operationId: getIntegrationFieldMapAvailableFields
+      parameters:
+      - name: field_map_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a description of the fields to which data can be mapped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldMapping_MappableFieldEntity'
+  /v1/integrations/slack/connections/{connection_id}/emoji_actions:
+    get:
+      tags:
+      - Integrations
+      summary: List Slack emoji actions
+      description: Lists all slack emoji actions
+      operationId: listSlackEmojiActions
+      parameters:
+      - name: connection_id
+        in: path
+        description: Slack Connection UUID
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Lists all slack emoji actions
+          content: {}
+    post:
+      tags:
+      - Integrations
+      summary: Create a Slack emoji action
+      description: Creates a new slack emoji action
+      operationId: createSlackEmojiAction
+      parameters:
+      - name: connection_id
+        in: path
+        description: Slack Connection UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - emoji_name
+              type: object
+              properties:
+                emoji_name:
+                  type: string
+                  description: The name of the emoji to associate with this action
+                incident_type_id:
+                  type: string
+                  description: The ID of the incident type to associate with this emoji action
+        required: true
+      responses:
+        '201':
+          description: Creates a new slack emoji action
+          content: {}
+  /v1/integrations/slack/connections/{connection_id}/emoji_actions/{emoji_action_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a Slack emoji action
+      description: Retrieves a slack emoji action
+      operationId: getSlackEmojiAction
+      parameters:
+      - name: connection_id
+        in: path
+        description: Slack Connection UUID
+        required: true
+        schema:
+          type: string
+      - name: emoji_action_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a slack emoji action
+          content: {}
+    delete:
+      tags:
+      - Integrations
+      summary: Delete a Slack emoji action
+      description: Deletes a slack emoji action
+      operationId: deleteSlackEmojiAction
+      parameters:
+      - name: connection_id
+        in: path
+        description: Slack Connection UUID
+        required: true
+        schema:
+          type: string
+      - name: emoji_action_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Deletes a slack emoji action
+          content: {}
+    patch:
+      tags:
+      - Integrations
+      summary: Update a Slack emoji action
+      description: Updates a slack emoji action
+      operationId: updateSlackEmojiAction
+      parameters:
+      - name: connection_id
+        in: path
+        description: Slack Connection UUID
+        required: true
+        schema:
+          type: string
+      - name: emoji_action_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emoji_name:
+                  type: string
+                  description: The name of the emoji to associate with this action
+                incident_type_id:
+                  type: string
+                  description: The ID of the incident type to associate with this emoji action
+      responses:
+        '200':
+          description: Updates a slack emoji action
+          content: {}
+  /v1/integrations/slack/connections/{connection_id}/workspaces:
+    get:
+      tags:
+      - Integrations
+      operationId: getSlackWorkspaces
+      parameters:
+      - name: connection_id
+        in: path
+        description: Connection UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Workspace(s)
+          content: {}
+      summary: List Slack workspaces for a connection
+  /v1/integrations/slack/usergroups:
+    get:
+      tags:
+      - Integrations
+      operationId: listSlackUsergroups
+      responses:
+        '200':
+          description: get Usergroup(s)
+          content: {}
+      summary: List Slack usergroups
+  /v1/integrations/statuses/{slug}:
+    get:
+      tags:
+      - Integrations
+      operationId: getIntegrationStatus
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Status(s)
+          content: {}
+      summary: Get an integration status
+  /v1/integrations/statuspage/connections:
+    get:
+      tags:
+      - Integrations
+      summary: List Statuspage connections
+      description: Lists the available and configured Statuspage integrations connections for the authenticated organization.
+      operationId: listStatuspageConnections
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: Lists the available and configured Statuspage integrations connections for the authenticated organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Statuspage_ConnectionEntityPaginated'
+  /v1/integrations/statuspage/connections/{connection_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a Statuspage connection
+      description: Retrieve the information about the Statuspage connection.
+      operationId: getStatuspageConnection
+      parameters:
+      - name: connection_id
+        in: path
+        description: Connection UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve the information about the Statuspage connection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Statuspage_ConnectionEntity'
+    delete:
+      tags:
+      - Integrations
+      summary: Delete a Statuspage connection
+      description: Deletes the given Statuspage integration connection.
+      operationId: deleteStatuspageConnection
+      parameters:
+      - name: connection_id
+        in: path
+        description: Connection UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Deletes the given Statuspage integration connection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Statuspage_ConnectionEntity'
+    patch:
+      x-speakeasy-test: false
+      tags:
+      - Integrations
+      summary: Update a Statuspage connection
+      description: Update the given Statuspage integration connection.
+      operationId: updateStatuspageConnection
+      parameters:
+      - name: connection_id
+        in: path
+        description: Connection UUID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1IntegrationsStatuspageConnectionsConnectionId'
+        required: true
+      responses:
+        '200':
+          description: Update the given Statuspage integration connection.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_Statuspage_ConnectionEntity'
+      x-codegen-request-body-name: patchV1IntegrationsStatuspageConnectionsConnectionId
+  /v1/integrations/statuspage/connections/{connection_id}/pages:
+    get:
+      tags:
+      - Integrations
+      operationId: listStatuspagePages
+      parameters:
+      - name: connection_id
+        in: path
+        description: Connection UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Page(s)
+          content: {}
+      summary: List StatusPage pages for a connection
+  /v1/integrations/zendesk/search:
+    get:
+      tags:
+      - Integrations
+      operationId: searchZendeskTickets
+      parameters:
+      - name: ticket_id
+        in: query
+        description: Zendesk ticket ID
+        required: true
+        schema:
+          type: string
+      - name: include
+        in: query
+        description: Use to include attached_incidents
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get Search(s)
+          content: {}
+      summary: Search for Zendesk tickets
+  /v1/integrations/{integration_id}:
+    get:
+      tags:
+      - Integrations
+      description: Retrieve a single integration
+      operationId: getIntegration
+      parameters:
+      - name: integration_id
+        in: path
+        description: Integration UUID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single integration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Integrations_IntegrationEntity'
+      summary: Get an integration
+  /v1/ticketing/priorities/{id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a ticketing priority
+      description: Retrieve a single ticketing priority by ID
+      operationId: getTicketingPriority
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single ticketing priority by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_PriorityEntity'
+    delete:
+      tags:
+      - Integrations
+      summary: Delete a ticketing priority
+      description: Delete a single ticketing priority by ID
+      operationId: deleteTicketingPriority
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Delete a single ticketing priority by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_PriorityEntity'
+    patch:
+      tags:
+      - Integrations
+      summary: Update a ticketing priority
+      description: Update a single ticketing priority's attributes
+      operationId: updateTicketingPriority
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TicketingPrioritiesId'
+        required: true
+      responses:
+        '200':
+          description: Update a single ticketing priority's attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_PriorityEntity'
+      x-codegen-request-body-name: patchV1TicketingPrioritiesId
+  /v1/ticketing/projects:
+    get:
+      tags:
+      - Integrations
+      summary: List ticketing projects
+      description: List all ticketing projects available to the organization
+      operationId: listTicketingProjects
+      parameters:
+      - name: supports_ticket_types
+        in: query
+        schema:
+          type: string
+      - name: providers
+        in: query
+        schema:
+          type: string
+      - name: connection_ids
+        in: query
+        schema:
+          type: string
+      - name: configured_projects
+        in: query
+        schema:
+          type: boolean
+      - name: query
+        in: query
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all ticketing projects available to the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_Projects_ProjectListItemEntity'
+  /v1/ticketing/projects/{ticketing_project_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a ticketing project
+      description: Retrieve a single ticketing project by ID
+      operationId: getTicketingProject
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single ticketing project by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_Projects_ProjectListItemEntity'
+  /v1/ticketing/projects/{ticketing_project_id}/configuration_options:
+    get:
+      tags:
+      - Integrations
+      operationId: getTicketingProjectConfigurationOptions
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get ConfigurationOption(s)
+          content: {}
+      summary: List configuration options for a ticketing project
+  /v1/ticketing/projects/{ticketing_project_id}/configuration_options/options_for/{field_id}:
+    get:
+      tags:
+      - Integrations
+      operationId: getTicketingProjectFieldOptions
+      parameters:
+      - name: field_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: get OptionsFor(s)
+          content: {}
+      summary: List configuration options for a ticketing project field
+  /v1/ticketing/projects/{ticketing_project_id}/field_maps:
+    post:
+      tags:
+      - Integrations
+      summary: Create a field mapping for a ticketing project
+      description: Creates field map for a ticketing project
+      operationId: createTicketingProjectFieldMap
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Creates field map for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectFieldMapEntity'
+  /v1/ticketing/projects/{ticketing_project_id}/field_maps/available_fields:
+    get:
+      tags:
+      - Integrations
+      summary: List available fields for ticket field mapping
+      description: Returns metadata for the fields that are available for field mapping.
+      operationId: getTicketingProjectAvailableFields
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns metadata for the fields that are available for field mapping.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_FieldMaps_MappableFieldEntity'
+  /v1/ticketing/projects/{ticketing_project_id}/field_maps/{map_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a field map for a ticketing project
+      description: Retrieve field map for a ticketing project
+      operationId: getTicketingProjectFieldMap
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve field map for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectFieldMapEntity'
+    delete:
+      tags:
+      - Integrations
+      summary: Delete a field map for a ticketing project
+      description: Archive field map for a ticketing project
+      operationId: deleteTicketingProjectFieldMap
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Archive field map for a ticketing project
+          content: {}
+    patch:
+      tags:
+      - Integrations
+      summary: Update a field map for a ticketing project
+      description: Update field map for a ticketing project
+      operationId: updateTicketingProjectFieldMap
+      parameters:
+      - name: map_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Update field map for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectFieldMapEntity'
+  /v1/ticketing/projects/{ticketing_project_id}/provider_project_configurations:
+    post:
+      tags:
+      - Integrations
+      summary: Create a ticketing project configuration
+      description: Creates configuration for a ticketing project
+      operationId: createTicketingProjectConfiguration
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Creates configuration for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
+  /v1/ticketing/projects/{ticketing_project_id}/provider_project_configurations/{config_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a ticketing project configuration
+      description: Retrieve configuration for a ticketing project
+      operationId: getTicketingProjectConfig
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: config_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve configuration for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
+    delete:
+      tags:
+      - Integrations
+      summary: Delete a ticketing project configuration
+      description: Archive configuration for a ticketing project
+      operationId: deleteTicketingProjectConfig
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: config_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Archive configuration for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
+    patch:
+      tags:
+      - Integrations
+      summary: Update a ticketing project configuration
+      description: Update configuration for a ticketing project
+      operationId: updateTicketingProjectConfig
+      parameters:
+      - name: ticketing_project_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: config_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Update configuration for a ticketing project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
+  /v1/ticketing/ticket_tags:
+    get:
+      tags:
+      - Integrations
+      summary: List ticket tags
+      description: List all of the ticket tags in the organization
+      operationId: listTicketTags
+      parameters:
+      - name: prefix
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List all of the ticket tags in the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagEntityPaginated'
+  /v1/ticketing/tickets/{ticket_id}:
+    get:
+      tags:
+      - Integrations
+      summary: Get a ticket
+      description: Retrieves a single ticket by ID
+      operationId: getTicket
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves a single ticket by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_TicketEntity'
+    delete:
+      tags:
+      - Integrations
+      operationId: deleteTicket
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: deleted Ticket
+          content: {}
+      summary: Delete a ticket
+    patch:
+      tags:
+      - Integrations
+      summary: Update a ticket
+      description: Update a ticket's attributes
+      operationId: updateTicket
+      parameters:
+      - name: ticket_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1TicketingTicketsTicketId'
+        required: true
+      responses:
+        '200':
+          description: Update a ticket's attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticketing_TicketEntity'
+      x-codegen-request-body-name: patchV1TicketingTicketsTicketId
+components:
+  schemas:
+    Ticketing_ProjectFieldMapEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        connection_id:
+          type: string
+        connection_type:
+          type: string
+        ticketing_project_id:
+          type: string
+        body:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticketing_ProjectFieldMapBodyEntity'
+      description: Ticketing_ProjectFieldMapEntity model
+    FieldMapping_MappableFieldEntity:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The ID of the field
+        label:
+          type: string
+          description: The human-readable name of the field
+        type:
+          type: string
+          description: The allowed type of the field
+        allowed_values:
+          type: string
+          description: The allowed values of the field
+        required:
+          type: string
+          description: If the field is required to be mapped
+        help_text:
+          type: string
+          description: Short, inline documentation for the present field
+      description: FieldMapping_MappableFieldEntity model
+    Integrations_Aws_CloudtrailBatchEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Aws_CloudtrailBatchEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Integrations_Aws_CloudtrailBatchEntityPaginated model
+    patchV1IntegrationsAwsCloudtrailBatchesId:
+      type: object
+      properties:
+        events_created:
+          type: integer
+          format: int32
+        status:
+          type: string
+        error:
+          type: string
+        ends_at:
+          type: string
+          format: date-time
+      description: Update a CloudTrail batch with new information.
+    Integrations_Aws_ConnectionEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Integrations_Aws_ConnectionEntityPaginated model
+    patchV1TicketingTicketsTicketId:
+      type: object
+      properties:
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        type:
+          type: string
+        priority_id:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the ticket
+          items:
+            type: string
+      description: Update a ticket's attributes
+    Integrations_IntegrationEntity_LogoEntity:
+      type: object
+      properties:
+        logo_url:
+          type: string
+    Integrations_Aws_CloudtrailBatchEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        events_created:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+          - in_progress
+          - failed
+          - successful
+          - pending
+          - retried
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        connection:
+          $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
+        created_at:
+          type: string
+          format: date-time
+      description: Integrations_Aws_CloudtrailBatchEntity model
+    patchV1IntegrationsStatuspageConnectionsConnectionId:
+      type: object
+      properties:
+        page_id:
+          type: string
+        severities:
+          type: array
+          items:
+            required:
+            - remote_status
+            - severity_slug
+            type: object
+            properties:
+              severity_slug:
+                type: string
+                description: FireHydrant severity slug
+              remote_status:
+                type: string
+                description: Statuspage.io severity name
+        conditions:
+          type: array
+          items:
+            required:
+            - condition_id
+            - statuspageio_condition
+            type: object
+            properties:
+              condition_id:
+                type: string
+                description: FireHydrant condition id
+              statuspageio_condition:
+                type: string
+                description: Statuspage.io condition name
+        milestone_mappings:
+          type: array
+          items:
+            required:
+            - milestone_id
+            - status
+            type: object
+            properties:
+              milestone_id:
+                type: string
+                description: FireHydrant milestone id
+              status:
+                type: string
+                description: Statuspage.io status
+                enum:
+                - investigating
+                - identified
+                - monitoring
+                - resolved
+      description: Update the given Statuspage integration connection.
+    Ticketing_FieldMaps_MappableFieldEntity:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The ID of the field
+        label:
+          type: string
+          description: The human-readable name of the field
+        type:
+          type: string
+          description: The allowed type of the field
+        allowed_values:
+          type: string
+          description: The allowed values of the field
+        required:
+          type: string
+          description: If the field is required to be mapped
+      description: Ticketing_FieldMaps_MappableFieldEntity model
+    Integrations_Statuspage_ConditionEntity:
+      type: object
+      properties:
+        condition_id:
+          type: string
+        condition_name:
+          type: string
+        statuspageio_condition:
+          type: string
+          enum:
+          - operational
+          - major_outage
+          - minor_outage
+          - degraded_performance
+    Ticketing_Projects_ProjectListItemEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        config:
+          $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
+        field_map:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapEntity'
+        updated_at:
+          type: string
+          format: date-time
+        connection_slug:
+          type: string
+      description: Ticketing_Projects_ProjectListItemEntity model
+    Ticketing_ProjectConfigEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        connection_id:
+          type: string
+        connection_type:
+          type: string
+        ticketing_project_id:
+          type: string
+        ticketing_project_name:
+          type: string
+        details:
+          type: object
+          properties: {}
+          description: 'A config object containing details about the project config. Can be one of: Ticketing::JiraCloud::ProjectConfigEntity, Ticketing::JiraOnprem::ProjectConfigEntity, or Ticketing::Shortcut::ProjectConfigEntity'
+      description: Ticketing_ProjectConfigEntity model
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    Integrations_ConfluenceCloud_SpaceKeyEntity:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+      description: Integrations_ConfluenceCloud_SpaceKeyEntity model
+    Ticketing_ProjectFieldMapCasesEntity:
+      type: object
+      properties:
+        logic:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the logic for applying the rule.
+        external_value:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+    Attachments_LinkEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_text:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        editable:
+          type: boolean
+          description: Link can be edited
+        deletable:
+          type: boolean
+          description: Link can be deleted
+      description: Attachments_LinkEntity model
+    Integrations_Statuspage_ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        page_name:
+          type: string
+        page_id:
+          type: string
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_ConditionEntity'
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_SeverityEntity'
+        milestone_mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_MilestoneMappingEntity'
+      description: Integrations_Statuspage_ConnectionEntity model
+    Integrations_Statuspage_SeverityEntity:
+      type: object
+      properties:
+        severity_slug:
+          type: string
+        remote_status:
+          type: string
+    Integrations_ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_slug:
+          type: string
+        integration_id:
+          type: string
+        display_name:
+          type: string
+        configuration_url:
+          type: string
+        authorized_by:
+          type: string
+        authorized_by_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        details:
+          type: object
+          properties: {}
+          description: Integration-specific details of this connection. As identified by the integration_slug, this object will be represented by that integration's ConnectionEntity.
+        default_authorized_actor:
+          $ref: '#/components/schemas/AuthorEntity'
+    Integrations_Statuspage_ConnectionEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_ConnectionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Integrations_Statuspage_ConnectionEntityPaginated model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    Ticketing_ProjectFieldMapBodyEntity:
+      type: object
+      properties:
+        strategy:
+          type: string
+          enum:
+          - basic
+          - logic
+        external_field:
+          type: string
+        external_value:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+        user_data:
+          type: object
+          properties: {}
+        cases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticketing_ProjectFieldMapCasesEntity'
+        else:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapCasesElseEntity'
+    Ticketing_ProjectFieldMapExternalValueEntity:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - literal
+          - fh-attribute
+          - fh-type
+        value:
+          type: string
+        attribute:
+          type: string
+        presentation:
+          type: string
+    TagEntity:
+      type: object
+      properties:
+        name:
+          type: string
+      description: TagEntity model
+    TagEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: TagEntityPaginated model
+    Integrations_Aws_ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        aws_account_id:
+          type: string
+        target_arn:
+          type: string
+        external_id:
+          type: string
+        connection_status:
+          type: string
+          enum:
+          - pending_setup
+          - role_assumed
+          - cant_assume_role
+          - invalid_permissions
+          - validated
+        status_text:
+          type: string
+        status_description:
+          type: string
+        environment_id:
+          type: string
+        environment_name:
+          type: string
+        regions:
+          type: array
+          items:
+            type: string
+      description: Integrations_Aws_ConnectionEntity model
+    Ticketing_PriorityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      description: Ticketing_PriorityEntity model
+    FieldMapping_FieldMapEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        connection_id:
+          type: string
+        connection_type:
+          type: string
+        entity_id:
+          type: string
+        entity_type:
+          type: string
+        body:
+          type: object
+          properties: {}
+        available_fields_url:
+          type: string
+        data_bag_url:
+          type: string
+      description: FieldMapping_FieldMapEntity model
+    patchV1IntegrationsAwsConnectionsId:
+      type: object
+      properties:
+        aws_account_id:
+          type: string
+        target_arn:
+          type: string
+        connection_status:
+          type: string
+      description: Update the AWS connection with the provided data.
+    Integrations_IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        setup_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        connections:
+          $ref: '#/components/schemas/Integrations_ConnectionEntity'
+        enabled:
+          type: boolean
+        installed:
+          type: boolean
+        deprecated:
+          type: boolean
+        logo:
+          $ref: '#/components/schemas/Integrations_IntegrationEntity_LogoEntity'
+        nat_ip:
+          type: string
+      description: Integrations_IntegrationEntity model
+    patchV1TicketingPrioritiesId:
+      type: object
+      properties:
+        name:
+          type: string
+        position:
+          type: integer
+          description: The position that this priority should take in your list of priorities. Priorities should be ordered from highest to lowest, with the highest priority at 0. If a position isn't specified, the new priority will be added to the end of the list; if another priority already exists at the specified position, this priority will shift that priority and all priorities down the list.
+          format: int32
+      description: Update a single ticketing priority's attributes
+    Ticketing_ProjectFieldMapCasesElseEntity:
+      type: object
+      properties:
+        external_value:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+    Integrations_Statuspage_MilestoneMappingEntity:
+      type: object
+      properties:
+        milestone_id:
+          type: string
+        status:
+          type: string
+    Ticketing_TicketEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - cancelled
+          - done
+        type:
+          type: string
+          enum:
+          - incident
+          - task
+          - follow_up
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorEntity'
+        priority:
+          $ref: '#/components/schemas/Ticketing_PriorityEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tag_list:
+          type: array
+          items:
+            type: string
+        incident_id:
+          type: string
+          description: ID of incident that this ticket is related to
+        incident_name:
+          type: string
+          description: Name of incident that this ticket is related to
+        incident_current_milestone:
+          type: string
+          description: Milestone of incident that this ticket is related to
+        task_id:
+          type: string
+          description: ID of task that this ticket is related to
+        due_at:
+          type: string
+          format: date-time
+        link:
+          $ref: '#/components/schemas/Attachments_LinkEntity'
+      description: Ticketing_TicketEntity model
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

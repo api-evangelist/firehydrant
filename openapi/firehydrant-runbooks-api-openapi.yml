@@ -1,19 +1,607 @@
 openapi: 3.2.0
 info:
-  title: FireHydrant REST Audits Runbooks API
-  description: Incident management platform exposing programmatic access to incidents, services, teams, environments, runbooks, change events, on-call schedules, Signals event sources, status pages, retrospectives, and integrations. Authentication is by Bot User API token presented as a Bearer token.
+  title: Firehydrant Runbooks API
   version: '1.0'
-  contact:
-    name: FireHydrant
-    url: https://docs.firehydrant.com/reference
+  description: 'Operations tagged Runbooks across 2 of this provider''s published API definitions: firehydrant-api-openapi.yml, firehydrant-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.firehydrant.io/
 - url: https://api.firehydrant.io/v1
   description: Production
-security:
-- bearerAuth: []
 tags:
 - name: Runbooks
+  description: Operations related to Runbooks
 paths:
+  /v1/runbook_audits:
+    get:
+      tags:
+      - Runbooks
+      summary: List runbook audits
+      description: Please contact support to enable audit logging for your account.
+      operationId: listRunbookAudits
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: auditable_type
+        in: query
+        description: A query to filter audits by type
+        schema:
+          type: string
+          default: Runbooks::Step
+          enum:
+          - Runbooks::Step
+          - Runbooks::Runbook
+      - name: sort
+        in: query
+        description: A query to sort audits by their created_at timestamp. Options are 'asc' or 'desc'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List runbook audits
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks:
+    get:
+      tags:
+      - Runbooks
+      summary: List runbooks
+      description: Lists all available runbooks.
+      operationId: listRunbooks
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: name
+        in: query
+        description: A query to search runbooks by their name
+        schema:
+          type: string
+      - name: owners
+        in: query
+        description: A query to search runbooks by their owners
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Sort runbooks by their updated date. Accepts 'asc', 'desc'
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      responses:
+        '200':
+          description: Lists all available runbooks.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunbookEntity'
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Runbooks
+      summary: Create a runbook
+      description: Create a new runbook for use with incidents.
+      operationId: createRunbook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1Runbooks'
+        required: true
+      responses:
+        '201':
+          description: Create a new runbook for use with incidents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunbookEntity'
+      x-codegen-request-body-name: postV1Runbooks
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/actions:
+    get:
+      tags:
+      - Runbooks
+      summary: List runbook actions
+      description: List all Runbook actions available through your connected integrations
+      operationId: listRunbookActions
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: type
+        in: query
+        description: List actions supporting this specific Runbook type
+        schema:
+          type: string
+      - name: lite
+        in: query
+        description: Boolean to determine whether to return a slimified version of the action object's integration
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List all Runbook actions available through your connected integrations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ActionsEntityPaginated'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions:
+    get:
+      tags:
+      - Runbooks
+      summary: List runbook executions
+      description: List all Runbook executions across all Runbooks
+      operationId: listRunbookExecutions
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: List all Runbook executions across all Runbooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ExecutionEntityPaginated'
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Runbooks
+      summary: Create a runbook execution
+      description: Attaches a runbook to an incident and executes it
+      operationId: createRunbookExecution
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/postV1RunbooksExecutions'
+        required: true
+      responses:
+        '201':
+          description: Attaches a runbook to an incident and executes it
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+      x-codegen-request-body-name: postV1RunbooksExecutions
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}:
+    get:
+      tags:
+      - Runbooks
+      summary: Get a runbook execution
+      description: Retrieve a runbook execution by ID
+      operationId: getRunbookExecution
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a runbook execution by ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Runbooks
+      summary: Terminate a runbook execution
+      description: Terminates a runbook execution, preventing any further steps from being executed
+      operationId: deleteRunbookExecution
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: reason
+        in: query
+        description: The reason for terminating the runbook execution
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Terminates a runbook execution, preventing any further steps from being executed
+          content: {}
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/steps/{step_id}:
+    put:
+      tags:
+      - Runbooks
+      summary: Update a runbook execution step
+      description: Updates a runbook step execution, especially for changing the state of a step execution.
+      operationId: updateRunbookExecutionStep
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/putV1RunbooksExecutionsExecutionIdStepsStepId'
+        required: true
+      responses:
+        '200':
+          description: Updates a runbook step execution, especially for changing the state of a step execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+      x-codegen-request-body-name: putV1RunbooksExecutionsExecutionIdStepsStepId
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/steps/{step_id}/script:
+    get:
+      tags:
+      - Runbooks
+      summary: Get a runbook execution step script
+      description: Retrieves the bash script from a "script" step.
+      operationId: getRunbookExecutionStepScript
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieves the bash script from a "script" step.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/steps/{step_id}/script/{state}:
+    put:
+      tags:
+      - Runbooks
+      summary: Update the script state for a runbook execution step
+      description: Updates the execution's step.
+      operationId: updateRunbookExecutionStepScriptState
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: state
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Updates the execution's step.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/steps/{step_id}/votes:
+    patch:
+      tags:
+      - Runbooks
+      summary: Update votes for a runbook execution step
+      description: Allows for upvoting or downvoting an event
+      operationId: updateRunbookExecutionStepVotes
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1RunbooksExecutionsExecutionIdStepsStepIdVotes'
+        required: true
+      responses:
+        '200':
+          description: Allows for upvoting or downvoting an event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotesEntity'
+      x-codegen-request-body-name: patchV1RunbooksExecutionsExecutionIdStepsStepIdVotes
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/steps/{step_id}/votes/status:
+    get:
+      tags:
+      - Runbooks
+      summary: Get vote counts for a runbook step
+      description: Returns the current vote counts for an object
+      operationId: getRunbookStepVoteStatus
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: step_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the current vote counts for an object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotesEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/votes:
+    patch:
+      tags:
+      - Runbooks
+      summary: Vote on a runbook execution
+      description: Allows for upvoting or downvoting an event
+      operationId: updateRunbookExecutionVotes
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/patchV1RunbooksExecutionsExecutionIdVotes'
+        required: true
+      responses:
+        '200':
+          description: Allows for upvoting or downvoting an event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotesEntity'
+      x-codegen-request-body-name: patchV1RunbooksExecutionsExecutionIdVotes
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/executions/{execution_id}/votes/status:
+    get:
+      tags:
+      - Runbooks
+      summary: Get vote counts for a runbook execution
+      description: Returns the current vote counts for an object
+      operationId: getRunbookExecutionVoteStatus
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the current vote counts for an object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VotesEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/select_options/{integration_slug}/{action_slug}/{field}:
+    get:
+      tags:
+      - Runbooks
+      operationId: getRunbookSelectOptions
+      parameters:
+      - name: integration_slug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: action_slug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: field
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: query
+        in: query
+        description: Text string of a query for filtering values.
+        schema:
+          type: string
+      - name: scope
+        in: query
+        description: Generic params used to add specificity (eg an id of some kind) to the select options request
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        description: Maximum number of items to return.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: get SelectOption(s)
+          content: {}
+      summary: List select options for a runbook integration action field
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
+  /v1/runbooks/{runbook_id}:
+    get:
+      tags:
+      - Runbooks
+      summary: Get a runbook
+      description: Get a runbook and all its configuration
+      operationId: getRunbook
+      parameters:
+      - name: runbook_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Get a runbook and all its configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunbookEntity'
+      security:
+      - api_key: []
+    put:
+      tags:
+      - Runbooks
+      summary: Update a runbook
+      description: 'Update a runbook and any attachment rules associated with it. This endpoint is used to configure nearly everything
+
+        about a runbook, including but not limited to the steps, environments, attachment rules, and severities.'
+      operationId: updateRunbook
+      parameters:
+      - name: runbook_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/putV1RunbooksRunbookId'
+        required: true
+      responses:
+        '200':
+          description: 'Update a runbook and any attachment rules associated with it. This endpoint is used to configure nearly everything
+
+            about a runbook, including but not limited to the steps, environments, attachment rules, and severities.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunbookEntity'
+      x-codegen-request-body-name: putV1RunbooksRunbookId
+      security:
+      - api_key: []
+    delete:
+      tags:
+      - Runbooks
+      summary: Delete a runbook
+      description: Delete a runbook and make it unavailable for any future incidents.
+      operationId: deleteRunbook
+      parameters:
+      - name: runbook_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Delete a runbook and make it unavailable for any future incidents.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunbookEntity'
+      security:
+      - api_key: []
+    servers:
+    - url: https://api.firehydrant.io/
   /runbooks:
     get:
       summary: List runbooks
@@ -23,6 +611,8 @@ paths:
           description: Runbooks
       tags:
       - Runbooks
+      security:
+      - bearerAuth: []
     post:
       summary: Create a runbook
       operationId: createRunbook
@@ -50,6 +640,11 @@ paths:
           description: Runbook created
       tags:
       - Runbooks
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
   /runbooks/executions:
     post:
       summary: Execute a runbook against a target
@@ -74,8 +669,819 @@ paths:
           description: Execution created
       tags:
       - Runbooks
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.firehydrant.io/v1
+      description: Production
 components:
+  schemas:
+    Runbooks_WebhookDeliveryEntity:
+      type: object
+      properties:
+        headers:
+          type: string
+        status_code:
+          type: string
+    Runbooks_ElementDynamicSelectEntity_SelectOptionEntity:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+    Runbooks_ExecutionStepEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        action_slug:
+          type: string
+        action_type:
+          type: string
+        integration_name:
+          type: string
+        integration_slug:
+          type: string
+        automatic:
+          type: boolean
+        config:
+          type: object
+          properties: {}
+        step_elements:
+          type: array
+          items:
+            type: object
+            properties: {}
+        executable:
+          type: boolean
+        repeats:
+          type: boolean
+        repeats_duration:
+          type: string
+          description: ISO8601 formatted duration string
+        repeats_at:
+          type: string
+          format: date-time
+        has_been_rerun:
+          type: boolean
+        has_been_retried:
+          type: boolean
+        execution:
+          $ref: '#/components/schemas/Runbooks_ExecutionStepExecutionEntity'
+        repeatable:
+          type: boolean
+        rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+    FHTypes_GenericEntity:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        label:
+          type: string
+    Rules_RuleEntity:
+      type: object
+      properties:
+        logic:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the logic for applying the rule.
+        user_data:
+          $ref: '#/components/schemas/FHTypes_GenericEntity'
+    Integrations_IntegrationEntity_LogoEntity:
+      type: object
+      properties:
+        logo_url:
+          type: string
+    putV1RunbooksRunbookId:
+      type: object
+      properties:
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        tutorial:
+          type: boolean
+          description: Whether or not this runbook is a tutorial runbook
+        owner:
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the runbook
+        severities:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+        environments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+        attachment_rule:
+          required:
+          - logic
+          type: object
+          properties:
+            logic:
+              type: string
+              description: The JSON logic for the attaching the runbook
+            user_data:
+              type: string
+              description: The user data for the rule
+        steps:
+          type: array
+          items:
+            required:
+            - action_id
+            - name
+            type: object
+            properties:
+              step_id:
+                type: string
+                description: ID of step to be updated
+              name:
+                type: string
+                description: Name for step
+              action_id:
+                type: string
+                description: ID of action to use for this step.
+              rule:
+                required:
+                - logic
+                type: object
+                properties:
+                  logic:
+                    type: string
+                    description: The JSON logic for the rule
+                  user_data:
+                    type: string
+                    description: The user data for the rule
+        auto_attach_to_restricted_incidents:
+          type: boolean
+          description: Whether or not this runbook should be automatically attached to restricted incidents. Note that setting this to `true` will prevent it from being attached to public incidents, even manually. Defaults to `false`.
+      description: 'Update a runbook and any attachment rules associated with it. This endpoint is used to configure nearly everything
+
+        about a runbook, including but not limited to the steps, environments, attachment rules, and severities.
+
+        '
+    SlimRunbookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        attachment_rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        categories:
+          type: string
+          description: categories the runbook applies to
+    Runbooks_ElementEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        markdown:
+          $ref: '#/components/schemas/Runbooks_ElementMarkdownEntity'
+        textarea:
+          $ref: '#/components/schemas/Runbooks_ElementTextareaEntity'
+        input:
+          $ref: '#/components/schemas/Runbooks_ElementInputEntity'
+        plain_text:
+          $ref: '#/components/schemas/Runbooks_ElementMarkdownEntity'
+        dynamic_select:
+          $ref: '#/components/schemas/Runbooks_ElementDynamicSelectEntity'
+    Runbooks_ExecutionEntity_ExecutedForEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+    RunbookStepEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        action_id:
+          type: string
+        step_id:
+          type: string
+        config:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the config settings for the step.
+        action_elements:
+          type: array
+          description: A list of action elements
+          items:
+            type: object
+            properties: {}
+        step_elements:
+          type: array
+          description: A list of step elements
+          items:
+            type: object
+            properties: {}
+        automatic:
+          type: boolean
+        delay_duration:
+          type: string
+          format: date-time
+        action:
+          $ref: '#/components/schemas/Runbooks_ActionsEntity'
+        reruns:
+          type: boolean
+        repeats:
+          type: boolean
+        repeats_duration:
+          type: string
+          format: date-time
+        votes:
+          $ref: '#/components/schemas/VotesEntity'
+        rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+    patchV1RunbooksExecutionsExecutionIdVotes:
+      required:
+      - direction
+      type: object
+      properties:
+        direction:
+          type: string
+          description: The direction you would like to vote, or if you dig it
+          enum:
+          - up
+          - down
+          - dig
+      description: Allows for upvoting or downvoting an event
+    Runbooks_ActionConfigEntity:
+      type: object
+      properties:
+        elements:
+          $ref: '#/components/schemas/Runbooks_ElementEntity'
+        documentation_url:
+          type: string
+          description: Location of documentation for this action
+    Runbooks_ActionsEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        config:
+          $ref: '#/components/schemas/Runbooks_ActionConfigEntity'
+        category:
+          type: string
+        prerequisites:
+          type: object
+          properties: {}
+        integration:
+          $ref: '#/components/schemas/Integrations_IntegrationEntity'
+        supported_runbook_types:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        automatable:
+          type: boolean
+        rerunnable:
+          type: boolean
+        repeatable:
+          type: boolean
+        default_logic:
+          type: object
+          properties: {}
+        default_rule_data:
+          type: object
+          properties: {}
+    Runbooks_ElementMarkdownEntity:
+      type: object
+      properties:
+        text:
+          type: string
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    VotesEntity:
+      type: object
+      properties:
+        voted:
+          type: boolean
+          description: Whether or not the current actor has voted
+        liked:
+          type: boolean
+          description: Whether or not the current actor has voted positively
+        disliked:
+          type: boolean
+          description: Whether or not the current actor has voted negatively
+        likes:
+          type: integer
+          format: int32
+        dislikes:
+          type: integer
+          format: int32
+      description: VotesEntity model
+    Integrations_ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_slug:
+          type: string
+        integration_id:
+          type: string
+        display_name:
+          type: string
+        configuration_url:
+          type: string
+        authorized_by:
+          type: string
+        authorized_by_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        details:
+          type: object
+          properties: {}
+          description: Integration-specific details of this connection. As identified by the integration_slug, this object will be represented by that integration's ConnectionEntity.
+        default_authorized_actor:
+          $ref: '#/components/schemas/AuthorEntity'
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    Runbooks_ElementTextareaEntity:
+      type: object
+      properties:
+        label:
+          type: string
+        placeholder:
+          type: string
+        default_value:
+          type: string
+    patchV1RunbooksExecutionsExecutionIdStepsStepIdVotes:
+      required:
+      - direction
+      type: object
+      properties:
+        direction:
+          type: string
+          description: The direction you would like to vote, or if you dig it
+          enum:
+          - up
+          - down
+          - dig
+      description: Allows for upvoting or downvoting an event
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    Runbooks_ElementInputEntity:
+      type: object
+      properties:
+        label:
+          type: string
+        placeholder:
+          type: string
+        default_value:
+          type: string
+        required:
+          type: boolean
+    Runbooks_ActionsEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Runbooks_ActionsEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Runbooks_ActionsEntityPaginated model
+    putV1RunbooksExecutionsExecutionIdStepsStepId:
+      required:
+      - state
+      type: object
+      properties:
+        state:
+          type: string
+        schedule_for:
+          type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties: true
+          description: Data for execution of this step
+        repeats_at:
+          type: string
+          format: date-time
+      description: Updates a runbook step execution, especially for changing the state of a step execution.
+    ActorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        type:
+          type: string
+          enum:
+          - firehydrant_user
+          - firehydrant_bot
+          - alertmanager
+          - asana
+          - aws
+          - bugsnag
+          - checkly
+          - custom_alerts
+          - datadog
+          - shortcut
+          - new_relic
+          - nunc
+          - github
+          - giphy
+          - google_meet
+          - google_calendar
+          - microsoft_teams
+          - microsoft_teams_v2
+          - webex
+          - jira_cloud
+          - jira_onprem
+          - opsgenie
+          - pager_duty
+          - honeycomb
+          - patchy
+          - service_now
+          - signals
+          - slack
+          - statuspage
+          - victorops
+          - zendesk
+          - zoom
+          - confluence_cloud
+          - google_docs
+          - zoom_v2
+          - linear
+          - cortex
+    Runbooks_ExecutionEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Runbooks_ExecutionEntityPaginated model
+    Runbooks_ExecutionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        status_reason:
+          type: string
+        status_reason_message:
+          type: string
+        has_been_rerun:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        runbook:
+          $ref: '#/components/schemas/SlimRunbookEntity'
+        steps:
+          $ref: '#/components/schemas/Runbooks_ExecutionStepEntity'
+        executed_for:
+          $ref: '#/components/schemas/Runbooks_ExecutionEntity_ExecutedForEntity'
+      description: Runbooks_ExecutionEntity model
+    postV1Runbooks:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          description: Deprecated, but still required. Please just use 'incident'
+          enum:
+          - incident
+          - general
+          - infrastructure
+          - incident_role
+        summary:
+          type: string
+          description: Deprecated. Use description
+        description:
+          type: string
+          description: A longer description about the Runbook. Supports markdown format
+        auto_attach_to_restricted_incidents:
+          type: boolean
+          description: Whether or not this runbook should be automatically attached to restricted incidents. Note that setting this to `true` will prevent it from being attached to public incidents, even manually. Defaults to `false`.
+        tutorial:
+          type: boolean
+          description: Whether or not this runbook is a tutorial runbook
+        owner:
+          required:
+          - id
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the runbook
+        attachment_rule:
+          required:
+          - logic
+          type: object
+          properties:
+            logic:
+              type: string
+              description: The JSON logic for the attaching the runbook
+            user_data:
+              type: string
+              description: The user data for the rule
+        steps:
+          type: array
+          items:
+            required:
+            - action_id
+            - name
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name for step
+              action_id:
+                type: string
+                description: ID of action to use for this step.
+              rule:
+                required:
+                - logic
+                type: object
+                properties:
+                  logic:
+                    type: string
+                    description: The JSON logic for the rule
+                  user_data:
+                    type: string
+                    description: The user data for the rule
+      description: Create a new runbook for use with incidents.
+    Runbooks_ElementDynamicSelectEntity:
+      type: object
+      properties:
+        label:
+          type: string
+        placeholder:
+          type: string
+        async_url:
+          type: string
+        required:
+          type: boolean
+        clearable:
+          type: boolean
+        is_multi:
+          type: boolean
+        default_value:
+          $ref: '#/components/schemas/Runbooks_ElementDynamicSelectEntity_SelectOptionEntity'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/Runbooks_ElementDynamicSelectEntity_SelectOptionEntity'
+    Integrations_IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        setup_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        connections:
+          $ref: '#/components/schemas/Integrations_ConnectionEntity'
+        enabled:
+          type: boolean
+        installed:
+          type: boolean
+        deprecated:
+          type: boolean
+        logo:
+          $ref: '#/components/schemas/Integrations_IntegrationEntity_LogoEntity'
+        nat_ip:
+          type: string
+      description: Integrations_IntegrationEntity model
+    Runbooks_ExecutionStepExecutionEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+          - initial
+          - pending
+          - scheduled
+          - started
+          - dismissed
+          - completed
+          - errored
+        data:
+          type: object
+          properties: {}
+        performed_by:
+          $ref: '#/components/schemas/ActorEntity'
+        performed_at:
+          type: string
+          format: date-time
+        scheduled_for:
+          type: string
+          format: date-time
+        error:
+          type: string
+        webhook_delivery:
+          $ref: '#/components/schemas/Runbooks_WebhookDeliveryEntity'
+    RunbookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        runbook_template_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        steps:
+          $ref: '#/components/schemas/RunbookStepEntity'
+        attachment_rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+        votes:
+          $ref: '#/components/schemas/VotesEntity'
+        is_editable:
+          type: boolean
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        categories:
+          type: string
+          description: categories the runbook applies to
+        auto_attach_to_restricted_incidents:
+          type: boolean
+        tutorial:
+          type: boolean
+      description: RunbookEntity model
+    postV1RunbooksExecutions:
+      required:
+      - execute_for
+      - runbook_id
+      type: object
+      properties:
+        execute_for:
+          type: string
+          description: 'The incident to attach the runbook to. Format must be: `incident/${incidentId}`'
+        runbook_id:
+          type: string
+          description: ID of runbook to attach
+      description: Attaches a runbook to an incident and executes it
   securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
     bearerAuth:
       type: http
       scheme: bearer
+x-refined-from:
+- firehydrant-api-openapi.yml
+- firehydrant-openapi.yml
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

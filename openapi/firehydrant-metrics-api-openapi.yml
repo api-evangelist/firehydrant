@@ -1,0 +1,324 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Metrics API
+  version: 0.0.1
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Metrics
+paths:
+  /v1/metrics/mttx:
+    get:
+      tags:
+      - Metrics
+      description: Fetch infrastructure metrics based on custom query
+      operationId: getV1MetricsMttx
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: conditions
+        in: query
+        description: A JSON string that defines 'logic' and 'user_data'
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs or 'is_empty' to filter for incidents with no impacted environments
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs or 'is_empty' to filter for incidents with no impacted services
+        schema:
+          type: string
+      - name: functionalities
+        in: query
+        description: A comma separated list of functionality IDs or 'is_empty' to filter for incidents with no impacted functionalities
+        schema:
+          type: string
+      - name: excluded_infrastructure_ids
+        in: query
+        description: A comma separated list of infrastructure IDs. Returns incidents that do not have the following infrastructure ids associated with them.
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs
+        schema:
+          type: string
+      - name: assigned_teams
+        in: query
+        description: A comma separated list of IDs for assigned teams or 'is_empty' to filter for incidents with no active team assignments
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Incident status
+        schema:
+          type: string
+      - name: start_date
+        in: query
+        description: Filters for incidents that started on or after this date
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: end_date
+        in: query
+        description: Filters for incidents that started on or before this date
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: resolved_at_or_after
+        in: query
+        description: Filters for incidents that were resolved at or after this time. Combine this with the `current_milestones` parameter if you wish to omit incidents that were re-opened and are still active.
+        schema:
+          type: string
+          format: date-time
+      - name: resolved_at_or_before
+        in: query
+        description: Filters for incidents that were resolved at or before this time. Combine this with the `current_milestones` parameter if you wish to omit incidents that were re-opened and are still active.
+        schema:
+          type: string
+          format: date-time
+      - name: created_at_or_after
+        in: query
+        description: Filters for incidents that were created at or after this time
+        schema:
+          type: string
+          format: date-time
+      - name: created_at_or_before
+        in: query
+        description: Filters for incidents that were created at or before this time
+        schema:
+          type: string
+          format: date-time
+      - name: query
+        in: query
+        description: A text query for an incident that searches on name, summary, and desciption
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: A query to search incidents by their name
+        schema:
+          type: string
+      - name: saved_search_id
+        in: query
+        description: The id of a previously saved search.
+        schema:
+          type: string
+      - name: priorities
+        in: query
+        description: A text value of priority
+        schema:
+          type: string
+      - name: priority_not_set
+        in: query
+        description: Flag for including incidents where priority has not been set
+        schema:
+          type: boolean
+      - name: severities
+        in: query
+        description: A text value of severity
+        schema:
+          type: string
+      - name: severity_not_set
+        in: query
+        description: Flag for including incidents where severity has not been set
+        schema:
+          type: boolean
+      - name: current_milestones
+        in: query
+        description: A comma separated list of current milestones
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags
+        schema:
+          type: string
+      - name: tag_match_strategy
+        in: query
+        description: A matching strategy for the tags provided
+        schema:
+          type: string
+          enum:
+          - any
+          - match_all
+          - exclude
+      - name: archived
+        in: query
+        description: Return archived incidents
+        schema:
+          type: boolean
+      - name: updated_after
+        in: query
+        description: Filters for incidents that were updated after this date
+        schema:
+          type: string
+          format: date-time
+      - name: updated_before
+        in: query
+        description: Filters for incidents that were updated before this date
+        schema:
+          type: string
+          format: date-time
+      - name: incident_type_id
+        in: query
+        description: A comma separated list of incident type IDs
+        schema:
+          type: string
+      - name: custom_field_id
+        in: query
+        schema:
+          type: string
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          enum:
+          - count_asc
+          - mttr_asc
+          - mtta_asc
+          - mttd_asc
+          - mttm_asc
+          - healthiness_asc
+          - count_desc
+          - mttr_desc
+          - mtta_desc
+          - mttd_desc
+          - mttm_desc
+          - healthiness_desc
+      - name: measurements
+        in: query
+        description: Comma-separated list of measurements to include in the response
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                group_by:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - services
+                    - environments
+                    - functionalities
+                    - teams
+                    - severities
+                    - users
+                    - started_day
+                    - started_week
+                    - started_month
+                    - custom_fields
+      responses:
+        '200':
+          description: Fetch infrastructure metrics based on custom query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metrics_MttxDataEntity'
+      summary: Get V1 metrics mttx
+      x-summary-source: derived
+components:
+  schemas:
+    Metrics_MttxGroupEntity:
+      type: object
+      properties:
+        group_attributes:
+          type: string
+        filter_params:
+          type: object
+          properties: {}
+        count:
+          type: integer
+          format: int32
+        mttd:
+          type: number
+          format: float
+        mtta:
+          type: number
+          format: float
+        mttm:
+          type: number
+          format: float
+        mttr:
+          type: number
+          format: float
+        count_diff:
+          type: integer
+          format: int32
+        count_percent_diff:
+          type: number
+          format: float
+        mttd_diff:
+          type: number
+          format: float
+        mtta_diff:
+          type: number
+          format: float
+        mttm_diff:
+          type: number
+          format: float
+        mttr_diff:
+          type: number
+          format: float
+        mttd_percent_diff:
+          type: number
+          format: float
+        mtta_percent_diff:
+          type: number
+          format: float
+        mttm_percent_diff:
+          type: number
+          format: float
+        mttr_percent_diff:
+          type: number
+          format: float
+        healthiness:
+          type: number
+          format: float
+    Metrics_MttxDataEntity:
+      type: object
+      properties:
+        groupings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MttxDataEntity_GroupingEntity'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MttxGroupEntity'
+      description: Metrics_MttxDataEntity model
+    Metrics_MttxDataEntity_GroupingEntity:
+      type: object
+      properties:
+        type:
+          type: string
+        id_attribute:
+          type: string
+        name_attribute:
+          type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'

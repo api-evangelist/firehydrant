@@ -1,0 +1,480 @@
+openapi: 3.2.0
+info:
+  title: FireHydrant Alerts API
+  version: 0.0.1
+  description: Operations related to Alerts
+servers:
+- url: https://api.firehydrant.io/
+security:
+- api_key: []
+tags:
+- name: Alerts
+  description: Operations related to Alerts
+paths:
+  /v1/alerts:
+    get:
+      tags:
+      - Alerts
+      summary: List alerts
+      description: Retrieve all alerts from third parties
+      operationId: listAlerts
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: A text query for alerts
+        schema:
+          type: string
+      - name: users
+        in: query
+        description: A comma separated list of user IDs. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: teams
+        in: query
+        description: A comma separated list of team IDs. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: signal_rules
+        in: query
+        description: A comma separated list of signals rule IDs. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: environments
+        in: query
+        description: A comma separated list of environment IDs. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: functionalities
+        in: query
+        description: A comma separated list of functionality IDs. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: services
+        in: query
+        description: A comma separated list of service IDs. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: tags
+        in: query
+        description: A comma separated list of tags. This currently only works for Signals alerts.
+        schema:
+          type: string
+      - name: tag_match_strategy
+        in: query
+        description: The strategy to match tags. `any` will return alerts that have at least one of the supplied tags, `match_all` will return only alerts that have all of the supplied tags, and `exclude` will only return alerts that have none of the supplied tags. This currently only works for Signals alerts.
+        schema:
+          type: string
+          enum:
+          - any
+          - match_all
+          - exclude
+      - name: statuses
+        in: query
+        description: 'A comma separated list of statuses to filter by. Valid statuses are: opened, acknowledged, resolved, ignored, or expired'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve all alerts from third parties
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alerts_AlertEntityPaginated'
+  /v1/alerts/{alert_id}:
+    get:
+      tags:
+      - Alerts
+      summary: Get an alert
+      description: Retrieve a single alert
+      operationId: getAlert
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Retrieve a single alert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alerts_AlertEntity'
+  /v1/incidents/{incident_id}/alerts:
+    get:
+      tags:
+      - Alerts
+      summary: List alerts for an incident
+      description: List alerts that have been attached to an incident
+      operationId: listIncidentAlerts
+      parameters:
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List alerts that have been attached to an incident
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incidents_AlertEntityPaginated'
+    post:
+      tags:
+      - Alerts
+      summary: Attach alerts to an incident
+      description: Add an alert to an incident. FireHydrant needs to have ingested the alert from a third party system in order to attach it to the incident.
+      operationId: createIncidentAlerts
+      parameters:
+      - name: incident_id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Array of alert IDs to be assigned to the incident
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '204':
+          description: Add an alert to an incident. FireHydrant needs to have ingested the alert from a third party system in order to attach it to the incident.
+          content: {}
+      x-codegen-request-body-name: alert_ids
+  /v1/processing_log_entries:
+    get:
+      tags:
+      - Alerts
+      summary: List alert processing log entries
+      description: Processing Log Entries for a specific alert
+      operationId: listAlertProcessingLogs
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: integration_slug
+        in: query
+        description: Scopes returned log entries to a specific integration ID
+        schema:
+          type: string
+      - name: connection_id
+        in: query
+        description: Scopes returned log entries to a specific connection ID
+        schema:
+          type: string
+      - name: of_level
+        in: query
+        description: Returns logs of all levels equal to or above the provided level
+        schema:
+          type: string
+          enum:
+          - unknown
+          - debug
+          - info
+          - warn
+          - error
+          - fatal
+      - name: exact_level
+        in: query
+        description: Returns log entries of all levels equal to the provided level
+        schema:
+          type: string
+          enum:
+          - unknown
+          - debug
+          - info
+          - warn
+          - error
+          - fatal
+      responses:
+        '200':
+          description: Processing Log Entries for a specific alert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alerts_ProcessingLogEntryEntityPaginated'
+components:
+  schemas:
+    Signals_API_TargetEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        is_pageable:
+          type: boolean
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Alerts_ProcessingLogEntryEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts_ProcessingLogEntryEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Alerts_ProcessingLogEntryEntityPaginated model
+    PublicAPI_V1_Incidents_SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        number:
+          type: string
+    Alerts_ProcessingLogEntryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        context:
+          type: object
+          properties: {}
+          description: An unstructured representation of this log entry's context.
+        created_at:
+          type: string
+          format: date-time
+        level:
+          type: string
+          enum:
+          - unknown
+          - debug
+          - info
+          - warn
+          - error
+          - fatal
+        message:
+          type: string
+        message_type:
+          type: string
+          enum:
+          - i18n_key
+          - custom
+    Alerts_SirenEventEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        data:
+          type: object
+          properties: {}
+          description: The event's payload
+        created_at:
+          type: string
+          format: date-time
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    Alerts_AlertEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+        integration_name:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        duration_ms:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        duration_iso8601:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        labels:
+          type: object
+          properties: {}
+          description: Arbitrary key:value pairs of labels.
+        environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        tags:
+          type: array
+          items:
+            type: string
+        source_icon:
+          type: string
+        signal_id:
+          type: string
+        signal_rule:
+          $ref: '#/components/schemas/Signals_API_RuleEntity'
+        team_name:
+          type: string
+        team_id:
+          type: string
+        position:
+          type: integer
+          format: int32
+        incidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts_SirenEventEntity'
+        is_expired:
+          type: boolean
+      description: Alerts_AlertEntity model
+    Signals_API_RuleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        expression:
+          type: string
+        team_id:
+          type: string
+        target:
+          $ref: '#/components/schemas/Signals_API_TargetEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        incident_type:
+          $ref: '#/components/schemas/SuccinctEntity'
+        notification_priority_override:
+          type: string
+          enum:
+          - HIGH
+          - MEDIUM
+          - LOW
+    Incidents_AlertEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_AlertEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Incidents_AlertEntityPaginated model
+    Incidents_AlertEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        alert:
+          $ref: '#/components/schemas/Alerts_AlertEntity'
+        primary:
+          type: boolean
+          description: whether or not this is the primary alert for this incident
+      description: Incidents_AlertEntity model
+    Alerts_AlertEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts_AlertEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Alerts_AlertEntityPaginated model
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Authorization
+      in: header
+x-speakeasy-test: true
+x-original-swagger-version: '2.0'
