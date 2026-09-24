@@ -223,8 +223,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-alerts-api
   name: FireHydrant Alerts API
   description: Operations related to Alerts
@@ -239,8 +237,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-communication-api
   name: FireHydrant Communication API
   description: Operations related to Communication
@@ -257,8 +253,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-incident-settings-api
   name: FireHydrant Incident Settings API
   description: Operations related to Incident Settings
@@ -273,8 +267,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-integrations-api
   name: FireHydrant Integrations API
   description: Operations related to Integrations
@@ -291,8 +283,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-metrics-api
   name: FireHydrant Metrics API
   description: The metrics API from FireHydrant — 1 operation(s) for metrics.
@@ -309,8 +299,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-metrics-reporting-api
   name: FireHydrant Metrics/Reporting API
   description: Operations related to Metrics/Reporting
@@ -325,8 +313,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-retrospectives-api
   name: FireHydrant Retrospectives API
   description: Operations related to Retrospectives
@@ -341,8 +327,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-scim-api
   name: FireHydrant SCIM API
   description: Operations related to SCIM
@@ -357,8 +341,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-status-pages-api
   name: FireHydrant Status Pages API
   description: Operations related to Status Pages
@@ -373,8 +355,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-tasks-api
   name: FireHydrant Tasks API
   description: Operations related to Tasks
@@ -391,8 +371,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-users-api
   name: FireHydrant Users API
   description: Operations related to Users
@@ -409,8 +387,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 - aid: firehydrant:firehydrant-webhooks-api
   name: FireHydrant Webhooks API
   description: Operations related to Webhooks
@@ -427,8 +403,6 @@ apis:
     url: https://docs.firehydrant.com
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
-  - type: GraphQL
-    url: graphql/firehydrant-graphql.md
 common:
 - type: AgenticAccess
   url: agentic-access/firehydrant-agentic-access.yml
