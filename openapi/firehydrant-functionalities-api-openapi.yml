@@ -187,7 +187,7 @@ paths:
   /functionalities:
     get:
       summary: List functionalities
-      operationId: listFunctionalities
+      operationId: getFunctionalities
       responses:
         '200':
           description: Functionalities
@@ -195,9 +195,11 @@ paths:
       - Functionalities
       security:
       - bearerAuth: []
+      x-operation-id-source: normalized
+      x-operation-id-original: listFunctionalities
     post:
       summary: Create a functionality
-      operationId: createFunctionality
+      operationId: postFunctionalities
       requestBody:
         required: true
         content:
@@ -218,11 +220,78 @@ paths:
       - Functionalities
       security:
       - bearerAuth: []
+      x-operation-id-source: normalized
+      x-operation-id-original: createFunctionality
     servers:
     - url: https://api.firehydrant.io/v1
       description: Production
 components:
   schemas:
+    FunctionalityEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: FunctionalityEntityPaginated model
+    FunctionalityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        links:
+          type: array
+          description: List of links attached to this functionality.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        services:
+          type: array
+          description: Services this functionality provides
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+        teams:
+          type: array
+          description: List of teams attached to the functionality
+          items:
+            $ref: '#/components/schemas/TeamEntityLite'
+      description: FunctionalityEntity model
     PaginationEntity:
       type: object
       properties:
@@ -251,6 +320,95 @@ components:
           - integer
           - 'null'
           format: int32
+    postV1Functionalities:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        services:
+          type: array
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of a service
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: A hash of label keys and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        external_resources:
+          type: array
+          description: An array of external resources to attach to this service.
+          items:
+            required:
+            - remote_id
+            type: object
+            properties:
+              remote_id:
+                type: string
+              connection_type:
+                type: string
+                description: 'The integration slug for the external resource. Can be one of: github, opsgenie, pager_duty, statuspage, victorops. Not required if the resource has already been imported.'
+        links:
+          type: array
+          description: An array of links to associate with this service
+          items:
+            required:
+            - href_url
+            - name
+            type: object
+            properties:
+              name:
+                type: string
+                description: Short name used to display and identify this link
+              href_url:
+                type: string
+                description: URL
+              icon_url:
+                type: string
+                description: An optional URL to an icon representing this link
+        owner:
+          required:
+          - id
+          type: object
+          properties:
+            id:
+              type: string
+          description: An object representing a Team that owns the service
+        teams:
+          type: array
+          description: An array of teams to attach to this service.
+          items:
+            required:
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+      description: Creates a functionality for the organization
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
     ServiceEntityLite:
       type: object
       properties:
@@ -388,61 +546,17 @@ components:
           description: Set this to true if you want to remove all of the services that are not included in the services array from the functionality
           default: false
       description: Update a functionalities attributes
-    FunctionalityEntity:
+    LinksEntity:
       type: object
       properties:
         id:
           type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
         name:
           type: string
-        slug:
-          type: string
-        description:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        labels:
-          type: object
-          properties: {}
-          description: An object of label key and values
-        active_incidents:
-          type: array
-          description: List of active incident guids
-          items:
-            type: string
-        links:
-          type: array
-          description: List of links attached to this functionality.
-          items:
-            $ref: '#/components/schemas/LinksEntity'
-        owner:
-          $ref: '#/components/schemas/TeamEntityLite'
-        alert_on_add:
-          type: boolean
-        auto_add_responding_team:
-          type: boolean
-        updated_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        services:
-          type: array
-          description: Services this functionality provides
-          items:
-            $ref: '#/components/schemas/ServiceEntityLite'
-        external_resources:
-          type: array
-          description: Information about known linkages to representations of services outside of FireHydrant.
-          items:
-            $ref: '#/components/schemas/ExternalResourceEntity'
-        teams:
-          type: array
-          description: List of teams attached to the functionality
-          items:
-            $ref: '#/components/schemas/TeamEntityLite'
-      description: FunctionalityEntity model
     TeamEntityLite:
       type: object
       properties:
@@ -466,106 +580,6 @@ components:
           $ref: '#/components/schemas/AuthorEntity'
         in_support_hours:
           type: boolean
-    postV1Functionalities:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        services:
-          type: array
-          items:
-            required:
-            - id
-            type: object
-            properties:
-              id:
-                type: string
-                description: ID of a service
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: A hash of label keys and values
-        alert_on_add:
-          type: boolean
-        auto_add_responding_team:
-          type: boolean
-        external_resources:
-          type: array
-          description: An array of external resources to attach to this service.
-          items:
-            required:
-            - remote_id
-            type: object
-            properties:
-              remote_id:
-                type: string
-              connection_type:
-                type: string
-                description: 'The integration slug for the external resource. Can be one of: github, opsgenie, pager_duty, statuspage, victorops. Not required if the resource has already been imported.'
-        links:
-          type: array
-          description: An array of links to associate with this service
-          items:
-            required:
-            - href_url
-            - name
-            type: object
-            properties:
-              name:
-                type: string
-                description: Short name used to display and identify this link
-              href_url:
-                type: string
-                description: URL
-              icon_url:
-                type: string
-                description: An optional URL to an icon representing this link
-        owner:
-          required:
-          - id
-          type: object
-          properties:
-            id:
-              type: string
-          description: An object representing a Team that owns the service
-        teams:
-          type: array
-          description: An array of teams to attach to this service.
-          items:
-            required:
-            - id
-            type: object
-            properties:
-              id:
-                type: string
-      description: Creates a functionality for the organization
-    LinksEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        href_url:
-          type: string
-        icon_url:
-          type: string
-        name:
-          type: string
-    AuthorEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        source:
-          type: string
-        email:
-          type: string
     ExternalResourceEntity:
       type: object
       properties:
@@ -587,16 +601,6 @@ components:
           format: date-time
         name:
           type: string
-    FunctionalityEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/FunctionalityEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: FunctionalityEntityPaginated model
   securitySchemes:
     api_key:
       type: apiKey

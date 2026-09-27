@@ -316,16 +316,6 @@ components:
           type: string
         id:
           type: string
-    PongEntity:
-      type: object
-      properties:
-        response:
-          type: string
-        actor:
-          $ref: '#/components/schemas/ActorEntity'
-        organization:
-          $ref: '#/components/schemas/OrganizationEntity'
-      description: PongEntity model
     EntitlementEntityPaginated:
       type: object
       properties:
@@ -336,62 +326,6 @@ components:
         pagination:
           $ref: '#/components/schemas/PaginationEntity'
       description: EntitlementEntityPaginated model
-    SavedSearchEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        resource_type:
-          type: string
-        user_id:
-          type: string
-        is_private:
-          type: boolean
-          description: Whether or not this saved search is private
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        filter_values:
-          type: object
-          properties: {}
-          description: An unstructured key/value pair of saved values for searching
-      description: SavedSearchEntity model
-    patchV1SavedSearchesResourceTypeSavedSearchId:
-      type: object
-      properties:
-        is_private:
-          type: boolean
-        name:
-          type: string
-        filter_values:
-          type: object
-          additionalProperties: true
-      description: Update a specific saved search
-    AI_Entities_PreferencesEntity:
-      type: object
-      properties:
-        ai:
-          type: boolean
-        description:
-          type: boolean
-        followups:
-          type: boolean
-        impact:
-          type: boolean
-        retros:
-          type: boolean
-        similar_incidents:
-          type: boolean
-        summaries:
-          type: boolean
-        updates:
-          type: boolean
-      description: AI_Entities_PreferencesEntity model
     EntitlementEntity:
       type: object
       properties:
@@ -420,6 +354,61 @@ components:
           - essentials
           - enterprise
           - signals_only
+    AI_Entities_PreferencesEntity:
+      type: object
+      properties:
+        ai:
+          type: boolean
+        description:
+          type: boolean
+        followups:
+          type: boolean
+        impact:
+          type: boolean
+        retros:
+          type: boolean
+        similar_incidents:
+          type: boolean
+        summaries:
+          type: boolean
+        updates:
+          type: boolean
+      description: AI_Entities_PreferencesEntity model
+    SavedSearchEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        resource_type:
+          type: string
+        user_id:
+          type: string
+        is_private:
+          type: boolean
+          description: Whether or not this saved search is private
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        filter_values:
+          type: object
+          properties: {}
+          description: An unstructured key/value pair of saved values for searching
+      description: SavedSearchEntity model
+    PongEntity:
+      type: object
+      properties:
+        response:
+          type: string
+        actor:
+          $ref: '#/components/schemas/ActorEntity'
+        organization:
+          $ref: '#/components/schemas/OrganizationEntity'
+      description: PongEntity model
     ActorEntity:
       type: object
       properties:
@@ -469,6 +458,17 @@ components:
           - zoom_v2
           - linear
           - cortex
+    patchV1SavedSearchesResourceTypeSavedSearchId:
+      type: object
+      properties:
+        is_private:
+          type: boolean
+        name:
+          type: string
+        filter_values:
+          type: object
+          additionalProperties: true
+      description: Update a specific saved search
   securitySchemes:
     api_key:
       type: apiKey

@@ -277,6 +277,15 @@ paths:
       description: Production
 components:
   schemas:
+    postV1ConversationsConversationIdCommentsCommentIdReactions:
+      required:
+      - reaction
+      type: object
+      properties:
+        reaction:
+          type: string
+          description: CLDR short name of Unicode emojis
+      description: ALPHA - Create a reaction on a comment
     postV1ConversationsConversationIdComments:
       required:
       - body
@@ -293,15 +302,6 @@ components:
           type: string
           description: Text body of comment
       description: ALPHA - Update a comment's attributes
-    postV1ConversationsConversationIdCommentsCommentIdReactions:
-      required:
-      - reaction
-      type: object
-      properties:
-        reaction:
-          type: string
-          description: CLDR short name of Unicode emojis
-      description: ALPHA - Create a reaction on a comment
   securitySchemes:
     api_key:
       type: apiKey

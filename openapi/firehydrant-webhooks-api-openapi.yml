@@ -137,6 +137,14 @@ paths:
       summary: List webhook deliveries
 components:
   schemas:
+    postV1Webhooks:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+      description: Create a new webhook
     Webhooks_Entities_WebhookEntity:
       type: object
       properties:
@@ -157,14 +165,6 @@ components:
         subscriptions:
           type: string
       description: Webhooks_Entities_WebhookEntity model
-    postV1Webhooks:
-      required:
-      - url
-      type: object
-      properties:
-        url:
-          type: string
-      description: Create a new webhook
     AuthorEntity:
       type: object
       properties:

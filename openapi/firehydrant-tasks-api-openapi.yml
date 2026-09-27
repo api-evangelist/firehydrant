@@ -478,6 +478,132 @@ paths:
       x-codegen-request-body-name: postV1TicketingTickets
 components:
   schemas:
+    patchV1TaskListsTaskListId:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        task_list_items:
+          type: array
+          items:
+            required:
+            - summary
+            type: object
+            properties:
+              summary:
+                type: string
+                description: A summary of the task
+              description:
+                type: string
+                description: A long-form description for the task if additional context is helpful
+      description: Updates a task list's attributes and task list items
+    ChecklistTemplateEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistTemplateEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: ChecklistTemplateEntityPaginated model
+    postV1IncidentsIncidentIdTasksTaskIdConvert:
+      type: object
+      properties:
+        summary:
+          type: string
+        project_id:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the ticket
+          items:
+            type: string
+      description: Convert a task to a follow-up
+    TaskListItemEntity:
+      type: object
+      properties:
+        summary:
+          type: string
+        description:
+          type: string
+    Attachments_LinkEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_text:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        editable:
+          type: boolean
+          description: Link can be edited
+        deletable:
+          type: boolean
+          description: Link can be deleted
+      description: Attachments_LinkEntity model
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
     TaskEntity:
       type: object
       properties:
@@ -503,6 +629,112 @@ components:
           type: string
           format: date-time
       description: TaskEntity model
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    TaskListEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        task_list_items:
+          $ref: '#/components/schemas/TaskListItemEntity'
+      description: TaskListEntity model
+    ChecklistCheckEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: boolean
+    Ticketing_TicketEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+          enum:
+          - open
+          - in_progress
+          - cancelled
+          - done
+        type:
+          type: string
+          enum:
+          - incident
+          - task
+          - follow_up
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorEntity'
+        priority:
+          $ref: '#/components/schemas/Ticketing_PriorityEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tag_list:
+          type: array
+          items:
+            type: string
+        incident_id:
+          type: string
+          description: ID of incident that this ticket is related to
+        incident_name:
+          type: string
+          description: Name of incident that this ticket is related to
+        incident_current_milestone:
+          type: string
+          description: Milestone of incident that this ticket is related to
+        task_id:
+          type: string
+          description: ID of task that this ticket is related to
+        due_at:
+          type: string
+          format: date-time
+        link:
+          $ref: '#/components/schemas/Attachments_LinkEntity'
+      description: Ticketing_TicketEntity model
     ChecklistTemplateEntity:
       type: object
       properties:
@@ -569,199 +801,6 @@ components:
         service_checklist_updated_at:
           type: string
           format: date-time
-    TaskEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaskEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: TaskEntityPaginated model
-    postV1TaskLists:
-      required:
-      - name
-      - task_list_items
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        task_list_items:
-          type: array
-          items:
-            required:
-            - summary
-            type: object
-            properties:
-              summary:
-                type: string
-                description: A summary of the task
-              description:
-                type: string
-                description: A long-form description for the task if additional context is helpful
-      description: Creates a new task list
-    patchV1TaskListsTaskListId:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        task_list_items:
-          type: array
-          items:
-            required:
-            - summary
-            type: object
-            properties:
-              summary:
-                type: string
-                description: A summary of the task
-              description:
-                type: string
-                description: A long-form description for the task if additional context is helpful
-      description: Updates a task list's attributes and task list items
-    TaskListItemEntity:
-      type: object
-      properties:
-        summary:
-          type: string
-        description:
-          type: string
-    postV1IncidentsIncidentIdTasks:
-      required:
-      - title
-      type: object
-      properties:
-        title:
-          type: string
-          description: The title of the task.
-        state:
-          type: string
-          description: 'The state of the task. One of: open, in_progress, cancelled, done'
-        description:
-          type: string
-          description: A description of what the task is for.
-        assignee_id:
-          type: string
-          description: The ID of the user assigned to the task.
-        due_at:
-          type: string
-          description: The due date of the task. Relative values are supported such as '5m'
-      description: Create a task
-    AuthorEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        source:
-          type: string
-        email:
-          type: string
-    Attachments_LinkEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        display_text:
-          type: string
-        href_url:
-          type: string
-        icon_url:
-          type: string
-        editable:
-          type: boolean
-          description: Link can be edited
-        deletable:
-          type: boolean
-          description: Link can be deleted
-      description: Attachments_LinkEntity model
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    TeamEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        signals_ical_url:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        in_support_hours:
-          type: boolean
-    postV1IncidentsIncidentIdTasksTaskIdConvert:
-      type: object
-      properties:
-        summary:
-          type: string
-        project_id:
-          type: string
-        description:
-          type: string
-        state:
-          type: string
-        tag_list:
-          type: array
-          description: List of tags for the ticket
-          items:
-            type: string
-      description: Convert a task to a follow-up
-    ChecklistCheckEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        status:
-          type: boolean
     patchV1IncidentsIncidentIdTasksTaskId:
       type: object
       properties:
@@ -781,40 +820,16 @@ components:
           type: string
           description: The due date of the task. Relative values are supported such as '5m'
       description: Update a task's attributes
-    ErrorEntity:
+    TaskEntityPaginated:
       type: object
       properties:
-        detail:
-          type: string
-        messages:
+        data:
           type: array
           items:
-            type: string
-        meta:
-          type: object
-          properties: {}
-          description: An object with additional error metadata
-        code:
-          type: string
-          description: A stable code on which to match errors
-      description: ErrorEntity model
-    Ticketing_PriorityEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        position:
-          type: integer
-          format: int32
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-      description: Ticketing_PriorityEntity model
+            $ref: '#/components/schemas/TaskEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: TaskEntityPaginated model
     patchV1ChecklistTemplatesId:
       type: object
       properties:
@@ -859,26 +874,97 @@ components:
           type: boolean
           description: If set to true, any services tagged on the checklist that are not included in the given array will be removed. Set this to true if you want to do a replacement operation for the services
       description: Update a checklist templates attributes
-    TaskListEntity:
+    postV1TicketingTickets:
+      required:
+      - summary
+      type: object
+      properties:
+        summary:
+          type: string
+        related_to:
+          type: string
+          description: Which incident this ticket is related to, in the format of 'incident/UUID'
+        project_id:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        type:
+          type: string
+        priority_id:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the ticket
+          items:
+            type: string
+        remote_url:
+          type: string
+          description: The remote URL for an existing ticket in a supported and configured ticketing integration
+      description: Creates a ticket for a project
+    postV1TaskLists:
+      required:
+      - name
+      - task_list_items
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        task_list_items:
+          type: array
+          items:
+            required:
+            - summary
+            type: object
+            properties:
+              summary:
+                type: string
+                description: A summary of the task
+              description:
+                type: string
+                description: A long-form description for the task if additional context is helpful
+      description: Creates a new task list
+    postV1IncidentsIncidentIdTasks:
+      required:
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the task.
+        state:
+          type: string
+          description: 'The state of the task. One of: open, in_progress, cancelled, done'
+        description:
+          type: string
+          description: A description of what the task is for.
+        assignee_id:
+          type: string
+          description: The ID of the user assigned to the task.
+        due_at:
+          type: string
+          description: The due date of the task. Relative values are supported such as '5m'
+      description: Create a task
+    Ticketing_PriorityEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        description:
-          type: string
+        position:
+          type: integer
+          format: int32
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        task_list_items:
-          $ref: '#/components/schemas/TaskListItemEntity'
-      description: TaskListEntity model
+      description: Ticketing_PriorityEntity model
     postV1ChecklistTemplates:
       required:
       - checks
@@ -917,109 +1003,23 @@ components:
               id:
                 type: string
       description: Creates a checklist template for the organization
-    postV1TicketingTickets:
-      required:
-      - summary
+    ErrorEntity:
       type: object
       properties:
-        summary:
+        detail:
           type: string
-        related_to:
-          type: string
-          description: Which incident this ticket is related to, in the format of 'incident/UUID'
-        project_id:
-          type: string
-        description:
-          type: string
-        state:
-          type: string
-        type:
-          type: string
-        priority_id:
-          type: string
-        tag_list:
-          type: array
-          description: List of tags for the ticket
-          items:
-            type: string
-        remote_url:
-          type: string
-          description: The remote URL for an existing ticket in a supported and configured ticketing integration
-      description: Creates a ticket for a project
-    Ticketing_TicketEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        summary:
-          type: string
-        description:
-          type: string
-        state:
-          type: string
-          enum:
-          - open
-          - in_progress
-          - cancelled
-          - done
-        type:
-          type: string
-          enum:
-          - incident
-          - task
-          - follow_up
-        assignees:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorEntity'
-        priority:
-          $ref: '#/components/schemas/Ticketing_PriorityEntity'
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        attachments:
-          type: array
-          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
-          items:
-            type: object
-            properties: {}
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        tag_list:
+        messages:
           type: array
           items:
             type: string
-        incident_id:
+        meta:
+          type: object
+          properties: {}
+          description: An object with additional error metadata
+        code:
           type: string
-          description: ID of incident that this ticket is related to
-        incident_name:
-          type: string
-          description: Name of incident that this ticket is related to
-        incident_current_milestone:
-          type: string
-          description: Milestone of incident that this ticket is related to
-        task_id:
-          type: string
-          description: ID of task that this ticket is related to
-        due_at:
-          type: string
-          format: date-time
-        link:
-          $ref: '#/components/schemas/Attachments_LinkEntity'
-      description: Ticketing_TicketEntity model
-    ChecklistTemplateEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChecklistTemplateEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: ChecklistTemplateEntityPaginated model
+          description: A stable code on which to match errors
+      description: ErrorEntity model
   securitySchemes:
     api_key:
       type: apiKey
