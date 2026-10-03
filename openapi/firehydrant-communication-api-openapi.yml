@@ -124,14 +124,6 @@ paths:
       x-codegen-request-body-name: patchV1StatusUpdateTemplatesStatusUpdateTemplateId
 components:
   schemas:
-    patchV1StatusUpdateTemplatesStatusUpdateTemplateId:
-      type: object
-      properties:
-        name:
-          type: string
-        body:
-          type: string
-      description: Update a single status update template
     postV1StatusUpdateTemplates:
       required:
       - body
@@ -143,6 +135,14 @@ components:
         body:
           type: string
       description: Create a status update template for your organization
+    patchV1StatusUpdateTemplatesStatusUpdateTemplateId:
+      type: object
+      properties:
+        name:
+          type: string
+        body:
+          type: string
+      description: Update a single status update template
     StatusUpdateTemplateEntity:
       type: object
       properties:

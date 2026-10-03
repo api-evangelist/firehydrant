@@ -682,24 +682,67 @@ paths:
       description: Production
 components:
   schemas:
-    patchV1RunbooksExecutionsExecutionIdStepsStepIdVotes:
+    RunbookStepEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        action_id:
+          type: string
+        step_id:
+          type: string
+        config:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the config settings for the step.
+        action_elements:
+          type: array
+          description: A list of action elements
+          items:
+            type: object
+            properties: {}
+        step_elements:
+          type: array
+          description: A list of step elements
+          items:
+            type: object
+            properties: {}
+        automatic:
+          type: boolean
+        delay_duration:
+          type: string
+          format: date-time
+        action:
+          $ref: '#/components/schemas/Runbooks_ActionsEntity'
+        reruns:
+          type: boolean
+        repeats:
+          type: boolean
+        repeats_duration:
+          type: string
+          format: date-time
+        votes:
+          $ref: '#/components/schemas/VotesEntity'
+        rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+    putV1RunbooksExecutionsExecutionIdStepsStepId:
       required:
-      - direction
+      - state
       type: object
       properties:
-        direction:
+        state:
           type: string
-          description: The direction you would like to vote, or if you dig it
-          enum:
-          - up
-          - down
-          - dig
-      description: Allows for upvoting or downvoting an event
-    Integrations_IntegrationEntity_LogoEntity:
-      type: object
-      properties:
-        logo_url:
+        schedule_for:
           type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties: true
+          description: Data for execution of this step
+        repeats_at:
+          type: string
+          format: date-time
+      description: Updates a runbook step execution, especially for changing the state of a step execution.
     postV1Runbooks:
       required:
       - name
@@ -773,6 +816,396 @@ components:
                     type: string
                     description: The user data for the rule
       description: Create a new runbook for use with incidents.
+    Runbooks_ExecutionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        status_reason:
+          type: string
+        status_reason_message:
+          type: string
+        has_been_rerun:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+        runbook:
+          $ref: '#/components/schemas/SlimRunbookEntity'
+        steps:
+          $ref: '#/components/schemas/Runbooks_ExecutionStepEntity'
+        executed_for:
+          $ref: '#/components/schemas/Runbooks_ExecutionEntity_ExecutedForEntity'
+      description: Runbooks_ExecutionEntity model
+    SlimRunbookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        attachment_rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        categories:
+          type: string
+          description: categories the runbook applies to
+    Integrations_IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        setup_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        connections:
+          $ref: '#/components/schemas/Integrations_ConnectionEntity'
+        enabled:
+          type: boolean
+        installed:
+          type: boolean
+        deprecated:
+          type: boolean
+        logo:
+          $ref: '#/components/schemas/Integrations_IntegrationEntity_LogoEntity'
+        nat_ip:
+          type: string
+      description: Integrations_IntegrationEntity model
+    Runbooks_WebhookDeliveryEntity:
+      type: object
+      properties:
+        headers:
+          type: string
+        status_code:
+          type: string
+    Runbooks_ActionsEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Runbooks_ActionsEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Runbooks_ActionsEntityPaginated model
+    Runbooks_ExecutionStepExecutionEntity:
+      type: object
+      properties:
+        state:
+          type: string
+          enum:
+          - initial
+          - pending
+          - scheduled
+          - started
+          - dismissed
+          - completed
+          - errored
+        data:
+          type: object
+          properties: {}
+        performed_by:
+          $ref: '#/components/schemas/ActorEntity'
+        performed_at:
+          type: string
+          format: date-time
+        scheduled_for:
+          type: string
+          format: date-time
+        error:
+          type: string
+        webhook_delivery:
+          $ref: '#/components/schemas/Runbooks_WebhookDeliveryEntity'
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    ActorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        type:
+          type: string
+          enum:
+          - firehydrant_user
+          - firehydrant_bot
+          - alertmanager
+          - asana
+          - aws
+          - bugsnag
+          - checkly
+          - custom_alerts
+          - datadog
+          - shortcut
+          - new_relic
+          - nunc
+          - github
+          - giphy
+          - google_meet
+          - google_calendar
+          - microsoft_teams
+          - microsoft_teams_v2
+          - webex
+          - jira_cloud
+          - jira_onprem
+          - opsgenie
+          - pager_duty
+          - honeycomb
+          - patchy
+          - service_now
+          - signals
+          - slack
+          - statuspage
+          - victorops
+          - zendesk
+          - zoom
+          - confluence_cloud
+          - google_docs
+          - zoom_v2
+          - linear
+          - cortex
+    Runbooks_ActionConfigEntity:
+      type: object
+      properties:
+        elements:
+          $ref: '#/components/schemas/Runbooks_ElementEntity'
+        documentation_url:
+          type: string
+          description: Location of documentation for this action
+    Rules_RuleEntity:
+      type: object
+      properties:
+        logic:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the logic for applying the rule.
+        user_data:
+          $ref: '#/components/schemas/FHTypes_GenericEntity'
+    Runbooks_ExecutionEntity_ExecutedForEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+    postV1RunbooksExecutions:
+      required:
+      - execute_for
+      - runbook_id
+      type: object
+      properties:
+        execute_for:
+          type: string
+          description: 'The incident to attach the runbook to. Format must be: `incident/${incidentId}`'
+        runbook_id:
+          type: string
+          description: ID of runbook to attach
+      description: Attaches a runbook to an incident and executes it
+    VotesEntity:
+      type: object
+      properties:
+        voted:
+          type: boolean
+          description: Whether or not the current actor has voted
+        liked:
+          type: boolean
+          description: Whether or not the current actor has voted positively
+        disliked:
+          type: boolean
+          description: Whether or not the current actor has voted negatively
+        likes:
+          type: integer
+          format: int32
+        dislikes:
+          type: integer
+          format: int32
+      description: VotesEntity model
+    Integrations_ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_slug:
+          type: string
+        integration_id:
+          type: string
+        display_name:
+          type: string
+        configuration_url:
+          type: string
+        authorized_by:
+          type: string
+        authorized_by_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        details:
+          type: object
+          properties: {}
+          description: Integration-specific details of this connection. As identified by the integration_slug, this object will be represented by that integration's ConnectionEntity.
+        default_authorized_actor:
+          $ref: '#/components/schemas/AuthorEntity'
+    Runbooks_ActionsEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        config:
+          $ref: '#/components/schemas/Runbooks_ActionConfigEntity'
+        category:
+          type: string
+        prerequisites:
+          type: object
+          properties: {}
+        integration:
+          $ref: '#/components/schemas/Integrations_IntegrationEntity'
+        supported_runbook_types:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        automatable:
+          type: boolean
+        rerunnable:
+          type: boolean
+        repeatable:
+          type: boolean
+        default_logic:
+          type: object
+          properties: {}
+        default_rule_data:
+          type: object
+          properties: {}
+    Integrations_IntegrationEntity_LogoEntity:
+      type: object
+      properties:
+        logo_url:
+          type: string
+    Runbooks_ExecutionStepEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        action_slug:
+          type: string
+        action_type:
+          type: string
+        integration_name:
+          type: string
+        integration_slug:
+          type: string
+        automatic:
+          type: boolean
+        config:
+          type: object
+          properties: {}
+        step_elements:
+          type: array
+          items:
+            type: object
+            properties: {}
+        executable:
+          type: boolean
+        repeats:
+          type: boolean
+        repeats_duration:
+          type: string
+          description: ISO8601 formatted duration string
+        repeats_at:
+          type: string
+          format: date-time
+        has_been_rerun:
+          type: boolean
+        has_been_retried:
+          type: boolean
+        execution:
+          $ref: '#/components/schemas/Runbooks_ExecutionStepExecutionEntity'
+        repeatable:
+          type: boolean
+        rule:
+          $ref: '#/components/schemas/Rules_RuleEntity'
     putV1RunbooksRunbookId:
       type: object
       properties:
@@ -859,99 +1292,11 @@ components:
         about a runbook, including but not limited to the steps, environments, attachment rules, and severities.
 
         '
-    ActorEntity:
+    Runbooks_ElementMarkdownEntity:
       type: object
       properties:
-        id:
+        text:
           type: string
-        name:
-          type: string
-        email:
-          type: string
-        type:
-          type: string
-          enum:
-          - firehydrant_user
-          - firehydrant_bot
-          - alertmanager
-          - asana
-          - aws
-          - bugsnag
-          - checkly
-          - custom_alerts
-          - datadog
-          - shortcut
-          - new_relic
-          - nunc
-          - github
-          - giphy
-          - google_meet
-          - google_calendar
-          - microsoft_teams
-          - microsoft_teams_v2
-          - webex
-          - jira_cloud
-          - jira_onprem
-          - opsgenie
-          - pager_duty
-          - honeycomb
-          - patchy
-          - service_now
-          - signals
-          - slack
-          - statuspage
-          - victorops
-          - zendesk
-          - zoom
-          - confluence_cloud
-          - google_docs
-          - zoom_v2
-          - linear
-          - cortex
-    Runbooks_ActionConfigEntity:
-      type: object
-      properties:
-        elements:
-          $ref: '#/components/schemas/Runbooks_ElementEntity'
-        documentation_url:
-          type: string
-          description: Location of documentation for this action
-    TeamEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        signals_ical_url:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        in_support_hours:
-          type: boolean
-    postV1RunbooksExecutions:
-      required:
-      - execute_for
-      - runbook_id
-      type: object
-      properties:
-        execute_for:
-          type: string
-          description: 'The incident to attach the runbook to. Format must be: `incident/${incidentId}`'
-        runbook_id:
-          type: string
-          description: ID of runbook to attach
-      description: Attaches a runbook to an incident and executes it
     PaginationEntity:
       type: object
       properties:
@@ -980,17 +1325,51 @@ components:
           - integer
           - 'null'
           format: int32
-    AuthorEntity:
+    Runbooks_ElementEntity:
       type: object
       properties:
         id:
           type: string
-        name:
+        type:
           type: string
-        source:
+        markdown:
+          $ref: '#/components/schemas/Runbooks_ElementMarkdownEntity'
+        textarea:
+          $ref: '#/components/schemas/Runbooks_ElementTextareaEntity'
+        input:
+          $ref: '#/components/schemas/Runbooks_ElementInputEntity'
+        plain_text:
+          $ref: '#/components/schemas/Runbooks_ElementMarkdownEntity'
+        dynamic_select:
+          $ref: '#/components/schemas/Runbooks_ElementDynamicSelectEntity'
+    Runbooks_ElementInputEntity:
+      type: object
+      properties:
+        label:
           type: string
-        email:
+        placeholder:
           type: string
+        default_value:
+          type: string
+        required:
+          type: boolean
+    Runbooks_ElementDynamicSelectEntity_SelectOptionEntity:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+    Runbooks_ExecutionEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Runbooks_ExecutionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Runbooks_ExecutionEntityPaginated model
     Runbooks_ElementDynamicSelectEntity:
       type: object
       properties:
@@ -1012,104 +1391,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Runbooks_ElementDynamicSelectEntity_SelectOptionEntity'
-    Integrations_ConnectionEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        integration_slug:
-          type: string
-        integration_id:
-          type: string
-        display_name:
-          type: string
-        configuration_url:
-          type: string
-        authorized_by:
-          type: string
-        authorized_by_id:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        details:
-          type: object
-          properties: {}
-          description: Integration-specific details of this connection. As identified by the integration_slug, this object will be represented by that integration's ConnectionEntity.
-        default_authorized_actor:
-          $ref: '#/components/schemas/AuthorEntity'
-    Runbooks_ElementEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        markdown:
-          $ref: '#/components/schemas/Runbooks_ElementMarkdownEntity'
-        textarea:
-          $ref: '#/components/schemas/Runbooks_ElementTextareaEntity'
-        input:
-          $ref: '#/components/schemas/Runbooks_ElementInputEntity'
-        plain_text:
-          $ref: '#/components/schemas/Runbooks_ElementMarkdownEntity'
-        dynamic_select:
-          $ref: '#/components/schemas/Runbooks_ElementDynamicSelectEntity'
-    Runbooks_ActionsEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Runbooks_ActionsEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Runbooks_ActionsEntityPaginated model
-    Runbooks_ActionsEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        config:
-          $ref: '#/components/schemas/Runbooks_ActionConfigEntity'
-        category:
-          type: string
-        prerequisites:
-          type: object
-          properties: {}
-        integration:
-          $ref: '#/components/schemas/Integrations_IntegrationEntity'
-        supported_runbook_types:
-          type: array
-          items:
-            type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        automatable:
-          type: boolean
-        rerunnable:
-          type: boolean
-        repeatable:
-          type: boolean
-        default_logic:
-          type: object
-          properties: {}
-        default_rule_data:
-          type: object
-          properties: {}
     FHTypes_GenericEntity:
       type: object
       properties:
@@ -1119,127 +1400,16 @@ components:
           type: string
         label:
           type: string
-    Runbooks_ExecutionStepExecutionEntity:
+    Runbooks_ElementTextareaEntity:
       type: object
       properties:
-        state:
+        label:
           type: string
-          enum:
-          - initial
-          - pending
-          - scheduled
-          - started
-          - dismissed
-          - completed
-          - errored
-        data:
-          type: object
-          properties: {}
-        performed_by:
-          $ref: '#/components/schemas/ActorEntity'
-        performed_at:
+        placeholder:
           type: string
-          format: date-time
-        scheduled_for:
+        default_value:
           type: string
-          format: date-time
-        error:
-          type: string
-        webhook_delivery:
-          $ref: '#/components/schemas/Runbooks_WebhookDeliveryEntity'
-    Runbooks_ExecutionEntity_ExecutedForEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        name:
-          type: string
-    Integrations_IntegrationEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        slug:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        setup_url:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        connections:
-          $ref: '#/components/schemas/Integrations_ConnectionEntity'
-        enabled:
-          type: boolean
-        installed:
-          type: boolean
-        deprecated:
-          type: boolean
-        logo:
-          $ref: '#/components/schemas/Integrations_IntegrationEntity_LogoEntity'
-        nat_ip:
-          type: string
-      description: Integrations_IntegrationEntity model
-    Runbooks_ExecutionEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Runbooks_ExecutionEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Runbooks_ExecutionEntityPaginated model
-    VotesEntity:
-      type: object
-      properties:
-        voted:
-          type: boolean
-          description: Whether or not the current actor has voted
-        liked:
-          type: boolean
-          description: Whether or not the current actor has voted positively
-        disliked:
-          type: boolean
-          description: Whether or not the current actor has voted negatively
-        likes:
-          type: integer
-          format: int32
-        dislikes:
-          type: integer
-          format: int32
-      description: VotesEntity model
-    Runbooks_WebhookDeliveryEntity:
-      type: object
-      properties:
-        headers:
-          type: string
-        status_code:
-          type: string
-    putV1RunbooksExecutionsExecutionIdStepsStepId:
-      required:
-      - state
-      type: object
-      properties:
-        state:
-          type: string
-        schedule_for:
-          type: string
-          format: date-time
-        data:
-          type: object
-          additionalProperties: true
-          description: Data for execution of this step
-        repeats_at:
-          type: string
-          format: date-time
-      description: Updates a runbook step execution, especially for changing the state of a step execution.
-    patchV1RunbooksExecutionsExecutionIdVotes:
+    patchV1RunbooksExecutionsExecutionIdStepsStepIdVotes:
       required:
       - direction
       type: object
@@ -1252,60 +1422,6 @@ components:
           - down
           - dig
       description: Allows for upvoting or downvoting an event
-    RunbookStepEntity:
-      type: object
-      properties:
-        name:
-          type: string
-        action_id:
-          type: string
-        step_id:
-          type: string
-        config:
-          type: object
-          properties: {}
-          description: An unstructured object of key/value pairs describing the config settings for the step.
-        action_elements:
-          type: array
-          description: A list of action elements
-          items:
-            type: object
-            properties: {}
-        step_elements:
-          type: array
-          description: A list of step elements
-          items:
-            type: object
-            properties: {}
-        automatic:
-          type: boolean
-        delay_duration:
-          type: string
-          format: date-time
-        action:
-          $ref: '#/components/schemas/Runbooks_ActionsEntity'
-        reruns:
-          type: boolean
-        repeats:
-          type: boolean
-        repeats_duration:
-          type: string
-          format: date-time
-        votes:
-          $ref: '#/components/schemas/VotesEntity'
-        rule:
-          $ref: '#/components/schemas/Rules_RuleEntity'
-    Runbooks_ElementInputEntity:
-      type: object
-      properties:
-        label:
-          type: string
-        placeholder:
-          type: string
-        default_value:
-          type: string
-        required:
-          type: boolean
     RunbookEntity:
       type: object
       properties:
@@ -1349,135 +1465,19 @@ components:
         tutorial:
           type: boolean
       description: RunbookEntity model
-    SlimRunbookEntity:
+    patchV1RunbooksExecutionsExecutionIdVotes:
+      required:
+      - direction
       type: object
       properties:
-        id:
+        direction:
           type: string
-        name:
-          type: string
-        summary:
-          type: string
-        description:
-          type: string
-        type:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        attachment_rule:
-          $ref: '#/components/schemas/Rules_RuleEntity'
-        owner:
-          $ref: '#/components/schemas/TeamEntityLite'
-        categories:
-          type: string
-          description: categories the runbook applies to
-    Rules_RuleEntity:
-      type: object
-      properties:
-        logic:
-          type: object
-          properties: {}
-          description: An unstructured object of key/value pairs describing the logic for applying the rule.
-        user_data:
-          $ref: '#/components/schemas/FHTypes_GenericEntity'
-    Runbooks_ElementDynamicSelectEntity_SelectOptionEntity:
-      type: object
-      properties:
-        label:
-          type: string
-        value:
-          type: string
-    Runbooks_ExecutionEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: string
-        status_reason:
-          type: string
-        status_reason_message:
-          type: string
-        has_been_rerun:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        created_by:
-          type: string
-        runbook:
-          $ref: '#/components/schemas/SlimRunbookEntity'
-        steps:
-          $ref: '#/components/schemas/Runbooks_ExecutionStepEntity'
-        executed_for:
-          $ref: '#/components/schemas/Runbooks_ExecutionEntity_ExecutedForEntity'
-      description: Runbooks_ExecutionEntity model
-    Runbooks_ExecutionStepEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        action_slug:
-          type: string
-        action_type:
-          type: string
-        integration_name:
-          type: string
-        integration_slug:
-          type: string
-        automatic:
-          type: boolean
-        config:
-          type: object
-          properties: {}
-        step_elements:
-          type: array
-          items:
-            type: object
-            properties: {}
-        executable:
-          type: boolean
-        repeats:
-          type: boolean
-        repeats_duration:
-          type: string
-          description: ISO8601 formatted duration string
-        repeats_at:
-          type: string
-          format: date-time
-        has_been_rerun:
-          type: boolean
-        has_been_retried:
-          type: boolean
-        execution:
-          $ref: '#/components/schemas/Runbooks_ExecutionStepExecutionEntity'
-        repeatable:
-          type: boolean
-        rule:
-          $ref: '#/components/schemas/Rules_RuleEntity'
-    Runbooks_ElementMarkdownEntity:
-      type: object
-      properties:
-        text:
-          type: string
-    Runbooks_ElementTextareaEntity:
-      type: object
-      properties:
-        label:
-          type: string
-        placeholder:
-          type: string
-        default_value:
-          type: string
+          description: The direction you would like to vote, or if you dig it
+          enum:
+          - up
+          - down
+          - dig
+      description: Allows for upvoting or downvoting an event
   securitySchemes:
     api_key:
       type: apiKey

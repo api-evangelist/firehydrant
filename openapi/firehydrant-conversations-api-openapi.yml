@@ -286,6 +286,13 @@ components:
           type: string
           description: CLDR short name of Unicode emojis
       description: ALPHA - Create a reaction on a comment
+    patchV1ConversationsConversationIdCommentsCommentId:
+      type: object
+      properties:
+        body:
+          type: string
+          description: Text body of comment
+      description: ALPHA - Update a comment's attributes
     postV1ConversationsConversationIdComments:
       required:
       - body
@@ -295,13 +302,6 @@ components:
           type: string
           description: Text body of comment
       description: ALPHA - Creates a comment for a project
-    patchV1ConversationsConversationIdCommentsCommentId:
-      type: object
-      properties:
-        body:
-          type: string
-          description: Text body of comment
-      description: ALPHA - Update a comment's attributes
   securitySchemes:
     api_key:
       type: apiKey

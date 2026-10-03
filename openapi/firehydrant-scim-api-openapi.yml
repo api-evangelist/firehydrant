@@ -238,73 +238,6 @@ paths:
       x-codegen-request-body-name: patchV1ScimV2UsersId
 components:
   schemas:
-    postV1ScimV2Users:
-      required:
-      - emails
-      - name
-      - userName
-      type: object
-      properties:
-        userName:
-          type: string
-          description: A service provider's unique identifier for the user
-        name:
-          required:
-          - familyName
-          - givenName
-          type: object
-          properties:
-            familyName:
-              type: string
-              description: The family name of the User, or last name in most Western languages
-            givenName:
-              type: string
-              description: The given name of the User, or first name in most Western languages
-          description: The components of the user's name
-        emails:
-          type: array
-          description: Email addresses for the User
-          items:
-            required:
-            - primary
-            - value
-            type: object
-            properties:
-              value:
-                type: string
-                description: String that represents an email address for the User
-              primary:
-                type: boolean
-                description: Boolean which signifies if an email is intended as the primary email for the User
-        roles:
-          type: array
-          description: Roles for the User. Options are owner, member or collaborator
-          items:
-            type: string
-        password:
-          type: string
-          description: This attribute is intended to be used as a means to set, replace, or compare (i.e., filter for equality) a password
-      description: SCIM endpoint to create and provision a new User. This endpoint will provision the User, which allows them to accept their account throught their IDP or via the Forgot Password flow.
-    postV1ScimV2Groups:
-      required:
-      - displayName
-      - members
-      type: object
-      properties:
-        displayName:
-          type: string
-          description: The name of the team being created
-        members:
-          type: array
-          items:
-            required:
-            - value
-            type: object
-            properties:
-              value:
-                type: string
-                description: String that represents the user's UUID to assign to the team
-      description: SCIM endpoint to create a new Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role.
     putV1ScimV2UsersId:
       type: object
       properties:
@@ -391,6 +324,73 @@ components:
                 type: string
                 description: The path to the attribute to be modified
       description: PATCH SCIM endpoint to update a User. This endpoint is used to update a resource's attributes.
+    postV1ScimV2Users:
+      required:
+      - emails
+      - name
+      - userName
+      type: object
+      properties:
+        userName:
+          type: string
+          description: A service provider's unique identifier for the user
+        name:
+          required:
+          - familyName
+          - givenName
+          type: object
+          properties:
+            familyName:
+              type: string
+              description: The family name of the User, or last name in most Western languages
+            givenName:
+              type: string
+              description: The given name of the User, or first name in most Western languages
+          description: The components of the user's name
+        emails:
+          type: array
+          description: Email addresses for the User
+          items:
+            required:
+            - primary
+            - value
+            type: object
+            properties:
+              value:
+                type: string
+                description: String that represents an email address for the User
+              primary:
+                type: boolean
+                description: Boolean which signifies if an email is intended as the primary email for the User
+        roles:
+          type: array
+          description: Roles for the User. Options are owner, member or collaborator
+          items:
+            type: string
+        password:
+          type: string
+          description: This attribute is intended to be used as a means to set, replace, or compare (i.e., filter for equality) a password
+      description: SCIM endpoint to create and provision a new User. This endpoint will provision the User, which allows them to accept their account throught their IDP or via the Forgot Password flow.
+    postV1ScimV2Groups:
+      required:
+      - displayName
+      - members
+      type: object
+      properties:
+        displayName:
+          type: string
+          description: The name of the team being created
+        members:
+          type: array
+          items:
+            required:
+            - value
+            type: object
+            properties:
+              value:
+                type: string
+                description: String that represents the user's UUID to assign to the team
+      description: SCIM endpoint to create a new Team (Colloquial for Group in the SCIM protocol). Any members defined in the payload will be assigned to the team with no defined role.
   securitySchemes:
     api_key:
       type: apiKey

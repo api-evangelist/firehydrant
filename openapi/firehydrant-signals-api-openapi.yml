@@ -1072,108 +1072,6 @@ paths:
       description: Production
 components:
   schemas:
-    patchV1SignalsWebhookTargetsId:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The webhook target's name.
-        description:
-          type: string
-          description: An optional detailed description of the webhook target.
-        url:
-          type: string
-          description: The URL that the webhook target will notify.
-        signing_key:
-          type: string
-          description: 'An optional secret we will provide in the `FH-Signature` header
-
-            when sending a payload to the webhook target. This key will not be
-
-            shown in any response once configured.
-
-            '
-      description: Update a Signals webhook target by ID
-    postV1SignalsWebhookTargets:
-      required:
-      - name
-      - url
-      type: object
-      properties:
-        name:
-          type: string
-          description: The webhook target's name.
-        description:
-          type: string
-          description: An optional detailed description of the webhook target.
-        url:
-          type: string
-          description: The URL that the webhook target will notify.
-        signing_key:
-          type: string
-          description: 'An optional secret we will provide in the `FH-Signature` header
-
-            when sending a payload to the webhook target. This key will not be
-
-            shown in any response once configured.
-
-            '
-      description: Create a Signals webhook target.
-    postV1TeamsTeamIdOnCallSchedulesScheduleIdShifts:
-      required:
-      - end_time
-      - start_time
-      type: object
-      properties:
-        start_time:
-          type: string
-          description: The start time of the shift in ISO8601 format.
-        end_time:
-          type: string
-          description: The end time of the shift in ISO8601 format.
-        user_id:
-          type: string
-          description: The ID of the user who is on-call for the shift. If not provided, the shift will be unassigned.
-      description: Create a Signals on-call shift in a schedule.
-    postV1SignalsDebugger:
-      required:
-      - expression
-      - signals
-      type: object
-      properties:
-        expression:
-          type: string
-          description: CEL expression
-        signals:
-          type: array
-          description: List of signals to evaluate rule expression against
-          items:
-            type: object
-            properties:
-              summary:
-                type: string
-              body:
-                type: string
-              level:
-                type: string
-              images:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    src:
-                      type: string
-                    alt:
-                      type: string
-              links:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    href:
-                      type: string
-                    text:
-                      type: string
     postV1TeamsTeamIdEscalationPolicies:
       required:
       - name
@@ -1245,12 +1143,38 @@ components:
               description: The ID of the target to which the policy will hand off.
           description: A step that defines where an alert should be sent when the policy is exhausted and the alert is still unacknowledged.
       description: Create a Signals escalation policy for a team.
-    Signals_API_IngestKeyEntity:
+    patchV1TeamsTeamIdSignalRulesId:
       type: object
       properties:
-        url:
+        name:
           type: string
-      description: Signals_API_IngestKeyEntity model
+          description: The rule's name.
+        expression:
+          type: string
+          description: The CEL expression that defines the rule.
+        target_type:
+          type: string
+          description: The type of target that the rule will notify when matched.
+          enum:
+          - EscalationPolicy
+          - OnCallSchedule
+          - User
+          - Webhook
+        target_id:
+          type: string
+          description: The ID of the target that the rule will notify when matched.
+        incident_type_id:
+          type: string
+          description: The ID of an incident type that should be used when an alert is promoted to an incident
+        notification_priority_override:
+          type: string
+          description: 'A notification priority that will be set on the resulting alert (default: HIGH)'
+          enum:
+          - HIGH
+          - MEDIUM
+          - LOW
+          - ''
+      description: Update a Signals rule by ID
     patchV1TeamsTeamIdEscalationPoliciesId:
       type: object
       properties:
@@ -1318,38 +1242,131 @@ components:
               description: The ID of the target to which the policy will hand off.
           description: A step that defines where an alert should be sent when the policy is exhausted and the alert is still unacknowledged.
       description: Update a Signals escalation policy by ID
-    patchV1TeamsTeamIdSignalRulesId:
+    patchV1SignalsEmailTargetsId:
       type: object
       properties:
         name:
           type: string
-          description: The rule's name.
+          description: The email target's name.
+        slug:
+          type: string
+          description: The email address that will be listening to events.
+        description:
+          type: string
+          description: A detailed description of the email target.
+        target:
+          required:
+          - id
+          - type
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type of target that the inbound email will notify when matched.
+              enum:
+              - Team
+              - EntireTeam
+              - EscalationPolicy
+              - OnCallSchedule
+              - User
+              - SlackChannel
+              - Webhook
+            id:
+              type: string
+              description: The ID of the target that the inbound email will notify when matched.
+          description: 'The target that the email target will notify. This object must contain a `type`
+
+            field that specifies the type of target and an `id` field that specifies the ID of
+
+            the target. The `type` field must be one of "escalation_policy", "on_call_schedule",
+
+            "team", "user", or "slack_channel".
+
+            '
+        allowed_senders:
+          type: array
+          description: A list of email addresses that are allowed to send events to the target. Must be exact match.
+          items:
+            type: string
+        status_cel:
+          type: string
+          description: The CEL expression that defines the status of an incoming email that is sent to the target.
+        level_cel:
+          type: string
+          description: The CEL expression that defines the level of an incoming email that is sent to the target.
+        rules:
+          type: array
+          description: A list of CEL expressions that should be evaluated and matched to determine if the target should be notified.
+          items:
+            type: string
+        rule_matching_strategy:
+          type: string
+          description: Whether or not all rules must match, or if only one rule must match.
+          enum:
+          - all
+          - any
+      description: Update a Signals email target by ID
+    patchV1SignalsWebhookTargetsId:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The webhook target's name.
+        description:
+          type: string
+          description: An optional detailed description of the webhook target.
+        url:
+          type: string
+          description: The URL that the webhook target will notify.
+        signing_key:
+          type: string
+          description: 'An optional secret we will provide in the `FH-Signature` header
+
+            when sending a payload to the webhook target. This key will not be
+
+            shown in any response once configured.
+
+            '
+      description: Update a Signals webhook target by ID
+    postV1SignalsDebugger:
+      required:
+      - expression
+      - signals
+      type: object
+      properties:
         expression:
           type: string
-          description: The CEL expression that defines the rule.
-        target_type:
-          type: string
-          description: The type of target that the rule will notify when matched.
-          enum:
-          - EscalationPolicy
-          - OnCallSchedule
-          - User
-          - Webhook
-        target_id:
-          type: string
-          description: The ID of the target that the rule will notify when matched.
-        incident_type_id:
-          type: string
-          description: The ID of an incident type that should be used when an alert is promoted to an incident
-        notification_priority_override:
-          type: string
-          description: 'A notification priority that will be set on the resulting alert (default: HIGH)'
-          enum:
-          - HIGH
-          - MEDIUM
-          - LOW
-          - ''
-      description: Update a Signals rule by ID
+          description: CEL expression
+        signals:
+          type: array
+          description: List of signals to evaluate rule expression against
+          items:
+            type: object
+            properties:
+              summary:
+                type: string
+              body:
+                type: string
+              level:
+                type: string
+              images:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    src:
+                      type: string
+                    alt:
+                      type: string
+              links:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    href:
+                      type: string
+                    text:
+                      type: string
     postV1SignalsEmailTargets:
       required:
       - name
@@ -1416,6 +1433,12 @@ components:
           type: string
           description: The CEL expression that defines the level of an incoming email that is sent to the target.
       description: Create a Signals email target for a team.
+    Signals_API_IngestKeyEntity:
+      type: object
+      properties:
+        url:
+          type: string
+      description: Signals_API_IngestKeyEntity model
     patchV1TeamsTeamIdOnCallSchedulesScheduleId:
       type: object
       properties:
@@ -1533,6 +1556,47 @@ components:
           items:
             type: string
       description: Update a Signals on-call schedule by ID
+    postV1TeamsTeamIdOnCallSchedulesScheduleIdShifts:
+      required:
+      - end_time
+      - start_time
+      type: object
+      properties:
+        start_time:
+          type: string
+          description: The start time of the shift in ISO8601 format.
+        end_time:
+          type: string
+          description: The end time of the shift in ISO8601 format.
+        user_id:
+          type: string
+          description: The ID of the user who is on-call for the shift. If not provided, the shift will be unassigned.
+      description: Create a Signals on-call shift in a schedule.
+    postV1SignalsWebhookTargets:
+      required:
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+          description: The webhook target's name.
+        description:
+          type: string
+          description: An optional detailed description of the webhook target.
+        url:
+          type: string
+          description: The URL that the webhook target will notify.
+        signing_key:
+          type: string
+          description: 'An optional secret we will provide in the `FH-Signature` header
+
+            when sending a payload to the webhook target. This key will not be
+
+            shown in any response once configured.
+
+            '
+      description: Create a Signals webhook target.
     postV1TeamsTeamIdSignalRules:
       required:
       - expression
@@ -1570,70 +1634,6 @@ components:
           - LOW
           - ''
       description: Create a Signals rule for a team.
-    patchV1SignalsEmailTargetsId:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The email target's name.
-        slug:
-          type: string
-          description: The email address that will be listening to events.
-        description:
-          type: string
-          description: A detailed description of the email target.
-        target:
-          required:
-          - id
-          - type
-          type: object
-          properties:
-            type:
-              type: string
-              description: The type of target that the inbound email will notify when matched.
-              enum:
-              - Team
-              - EntireTeam
-              - EscalationPolicy
-              - OnCallSchedule
-              - User
-              - SlackChannel
-              - Webhook
-            id:
-              type: string
-              description: The ID of the target that the inbound email will notify when matched.
-          description: 'The target that the email target will notify. This object must contain a `type`
-
-            field that specifies the type of target and an `id` field that specifies the ID of
-
-            the target. The `type` field must be one of "escalation_policy", "on_call_schedule",
-
-            "team", "user", or "slack_channel".
-
-            '
-        allowed_senders:
-          type: array
-          description: A list of email addresses that are allowed to send events to the target. Must be exact match.
-          items:
-            type: string
-        status_cel:
-          type: string
-          description: The CEL expression that defines the status of an incoming email that is sent to the target.
-        level_cel:
-          type: string
-          description: The CEL expression that defines the level of an incoming email that is sent to the target.
-        rules:
-          type: array
-          description: A list of CEL expressions that should be evaluated and matched to determine if the target should be notified.
-          items:
-            type: string
-        rule_matching_strategy:
-          type: string
-          description: Whether or not all rules must match, or if only one rule must match.
-          enum:
-          - all
-          - any
-      description: Update a Signals email target by ID
   securitySchemes:
     api_key:
       type: apiKey

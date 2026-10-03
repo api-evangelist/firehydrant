@@ -212,44 +212,6 @@ paths:
       description: Production
 components:
   schemas:
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    EnvironmentEntryEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EnvironmentEntryEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: EnvironmentEntryEntityPaginated model
     patchV1EnvironmentsEnvironmentId:
       required:
       - name
@@ -260,16 +222,6 @@ components:
         description:
           type: string
       description: Update a environments attributes
-    postV1Environments:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-      description: Creates an environment for the organization
     EnvironmentEntryEntity:
       type: object
       properties:
@@ -302,6 +254,44 @@ components:
           items:
             $ref: '#/components/schemas/ExternalResourceEntity'
       description: EnvironmentEntryEntity model
+    postV1Environments:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      description: Creates an environment for the organization
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
     ExternalResourceEntity:
       type: object
       properties:
@@ -323,6 +313,16 @@ components:
           format: date-time
         name:
           type: string
+    EnvironmentEntryEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentEntryEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: EnvironmentEntryEntityPaginated model
   securitySchemes:
     api_key:
       type: apiKey
