@@ -37,6 +37,9 @@ accessModel:
   generated: '2026-09-03'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/firehydrant.png
+x-docs-platform: readme
+x-docs-platform-confidence: high
+x-docs-platform-checked: 2026-10-03
 tags:
 - AIOps
 - Incident Management
@@ -404,6 +407,9 @@ apis:
   - type: APIReference
     url: https://docs.firehydrant.com/reference/firehydrant-api
 common:
+- type: CapabilityMap
+  url: capabilities/firehydrant-capability-edges.yml
+  name: FireHydrant Business Capability Map
 - type: AgenticAccess
   url: agentic-access/firehydrant-agentic-access.yml
 - type: TrustCenter
