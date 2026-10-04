@@ -137,26 +137,6 @@ paths:
       summary: List webhook deliveries
 components:
   schemas:
-    Webhooks_Entities_WebhookEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        url:
-          type: string
-        state:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        subscriptions:
-          type: string
-      description: Webhooks_Entities_WebhookEntity model
     AuthorEntity:
       type: object
       properties:
@@ -179,6 +159,26 @@ components:
           - active
           - inactive
       description: Update a specific webhook
+    Webhooks_Entities_WebhookEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        state:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        subscriptions:
+          type: string
+      description: Webhooks_Entities_WebhookEntity model
     postV1Webhooks:
       required:
       - url

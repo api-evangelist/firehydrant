@@ -903,17 +903,14 @@ paths:
       x-codegen-request-body-name: postV1SavedSearchesResourceType
 components:
   schemas:
-    Metrics_MilestonesFunnelEntity_MetaEntity:
+    Metrics_RetrospectiveEntity_DataEntity:
       type: object
       properties:
-        deleted_milestones:
-          type: array
-          items:
-            type: string
-        added_milestones:
-          type: array
-          items:
-            type: string
+        x:
+          type: string
+        y:
+          type: number
+          format: float
     SavedSearchEntity:
       type: object
       properties:
@@ -939,57 +936,67 @@ components:
           properties: {}
           description: An unstructured key/value pair of saved values for searching
       description: SavedSearchEntity model
-    Metrics_TicketFunnelMetricsEntity_GroupingsEntity:
+    Metrics_TicketFunnelMetricsEntity_DataBucketFilterParamsEntity:
       type: object
       properties:
-        bucket_size:
+        start_date:
           type: string
-          description: The bucket size for the data
-    Metrics_TicketFunnelMetricsEntity:
+          description: The start datetime for the period
+          format: date-time
+        end_date:
+          type: string
+          description: The end datetime for the period not inclusive
+          format: date
+    Metrics_MilestonesFunnelEntity_DataBucketFilterParamsEntity:
+      type: object
+      properties:
+        start_date:
+          type: string
+          description: The start datetime for the period
+          format: date-time
+        end_date:
+          type: string
+          description: The end datetime for the period not inclusive
+          format: date
+    Reports_BucketEntity:
+      type: object
+      properties:
+        bucket:
+          type: string
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reports_DataPointEntity'
+    postV1SavedSearchesResourceType:
+      required:
+      - filter_values
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        is_private:
+          type: boolean
+        filter_values:
+          type: object
+          additionalProperties: true
+      description: Create a new saved search for a particular resource type
+    Metrics_MilestonesFunnelEntity:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_DataBucketEntity'
+            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketEntity'
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_ColumnEntity'
         groupings:
-          $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_GroupingsEntity'
-      description: Metrics_TicketFunnelMetricsEntity model
-    Metrics_TicketFunnelMetricsEntity_DataBucketEntity:
-      type: object
-      properties:
-        time_bucket:
-          type: string
-          description: The start datetime for the period
-          format: date-time
-        filter_params:
-          $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_DataBucketFilterParamsEntity'
-        tasks_created:
-          type: integer
-          description: The number of tasks created
-          format: int32
-        tasks_done:
-          type: integer
-          description: The number of tasks completed
-          format: int32
-        follow_ups_created:
-          type: integer
-          description: The number of follow ups created
-          format: int32
-        follow_ups_done:
-          type: integer
-          description: The number of follow ups completed
-          format: int32
-    Metrics_MilestonesFunnelEntity_DataBucketMilestoneCountEntity:
-      type: object
-      properties:
-        milestone_id:
-          type: string
-          description: The UUID of the milestone
-        count:
-          type: integer
-          description: The frequency count of that milestone for the period
-          format: int32
+          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_GroupingsEntity'
+        meta:
+          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_MetaEntity'
+      description: Metrics_MilestonesFunnelEntity model
     Metrics_InfrastructureMetricsEntity:
       type: object
       properties:
@@ -1024,17 +1031,84 @@ components:
           description: Total time (seconds) the component was impacted (MTTR x Incident Count)
           format: int32
       description: Metrics_InfrastructureMetricsEntity model
-    Metrics_MilestonesFunnelEntity_DataBucketFilterParamsEntity:
+    Metrics_TicketFunnelMetricsEntity:
       type: object
       properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_DataBucketEntity'
+        groupings:
+          $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_GroupingsEntity'
+      description: Metrics_TicketFunnelMetricsEntity model
+    Metrics_RetrospectiveEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_RetrospectiveEntity_DataEntity'
+        summary:
+          $ref: '#/components/schemas/Metrics_RetrospectiveEntity_SummaryEntity'
+      description: Metrics_RetrospectiveEntity model
+    ReportEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reports_BucketEntity'
         start_date:
           type: string
-          description: The start datetime for the period
-          format: date-time
+          format: date
         end_date:
           type: string
-          description: The end datetime for the period not inclusive
           format: date
+        bucket_period:
+          type: string
+      description: ReportEntity model
+    Metrics_TicketFunnelMetricsEntity_GroupingsEntity:
+      type: object
+      properties:
+        bucket_size:
+          type: string
+          description: The bucket size for the data
+    Metrics_MetricsEntity_SortEntity:
+      type: object
+      properties:
+        field:
+          type: string
+        direction:
+          type: string
+        limit:
+          type: integer
+          format: int32
+    Metrics_MilestonesFunnelEntity_MetaEntity:
+      type: object
+      properties:
+        deleted_milestones:
+          type: array
+          items:
+            type: string
+        added_milestones:
+          type: array
+          items:
+            type: string
+    Metrics_MilestonesFunnelEntity_ColumnEntity:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The slug of the milestone
+        label:
+          type: string
+          description: The name of the milestone
+        tooltip:
+          type: string
+          description: The description of the milestone
+        id:
+          type: string
+          description: The UUID of the milestone
     Reports_DataPointEntity:
       type: object
       properties:
@@ -1043,20 +1117,62 @@ components:
         value:
           type: integer
           format: int32
-    postV1SavedSearchesResourceType:
-      required:
-      - filter_values
-      - name
+    Metrics_MilestonesFunnelEntity_DataBucketEntity:
       type: object
       properties:
-        name:
+        time_bucket:
           type: string
-        is_private:
-          type: boolean
-        filter_values:
-          type: object
-          additionalProperties: true
-      description: Create a new saved search for a particular resource type
+          description: The start datetime for the period
+          format: date-time
+        filter_params:
+          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketFilterParamsEntity'
+        milestone_counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketMilestoneCountEntity'
+    Metrics_RetrospectiveEntity_SummaryEntity:
+      type: object
+      properties:
+        completed:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+        incomplete:
+          type: integer
+          format: int32
+        mean:
+          type: number
+          format: float
+        shortest:
+          type: number
+          format: float
+        longest:
+          type: number
+          format: float
+        completion_percentage:
+          type: number
+          format: float
+    Metrics_InfrastructureListEntity:
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of infrastructure metrics
+          items:
+            $ref: '#/components/schemas/Metrics_InfrastructureMetricsEntity'
+      description: Metrics_InfrastructureListEntity model
+    Metrics_MilestonesFunnelEntity_DataBucketMilestoneCountEntity:
+      type: object
+      properties:
+        milestone_id:
+          type: string
+          description: The UUID of the milestone
+        count:
+          type: integer
+          description: The frequency count of that milestone for the period
+          format: int32
     Metrics_MetricsEntity:
       type: object
       properties:
@@ -1090,91 +1206,7 @@ components:
         bucket_size:
           type: string
           description: The bucket size for the data
-    Metrics_RetrospectiveEntity_DataEntity:
-      type: object
-      properties:
-        x:
-          type: string
-        y:
-          type: number
-          format: float
-    Metrics_RetrospectiveEntity_SummaryEntity:
-      type: object
-      properties:
-        completed:
-          type: integer
-          format: int32
-        total:
-          type: integer
-          format: int32
-        incomplete:
-          type: integer
-          format: int32
-        mean:
-          type: number
-          format: float
-        shortest:
-          type: number
-          format: float
-        longest:
-          type: number
-          format: float
-        completion_percentage:
-          type: number
-          format: float
-    Metrics_MilestonesFunnelEntity:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketEntity'
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_ColumnEntity'
-        groupings:
-          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_GroupingsEntity'
-        meta:
-          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_MetaEntity'
-      description: Metrics_MilestonesFunnelEntity model
-    Metrics_RetrospectiveEntity:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Metrics_RetrospectiveEntity_DataEntity'
-        summary:
-          $ref: '#/components/schemas/Metrics_RetrospectiveEntity_SummaryEntity'
-      description: Metrics_RetrospectiveEntity model
-    Metrics_TicketFunnelMetricsEntity_DataBucketFilterParamsEntity:
-      type: object
-      properties:
-        start_date:
-          type: string
-          description: The start datetime for the period
-          format: date-time
-        end_date:
-          type: string
-          description: The end datetime for the period not inclusive
-          format: date
-    Metrics_MilestonesFunnelEntity_ColumnEntity:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The slug of the milestone
-        label:
-          type: string
-          description: The name of the milestone
-        tooltip:
-          type: string
-          description: The description of the milestone
-        id:
-          type: string
-          description: The UUID of the milestone
-    Metrics_MilestonesFunnelEntity_DataBucketEntity:
+    Metrics_TicketFunnelMetricsEntity_DataBucketEntity:
       type: object
       properties:
         time_bucket:
@@ -1182,55 +1214,23 @@ components:
           description: The start datetime for the period
           format: date-time
         filter_params:
-          $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketFilterParamsEntity'
-        milestone_counts:
-          type: array
-          items:
-            $ref: '#/components/schemas/Metrics_MilestonesFunnelEntity_DataBucketMilestoneCountEntity'
-    Metrics_MetricsEntity_SortEntity:
-      type: object
-      properties:
-        field:
-          type: string
-        direction:
-          type: string
-        limit:
+          $ref: '#/components/schemas/Metrics_TicketFunnelMetricsEntity_DataBucketFilterParamsEntity'
+        tasks_created:
           type: integer
+          description: The number of tasks created
           format: int32
-    Reports_BucketEntity:
-      type: object
-      properties:
-        bucket:
-          type: string
-        points:
-          type: array
-          items:
-            $ref: '#/components/schemas/Reports_DataPointEntity'
-    ReportEntity:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Reports_BucketEntity'
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        bucket_period:
-          type: string
-      description: ReportEntity model
-    Metrics_InfrastructureListEntity:
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of infrastructure metrics
-          items:
-            $ref: '#/components/schemas/Metrics_InfrastructureMetricsEntity'
-      description: Metrics_InfrastructureListEntity model
+        tasks_done:
+          type: integer
+          description: The number of tasks completed
+          format: int32
+        follow_ups_created:
+          type: integer
+          description: The number of follow ups created
+          format: int32
+        follow_ups_done:
+          type: integer
+          description: The number of follow ups completed
+          format: int32
   securitySchemes:
     api_key:
       type: apiKey

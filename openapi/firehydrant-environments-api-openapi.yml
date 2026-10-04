@@ -212,16 +212,6 @@ paths:
       description: Production
 components:
   schemas:
-    patchV1EnvironmentsEnvironmentId:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-      description: Update a environments attributes
     EnvironmentEntryEntity:
       type: object
       properties:
@@ -254,6 +244,16 @@ components:
           items:
             $ref: '#/components/schemas/ExternalResourceEntity'
       description: EnvironmentEntryEntity model
+    patchV1EnvironmentsEnvironmentId:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      description: Update a environments attributes
     postV1Environments:
       required:
       - name

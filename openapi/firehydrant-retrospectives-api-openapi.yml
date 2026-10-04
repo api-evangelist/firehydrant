@@ -381,30 +381,32 @@ paths:
       x-codegen-request-body-name: patchV1PostMortemsReportsReportIdReasonsReasonId
 components:
   schemas:
-    IntegrationEntity:
+    Incidents_ChannelEntity:
       type: object
       properties:
         id:
           type: string
-        integration_name:
+        name:
           type: string
-        integration_slug:
+        source:
           type: string
-        display_name:
+        source_name:
           type: string
-        created_at:
+        source_id:
           type: string
-          format: date-time
-    Incidents_ContextObjectEntity:
+        url:
+          type: string
+        icon_url:
+          type: string
+        status:
+          type: string
+      description: Incidents_ChannelEntity model
+    OrganizationEntity:
       type: object
       properties:
-        object_type:
+        name:
           type: string
-        object_id:
-          type: string
-        context_tag:
-          type: string
-        context_description:
+        id:
           type: string
     postV1PostMortemsReportsReportIdPublish:
       type: object
@@ -420,63 +422,65 @@ components:
           items:
             type: string
       description: Marks an incident retrospective as published and emails all of the participants in the report the summary
-    putV1PostMortemsReportsReportIdReasonsOrder:
-      required:
-      - new_position
-      - old_position
+    PostMortems_ReasonEntity:
       type: object
       properties:
-        old_position:
+        id:
+          type: string
+        summary:
+          type: string
+        position:
           type: integer
           format: int32
-        new_position:
-          type: integer
-          format: int32
-      description: Reorder a contributing factor
-    Incidents_LifecycleMilestoneEntity:
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+      description: PostMortems_ReasonEntity model
+    SeverityMatrix_ImpactEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        description:
+        type:
           type: string
-        slug:
+        affects_id:
           type: string
         position:
           type: integer
           format: int32
-        occurred_at:
+      description: SeverityMatrix_ImpactEntity model
+    Ticketing_PriorityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+        created_at:
           type: string
           format: date-time
-        duration:
-          type: string
-        updated_by:
-          $ref: '#/components/schemas/AuthorEntity'
         updated_at:
           type: string
           format: date-time
-    putV1PostMortemsQuestions:
+      description: Ticketing_PriorityEntity model
+    PostMortems_PostMortemReportEntityPaginated:
       type: object
       properties:
-        _make_swagger_work_:
-          type: string
-        questions:
+        data:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-                description: ID of a question
-              title:
-                type: string
-                description: title of a question
-              tooltip:
-                type: string
-                description: tooltip of a question
-      description: Update the questions configured to be provided and filled out on future retrospective reports.
+            $ref: '#/components/schemas/PostMortems_PostMortemReportEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: PostMortems_PostMortemReportEntityPaginated model
     IncidentEntity:
       type: object
       properties:
@@ -649,57 +653,27 @@ components:
           items:
             $ref: '#/components/schemas/IncidentEntity_FieldRequirementEntity'
       description: IncidentEntity model
-    SeverityMatrix_ConditionEntity:
+    Calendars_EventEntity:
       type: object
       properties:
         id:
           type: string
-        name:
-          type: string
-        position:
-          type: integer
-          description: Position is used to determine ordering of conditions in API responses and dropdowns. The condition with the lowest position (typically 0) will be considered the Default Condition
-          format: int32
-      description: SeverityMatrix_ConditionEntity model
-    Incidents_RoleAssignmentEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: string
-          enum:
-          - active
-          - inactive
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        incident_role:
-          $ref: '#/components/schemas/IncidentRoleEntity'
-        user:
-          $ref: '#/components/schemas/UserEntity'
-      description: Incidents_RoleAssignmentEntity model
-    Incidents_LifecyclePhaseEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
+        summary:
           type: string
         description:
           type: string
-        type:
+        starts_at:
           type: string
-        position:
-          type: integer
-          format: int32
-        milestones:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_LifecycleMilestoneEntity'
+        ends_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        provider_url:
+          type: string
+        provider_icon_url:
+          type: string
     Attachments_LinkEntity:
       type: object
       properties:
@@ -720,110 +694,67 @@ components:
           type: boolean
           description: Link can be deleted
       description: Attachments_LinkEntity model
-    PostMortems_ReasonEntityPaginated:
+    Incidents_ContextObjectEntity:
       type: object
       properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/PostMortems_ReasonEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: PostMortems_ReasonEntityPaginated model
-    PostMortems_PostMortemReportEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/PostMortems_PostMortemReportEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: PostMortems_PostMortemReportEntityPaginated model
-    AuthorEntity:
-      type: object
-      properties:
-        id:
+        object_type:
           type: string
+        object_id:
+          type: string
+        context_tag:
+          type: string
+        context_description:
+          type: string
+    CustomFields_FieldValue:
+      type: object
+      properties:
         name:
           type: string
-        source:
+        value_type:
           type: string
-        email:
-          type: string
-    Conversations_API_Entities_Reference:
-      type: object
-      properties:
-        id:
-          type: string
-        resource_class:
-          type: string
-        resource_id:
-          type: string
-        field:
-          type: string
-        comments_url:
-          type: string
-        channel:
-          $ref: '#/components/schemas/Conversations_API_Entities_Channel'
-    Incidents_TeamAssignmentEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        team:
-          $ref: '#/components/schemas/TeamEntityLite'
-    TeamEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
+        display_name:
           type: string
         description:
           type: string
         slug:
           type: string
-        created_at:
+        field_id:
           type: string
-          format: date-time
-        updated_at:
+        value_array:
           type: string
-          format: date-time
-        signals_ical_url:
+        value_string:
           type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        in_support_hours:
-          type: boolean
-    Incidents_MilestoneEntity:
+        value:
+          type: string
+    patchV1PostMortemsReportsReportIdFieldsFieldId:
+      required:
+      - value
       type: object
       properties:
-        id:
+        value:
           type: string
-        type:
+      description: Update a field value on a post mortem report
+    patchV1PostMortemsReportsReportId:
+      type: object
+      properties:
+        name:
           type: string
-          description: The milestone's type. This will be one of the currently configured milestones for the given incident.
-        duration:
+        summary:
           type: string
-          description: How long the incident spent in this milestones, in ISO 8601 Duration Format. This will be null if the milestone is the incident's current milestone.
-        occurred_at:
+        additional_details:
           type: string
-          format: date-time
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of a question
+              body:
+                type: string
+                description: Answer to question
+      description: Update a report
     PostMortems_QuestionEntity:
       type: object
       properties:
@@ -849,33 +780,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Conversations_API_Entities_Reference'
-    Event_NoteEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        body:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        status_pages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_StatusPageEntity'
-        conversations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
-      description: Event_NoteEntity model
-    patchV1PostMortemsReportsReportIdFieldsFieldId:
-      required:
-      - value
-      type: object
-      properties:
-        value:
-          type: string
-      description: Update a field value on a post mortem report
     IncidentRoleEntity:
       type: object
       properties:
@@ -897,43 +801,173 @@ components:
           type: string
           format: date-time
       description: IncidentRoleEntity model
-    CustomFields_FieldValue:
-      type: object
-      properties:
-        name:
-          type: string
-        value_type:
-          type: string
-        display_name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        field_id:
-          type: string
-        value_array:
-          type: string
-        value_string:
-          type: string
-        value:
-          type: string
-    patchV1PostMortemsReportsReportIdReasonsReasonId:
-      type: object
-      properties:
-        summary:
-          type: string
-      description: Update a contributing factor
-    PostMortems_SectionFieldEntity:
+    AuthorEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        value:
+        source:
           type: string
-      description: PostMortems_SectionFieldEntity model
+        email:
+          type: string
+    Event_NoteEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        status_pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_StatusPageEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+      description: Event_NoteEntity model
+    Incidents_LifecycleMilestoneEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        position:
+          type: integer
+          format: int32
+        occurred_at:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        updated_at:
+          type: string
+          format: date-time
+    postV1PostMortemsReports:
+      required:
+      - incident_id
+      type: object
+      properties:
+        incident_id:
+          type: string
+      description: Create a report
+    PostMortems_PostMortemReportEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        incident_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tag_list:
+          type: array
+          items:
+            type: string
+        additional_details:
+          type: array
+          items:
+            type: string
+        incident:
+          $ref: '#/components/schemas/IncidentEntity'
+        questions:
+          $ref: '#/components/schemas/PostMortems_QuestionEntity'
+        calendar_events:
+          $ref: '#/components/schemas/Calendars_EventEntity'
+      description: PostMortems_PostMortemReportEntity model
+    putV1PostMortemsQuestions:
+      type: object
+      properties:
+        _make_swagger_work_:
+          type: string
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID of a question
+              title:
+                type: string
+                description: title of a question
+              tooltip:
+                type: string
+                description: tooltip of a question
+      description: Update the questions configured to be provided and filled out on future retrospective reports.
+    postV1PostMortemsReportsReportIdReasons:
+      required:
+      - summary
+      type: object
+      properties:
+        summary:
+          type: string
+      description: Add a new contributing factor to an incident
+    PostMortems_QuestionTypeEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostMortems_QuestionTypeEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: PostMortems_QuestionTypeEntityPaginated model
+    Incidents_ImpactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - environment
+          - functionality
+          - service
+        impact:
+          $ref: '#/components/schemas/SuccinctEntity'
+        condition:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+    SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    IncidentEntity_FieldRequirementEntity:
+      type: object
+      properties:
+        field_id:
+          type: string
+          description: A unique identifier for the field.
+        required_at_milestone_id:
+          type: string
+          description: The milestone at which this field is required. If null, this field is always required.
     ErrorEntity:
       type: object
       properties:
@@ -951,201 +985,17 @@ components:
           type: string
           description: A stable code on which to match errors
       description: ErrorEntity model
-    Incidents_StatusPageEntity:
+    Incidents_ConferenceBridgeEntity:
       type: object
       properties:
         id:
           type: string
-        url:
-          type: string
-        external_id:
-          type: string
-        name:
-          type: string
-        display_name:
-          type: string
-        integration:
-          $ref: '#/components/schemas/IntegrationEntity'
-      description: Incidents_StatusPageEntity model
-    patchV1PostMortemsReportsReportId:
-      type: object
-      properties:
-        name:
-          type: string
-        summary:
-          type: string
-        additional_details:
-          type: string
-        questions:
+        attachments:
           type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
           items:
             type: object
-            properties:
-              id:
-                type: string
-                description: ID of a question
-              body:
-                type: string
-                description: Answer to question
-      description: Update a report
-    UserEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        slack_user_id:
-          type: string
-        slack_linked?:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        signals_enabled_notification_types:
-          type: array
-          items:
-            type: string
-      description: UserEntity model
-    IncidentEntity_FieldRequirementEntity:
-      type: object
-      properties:
-        field_id:
-          type: string
-          description: A unique identifier for the field.
-        required_at_milestone_id:
-          type: string
-          description: The milestone at which this field is required. If null, this field is always required.
-    SuccinctEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-    postV1PostMortemsReportsReportIdReasons:
-      required:
-      - summary
-      type: object
-      properties:
-        summary:
-          type: string
-      description: Add a new contributing factor to an incident
-    Conversations_API_Entities_Channel:
-      type: object
-      properties:
-        name:
-          type: string
-    postV1PostMortemsReports:
-      required:
-      - incident_id
-      type: object
-      properties:
-        incident_id:
-          type: string
-      description: Create a report
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    PostMortems_ReasonEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        summary:
-          type: string
-        position:
-          type: integer
-          format: int32
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        conversations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
-      description: PostMortems_ReasonEntity model
-    OrganizationEntity:
-      type: object
-      properties:
-        name:
-          type: string
-        id:
-          type: string
-    PostMortems_QuestionTypeEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/PostMortems_QuestionTypeEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: PostMortems_QuestionTypeEntityPaginated model
-    SeverityMatrix_ImpactEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        affects_id:
-          type: string
-        position:
-          type: integer
-          format: int32
-      description: SeverityMatrix_ImpactEntity model
-    Incidents_ChannelEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        source:
-          type: string
-        source_name:
-          type: string
-        source_id:
-          type: string
-        url:
-          type: string
-        icon_url:
-          type: string
-        status:
-          type: string
-      description: Incidents_ChannelEntity model
+            properties: {}
     Ticketing_TicketEntity:
       type: object
       properties:
@@ -1210,43 +1060,58 @@ components:
         link:
           $ref: '#/components/schemas/Attachments_LinkEntity'
       description: Ticketing_TicketEntity model
-    PostMortems_QuestionTypeEntity:
+    Incidents_RoleAssignmentEntity:
       type: object
       properties:
         id:
           type: string
-        title:
-          type: string
-        tooltip:
-          type: string
-        kind:
-          type: string
-        is_required:
-          type: boolean
-        available_options:
-          type: array
-          items:
-            type: string
-      description: PostMortems_QuestionTypeEntity model
-    Incidents_ImpactEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
+        status:
           type: string
           enum:
-          - environment
-          - functionality
-          - service
-        impact:
-          $ref: '#/components/schemas/SuccinctEntity'
-        condition:
-          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
-        conversations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+          - active
+          - inactive
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        incident_role:
+          $ref: '#/components/schemas/IncidentRoleEntity'
+        user:
+          $ref: '#/components/schemas/UserEntity'
+      description: Incidents_RoleAssignmentEntity model
+    patchV1PostMortemsReportsReportIdReasonsReasonId:
+      type: object
+      properties:
+        summary:
+          type: string
+      description: Update a contributing factor
+    PostMortems_SectionFieldEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+      description: PostMortems_SectionFieldEntity model
+    Conversations_API_Entities_Reference:
+      type: object
+      properties:
+        id:
+          type: string
+        resource_class:
+          type: string
+        resource_id:
+          type: string
+        field:
+          type: string
+        comments_url:
+          type: string
+        channel:
+          $ref: '#/components/schemas/Conversations_API_Entities_Channel'
     Incidents_LifecycleMeasurementEntity:
       type: object
       properties:
@@ -1267,48 +1132,72 @@ components:
         calculated_at:
           type: string
           format: date-time
-    Incidents_ConferenceBridgeEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        attachments:
-          type: array
-          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
-          items:
-            type: object
-            properties: {}
-    Calendars_EventEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        summary:
-          type: string
-        description:
-          type: string
-        starts_at:
-          type: string
-        ends_at:
-          type: string
-        created_at:
-          type: string
-        updated_at:
-          type: string
-        provider_url:
-          type: string
-        provider_icon_url:
-          type: string
-    PostMortems_PostMortemReportEntity:
+    Incidents_LifecyclePhaseEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        summary:
+        description:
           type: string
-        incident_id:
+        type:
+          type: string
+        position:
+          type: integer
+          format: int32
+        milestones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_LifecycleMilestoneEntity'
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_name:
+          type: string
+        integration_slug:
+          type: string
+        display_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Incidents_TeamAssignmentEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
           type: string
         created_at:
           type: string
@@ -1316,22 +1205,138 @@ components:
         updated_at:
           type: string
           format: date-time
-        tag_list:
+        team:
+          $ref: '#/components/schemas/TeamEntityLite'
+    putV1PostMortemsReportsReportIdReasonsOrder:
+      required:
+      - new_position
+      - old_position
+      type: object
+      properties:
+        old_position:
+          type: integer
+          format: int32
+        new_position:
+          type: integer
+          format: int32
+      description: Reorder a contributing factor
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        slack_user_id:
+          type: string
+        slack_linked?:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_enabled_notification_types:
           type: array
           items:
             type: string
-        additional_details:
+      description: UserEntity model
+    PostMortems_ReasonEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostMortems_ReasonEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: PostMortems_ReasonEntityPaginated model
+    PostMortems_QuestionTypeEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        tooltip:
+          type: string
+        kind:
+          type: string
+        is_required:
+          type: boolean
+        available_options:
           type: array
           items:
             type: string
-        incident:
-          $ref: '#/components/schemas/IncidentEntity'
-        questions:
-          $ref: '#/components/schemas/PostMortems_QuestionEntity'
-        calendar_events:
-          $ref: '#/components/schemas/Calendars_EventEntity'
-      description: PostMortems_PostMortemReportEntity model
-    Ticketing_PriorityEntity:
+      description: PostMortems_QuestionTypeEntity model
+    Conversations_API_Entities_Channel:
+      type: object
+      properties:
+        name:
+          type: string
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    Incidents_StatusPageEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        external_id:
+          type: string
+        name:
+          type: string
+        display_name:
+          type: string
+        integration:
+          $ref: '#/components/schemas/IntegrationEntity'
+      description: Incidents_StatusPageEntity model
+    Incidents_MilestoneEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          description: The milestone's type. This will be one of the currently configured milestones for the given incident.
+        duration:
+          type: string
+          description: How long the incident spent in this milestones, in ISO 8601 Duration Format. This will be null if the milestone is the incident's current milestone.
+        occurred_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SeverityMatrix_ConditionEntity:
       type: object
       properties:
         id:
@@ -1340,14 +1345,9 @@ components:
           type: string
         position:
           type: integer
+          description: Position is used to determine ordering of conditions in API responses and dropdowns. The condition with the lowest position (typically 0) will be considered the Default Condition
           format: int32
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-      description: Ticketing_PriorityEntity model
+      description: SeverityMatrix_ConditionEntity model
   securitySchemes:
     api_key:
       type: apiKey

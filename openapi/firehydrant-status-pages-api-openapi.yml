@@ -578,16 +578,15 @@ paths:
                 $ref: '#/components/schemas/NuncEmailSubscribersEntity'
 components:
   schemas:
-    patchV1NuncConnectionsNuncConnectionIdLinksLinkId:
+    NuncConditionEntity:
       type: object
       properties:
-        display_text:
+        nunc_condition:
           type: string
-        icon_url:
+        condition_name:
           type: string
-        href_url:
+        condition_id:
           type: string
-      description: Update a link to be displayed on a FireHydrant status page
     NuncEmailSubscribersEntity:
       type: object
       properties:
@@ -602,46 +601,6 @@ components:
           description: The time the subscriber was created
           format: date-time
       description: NuncEmailSubscribersEntity model
-    NuncComponentGroupEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        component_group_id:
-          type: string
-        name:
-          type: string
-        position:
-          type: integer
-          format: int32
-    NuncConditionEntity:
-      type: object
-      properties:
-        nunc_condition:
-          type: string
-        condition_name:
-          type: string
-        condition_id:
-          type: string
-    MediaImageEntity:
-      type: object
-      properties:
-        original_url:
-          type: string
-        versions_urls:
-          type: object
-          properties: {}
-          description: An object with keys that can have different versions of an image
-    NuncConnectionEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/NuncConnectionEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: NuncConnectionEntityPaginated model
     NuncConnectionEntity:
       type: object
       properties:
@@ -704,6 +663,12 @@ components:
           items:
             $ref: '#/components/schemas/LinksEntity'
       description: NuncConnectionEntity model
+    Nunc_NuncSubscription:
+      type: object
+      properties:
+        response:
+          type: string
+      description: Nunc_NuncSubscription model
     NuncComponentEntity:
       type: object
       properties:
@@ -718,6 +683,27 @@ components:
           format: int32
         component_group_id:
           type: string
+    LinksEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+    patchV1NuncConnectionsNuncConnectionIdLinksLinkId:
+      type: object
+      properties:
+        display_text:
+          type: string
+        icon_url:
+          type: string
+        href_url:
+          type: string
+      description: Update a link to be displayed on a FireHydrant status page
     PaginationEntity:
       type: object
       properties:
@@ -746,23 +732,6 @@ components:
           - integer
           - 'null'
           format: int32
-    LinksEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        href_url:
-          type: string
-        icon_url:
-          type: string
-        name:
-          type: string
-    Nunc_NuncSubscription:
-      type: object
-      properties:
-        response:
-          type: string
-      description: Nunc_NuncSubscription model
     postV1NuncSubscriptions:
       required:
       - email
@@ -771,6 +740,37 @@ components:
         email:
           type: string
       description: Subscribe to status page updates
+    MediaImageEntity:
+      type: object
+      properties:
+        original_url:
+          type: string
+        versions_urls:
+          type: object
+          properties: {}
+          description: An object with keys that can have different versions of an image
+    NuncComponentGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        component_group_id:
+          type: string
+        name:
+          type: string
+        position:
+          type: integer
+          format: int32
+    NuncConnectionEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/NuncConnectionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: NuncConnectionEntityPaginated model
   securitySchemes:
     api_key:
       type: apiKey

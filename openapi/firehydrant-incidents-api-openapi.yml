@@ -2134,43 +2134,71 @@ paths:
       description: Production
 components:
   schemas:
-    postV1IncidentsIncidentIdRoleAssignments:
-      required:
-      - incident_role_id
-      - user_id
+    ChangeEntity:
       type: object
       properties:
-        user_id:
+        id:
           type: string
-          description: The user ID to assign the role to
-        incident_role_id:
+          description: UUID of the Change
+        summary:
           type: string
-          description: The Incident Role ID to assign the role to
-      description: Assign a role to a user for this incident
-    Incidents_LifecycleMilestoneEntity:
+          description: Description of the Change
+        created_at:
+          type: string
+          description: The time the change entry was created
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: Arbitrary key/value pairs of labels.
+        description:
+          type: string
+          description: Description of the Change
+      description: ChangeEntity model
+    SeverityMatrix_ImpactEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        description:
+        type:
           type: string
-        slug:
+        affects_id:
           type: string
         position:
           type: integer
           format: int32
-        occurred_at:
+      description: SeverityMatrix_ImpactEntity model
+    putV1IncidentsIncidentIdLinksLinkId:
+      type: object
+      properties:
+        display_text:
           type: string
-          format: date-time
-        duration:
+        icon_url:
           type: string
-        updated_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        updated_at:
+        href_url:
           type: string
-          format: date-time
+      description: Updates the external incident link attributes
+    Incidents_RelationshipsEntity:
+      type: object
+      properties:
+        parent:
+          $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
+        children:
+          type: array
+          description: The root incident's child incidents.
+          items:
+            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
+        siblings:
+          type: array
+          description: A list of incidents that share the root incident's parent.
+          items:
+            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
+      description: Incidents_RelationshipsEntity model
     IncidentEventEntityPaginated:
       type: object
       properties:
@@ -2181,32 +2209,402 @@ components:
         pagination:
           $ref: '#/components/schemas/PaginationEntity'
       description: IncidentEventEntityPaginated model
-    PublicAPI_V1_Incidents_SuccinctEntity:
+    putV1IncidentsIncidentIdImpact:
+      type: object
+      properties:
+        note:
+          type: string
+        milestone:
+          type: string
+        impact:
+          type: array
+          items:
+            required:
+            - condition_id
+            - id
+            type: object
+            properties:
+              id:
+                type: string
+              condition_id:
+                type: string
+        status_pages:
+          type: array
+          items:
+            required:
+            - id
+            - integration_slug
+            type: object
+            properties:
+              id:
+                type: string
+              integration_slug:
+                type: string
+      description: 'Allows updating an incident''s impacted infrastructure, with the option to
+
+        move the incident into a different milestone and provide a note to update
+
+        the incident timeline and any attached status pages. If this method is
+
+        requested with the PUT verb, impacts will be completely replaced with the
+
+        information in the request body, even if not provided (effectively clearing
+
+        all impacts). If this method is requested with the PATCH verb, the provided
+
+        impacts will be added or updated, but no impacts will be removed.
+
+        '
+    Incidents_ImpactEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+          - environment
+          - functionality
+          - service
+        impact:
+          $ref: '#/components/schemas/SuccinctEntity'
+        condition:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+    IncidentEntity_FieldRequirementEntity:
+      type: object
+      properties:
+        field_id:
+          type: string
+          description: A unique identifier for the field.
+        required_at_milestone_id:
+          type: string
+          description: The milestone at which this field is required. If null, this field is always required.
+    postV1Incidents:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        summary:
+          type: string
+        customer_impact_summary:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+        severity:
+          type: string
+        severity_condition_id:
+          type: string
+        severity_impact_id:
+          type: string
+        alert_ids:
+          type: array
+          description: List of alert IDs that this incident should be associated to
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: Key:value pairs to track custom data for the incident
+        runbook_ids:
+          type: array
+          description: List of ids of Runbooks to attach to this incident. Foregoes any conditions these Runbooks may have guarding automatic attachment.
+          items:
+            type: string
+        tag_list:
+          type: array
+          description: List of tags for the incident
+          items:
+            type: string
+        impacts:
+          type: array
+          description: An array of impacted infrastructure
+          items:
+            required:
+            - condition_id
+            - id
+            - type
+            type: object
+            properties:
+              type:
+                type: string
+                description: 'The type of impacted infrastructure. One of: environment, functionality, or service'
+              id:
+                type: string
+                description: The ID of the impacted infrastructure
+              condition_id:
+                type: string
+                description: The ID of the impact condition. Find these at /v1/severity_matrix/conditions
+        milestones:
+          type: array
+          description: An array of milestones to set on an incident. This can be used to create an already-resolved incident.
+          items:
+            required:
+            - occurred_at
+            - type
+            type: object
+            properties:
+              type:
+                type: string
+                description: The type/slug of the milestone. Must be one of the currently configured milestones.
+              occurred_at:
+                type: string
+                description: An ISO8601 formatted string for when this milestone occurred. If you are removing a milestone, this field still needs to be set to some value
+                format: date-time
+        restricted:
+          type: boolean
+        team_ids:
+          type: array
+          description: IDs of teams you wish to assign to this incident.
+          items:
+            type: string
+        custom_fields:
+          type: array
+          description: An array of custom fields to set on the incident.
+          items:
+            required:
+            - field_id
+            type: object
+            properties:
+              field_id:
+                type: string
+                description: The ID of the custom field you wish to set.
+              value_string:
+                type: string
+                description: The value you wish to set on the custom field if the type of the field accepts string values
+              value_array:
+                type: array
+                description: The value you wish to set on the custom field if the type of the field accepts array values
+                items:
+                  type: string
+        external_links:
+          type: string
+        skip_incident_type_values:
+          type: boolean
+          description: If true, the incident type values will not be copied to the incident. This is useful when creating an incident from an incident type, but you want to set the values manually.
+          default: false
+      description: Create a new incident
+    Incidents_RoleAssignmentEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_RoleAssignmentEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Incidents_RoleAssignmentEntityPaginated model
+    Incidents_TeamAssignmentEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        team:
+          $ref: '#/components/schemas/TeamEntityLite'
+    ExternalResourceEntity:
+      type: object
+      properties:
+        connection_type:
+          type: string
+        connection_name:
+          type: string
+        connection_id:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+    UserEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        number:
+        email:
           type: string
-    postV1IncidentsIncidentIdGenericChatMessages:
-      required:
-      - body
+        slack_user_id:
+          type: string
+        slack_linked?:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_enabled_notification_types:
+          type: array
+          items:
+            type: string
+      description: UserEntity model
+    SeverityMatrix_ConditionEntity:
       type: object
       properties:
-        body:
+        id:
           type: string
-        occurred_at:
+        name:
           type: string
-          description: ISO8601 timestamp for when the chat message occurred
+        position:
+          type: integer
+          description: Position is used to determine ordering of conditions in API responses and dropdowns. The condition with the lowest position (typically 0) will be considered the Default Condition
+          format: int32
+      description: SeverityMatrix_ConditionEntity model
+    Signals_API_TargetEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        is_pageable:
+          type: boolean
+    Incidents_ChannelEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        source_name:
+          type: string
+        source_id:
+          type: string
+        url:
+          type: string
+        icon_url:
+          type: string
+        status:
+          type: string
+      description: Incidents_ChannelEntity model
+    TaskEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        assignee:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_at:
+          type: string
           format: date-time
-        vote_direction:
+        updated_at:
           type: string
-          enum:
-          - up
-          - down
-      description: Create a new generic chat message on an incident timeline. These are independent of any specific chat provider.
+          format: date-time
+        due_at:
+          type: string
+          format: date-time
+      description: TaskEntity model
+    Alerts_AlertEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        summary:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+        integration_name:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        duration_ms:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        duration_iso8601:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        labels:
+          type: object
+          properties: {}
+          description: Arbitrary key:value pairs of labels.
+        environments:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccinctEntity'
+        tags:
+          type: array
+          items:
+            type: string
+        source_icon:
+          type: string
+        signal_id:
+          type: string
+        signal_rule:
+          $ref: '#/components/schemas/Signals_API_RuleEntity'
+        team_name:
+          type: string
+        team_id:
+          type: string
+        position:
+          type: integer
+          format: int32
+        incidents:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts_SirenEventEntity'
+        is_expired:
+          type: boolean
+      description: Alerts_AlertEntity model
     IncidentEntity:
       type: object
       properties:
@@ -2379,7 +2777,178 @@ components:
           items:
             $ref: '#/components/schemas/IncidentEntity_FieldRequirementEntity'
       description: IncidentEntity model
-    Incidents_LifecyclePhaseEntity:
+    CustomFields_FieldValue:
+      type: object
+      properties:
+        name:
+          type: string
+        value_type:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        field_id:
+          type: string
+        value_array:
+          type: string
+        value_string:
+          type: string
+        value:
+          type: string
+    patchV1IncidentsIncidentId:
+      type: object
+      properties:
+        name:
+          type: string
+        summary:
+          type: string
+        customer_impact_summary:
+          type: string
+        description:
+          type: string
+        labels:
+          type: object
+          properties: {}
+          description: Key:value pairs to track custom data for the incident
+        priority:
+          type: string
+        severity:
+          type: string
+        severity_condition_id:
+          type: string
+        severity_impact_id:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the incident
+          items:
+            type: string
+      description: Updates an incident with provided parameters
+    Signals_API_RuleEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        expression:
+          type: string
+        team_id:
+          type: string
+        target:
+          $ref: '#/components/schemas/Signals_API_TargetEntity'
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        incident_type:
+          $ref: '#/components/schemas/SuccinctEntity'
+        notification_priority_override:
+          type: string
+          enum:
+          - HIGH
+          - MEDIUM
+          - LOW
+    postV1ScheduledMaintenances:
+      required:
+      - ends_at
+      - name
+      - starts_at
+      type: object
+      properties:
+        name:
+          type: string
+        starts_at:
+          type: string
+          description: ISO8601 timestamp for the start time of the scheduled maintenance
+          format: date-time
+        ends_at:
+          type: string
+          description: ISO8601 timestamp for the end time of the scheduled maintenance
+          format: date-time
+        summary:
+          type: string
+        description:
+          type: string
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: A json object of label keys and values
+        status_pages:
+          type: array
+          description: An array of status pages to display this maintenance on
+          items:
+            required:
+            - connection_id
+            type: object
+            properties:
+              integration_slug:
+                type: string
+                description: The slug identifying the type of status page
+              connection_id:
+                type: string
+                description: The UUID of the status page to display this maintenance on
+        impacts:
+          type: array
+          description: An array of impact/condition combinations
+          items:
+            required:
+            - condition_id
+            - id
+            - type
+            type: object
+            properties:
+              type:
+                type: string
+                description: The type of impact
+              id:
+                type: string
+                description: The id of impact
+              condition_id:
+                type: string
+                description: The id of the condition
+      description: Create a new scheduled maintenance event
+    postV1IncidentsIncidentIdStatusPages:
+      required:
+      - integration_id
+      - integration_slug
+      type: object
+      properties:
+        integration_slug:
+          type: string
+        integration_id:
+          type: string
+        title:
+          type: string
+      description: Add a status page to an incident.
+    VotesEntity:
+      type: object
+      properties:
+        voted:
+          type: boolean
+          description: Whether or not the current actor has voted
+        liked:
+          type: boolean
+          description: Whether or not the current actor has voted positively
+        disliked:
+          type: boolean
+          description: Whether or not the current actor has voted negatively
+        likes:
+          type: integer
+          format: int32
+        dislikes:
+          type: integer
+          format: int32
+      description: VotesEntity model
+    Incidents_LifecycleMilestoneEntity:
       type: object
       properties:
         id:
@@ -2388,15 +2957,28 @@ components:
           type: string
         description:
           type: string
-        type:
+        slug:
           type: string
         position:
           type: integer
           format: int32
-        milestones:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_LifecycleMilestoneEntity'
+        occurred_at:
+          type: string
+          format: date-time
+        duration:
+          type: string
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        updated_at:
+          type: string
+          format: date-time
+    SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
     ScheduledMaintenanceEntity:
       type: object
       properties:
@@ -2435,18 +3017,59 @@ components:
           properties: {}
           description: An object of label key and values
       description: ScheduledMaintenanceEntity model
-    AuthorEntity:
+    postV1IncidentsIncidentIdTaskLists:
+      required:
+      - task_list_id
+      type: object
+      properties:
+        task_list_id:
+          type: string
+          description: The id of the task list.
+        assignee_id:
+          type: string
+          description: The ID of the user assigned to the tasks in this list.
+      description: Add all tasks from list to incident
+    patchV1IncidentsIncidentIdAlertsIncidentAlertIdPrimary:
+      required:
+      - primary
+      type: object
+      properties:
+        primary:
+          type: boolean
+      description: Setting an alert as primary will overwrite milestone times in the FireHydrant incident with times included in the primary alert. Services attached to the primary alert will also be automatically added to the incident.
+    EnvironmentEntryEntity:
       type: object
       properties:
         id:
           type: string
+          description: UUID of the Environment
         name:
           type: string
-        source:
+          description: Name of the Environment
+        slug:
           type: string
-        email:
+          description: Slug of the Environment
+        description:
           type: string
-    TeamEntityLite:
+          description: Description of the Environment
+        updated_at:
+          type: string
+          description: The time the environment was updated
+          format: date-time
+        created_at:
+          type: string
+          description: The time the environment was created
+          format: date-time
+        active_incidents:
+          type: string
+          description: List of active incident guids
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+      description: EnvironmentEntryEntity model
+    Incidents_LifecycleMeasurementEntity:
       type: object
       properties:
         id:
@@ -2457,18 +3080,57 @@ components:
           type: string
         slug:
           type: string
+        starts_at_milestone:
+          type: string
+        ends_at_milestone:
+          type: string
+        value:
+          type: string
+        calculated_at:
+          type: string
+          format: date-time
+    IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_name:
+          type: string
+        integration_slug:
+          type: string
+        display_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    ChangeIdentityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+        change_id:
+          type: string
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        signals_ical_url:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        in_support_hours:
-          type: boolean
+      description: ChangeIdentityEntity model
+    IncidentImpactEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncidentImpactEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: IncidentImpactEntityPaginated model
     Incidents_MilestoneEntity:
       type: object
       properties:
@@ -2489,218 +3151,7 @@ components:
         updated_at:
           type: string
           format: date-time
-    postV1IncidentsIncidentIdTeamAssignments:
-      required:
-      - team_id
-      type: object
-      properties:
-        team_id:
-          type: string
-          description: The team ID to associate to the incident
-      description: Assign a team for this incident
-    CustomFields_FieldValue:
-      type: object
-      properties:
-        name:
-          type: string
-        value_type:
-          type: string
-        display_name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        field_id:
-          type: string
-        value_array:
-          type: string
-        value_string:
-          type: string
-        value:
-          type: string
-    ChangeIdentityEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        value:
-          type: string
-        change_id:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-      description: ChangeIdentityEntity model
-    putV1IncidentsIncidentIdMilestonesBulkUpdate:
-      required:
-      - milestones
-      type: object
-      properties:
-        bulk:
-          type: string
-          enum:
-          - 'true'
-        milestones:
-          type: array
-          items:
-            required:
-            - occurred_at
-            - type
-            type: object
-            properties:
-              type:
-                type: string
-                description: The type/slug of the milestone. Must be one of the currently configured milestones for the given incident.
-              occurred_at:
-                type: string
-                description: An ISO8601 formatted string for when this milestone occurred. If you are removing a milestone, this field still needs to be set to some value
-                format: date-time
-              remove:
-                type: boolean
-                description: If set to true, the milestone will be removed from the incident
-      description: 'Update milestone times in bulk for a given incident. All milestone
-
-        times for an incident must occur in chronological order
-
-        corresponding to the configured order of milestones. If the result
-
-        of this request would cause any milestone(s) to appear out of place,
-
-        a 422 response will instead be returned. This includes milestones
-
-        not explicitly submitted or updated in this request.
-
-        '
-    ErrorEntity:
-      type: object
-      properties:
-        detail:
-          type: string
-        messages:
-          type: array
-          items:
-            type: string
-        meta:
-          type: object
-          properties: {}
-          description: An object with additional error metadata
-        code:
-          type: string
-          description: A stable code on which to match errors
-      description: ErrorEntity model
-    Incidents_StatusPageEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        url:
-          type: string
-        external_id:
-          type: string
-        name:
-          type: string
-        display_name:
-          type: string
-        integration:
-          $ref: '#/components/schemas/IntegrationEntity'
-      description: Incidents_StatusPageEntity model
-    putV1IncidentsIncidentIdLinksLinkId:
-      type: object
-      properties:
-        display_text:
-          type: string
-        icon_url:
-          type: string
-        href_url:
-          type: string
-      description: Updates the external incident link attributes
-    ServiceEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        service_tier:
-          type: integer
-          format: int32
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        allowed_params:
-          type: array
-          items:
-            type: string
-        labels:
-          type: object
-          properties: {}
-          description: An object of label key and values
-        alert_on_add:
-          type: boolean
-        auto_add_responding_team:
-          type: boolean
-      description: ServiceEntityLite model
-    UserEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        slack_user_id:
-          type: string
-        slack_linked?:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        signals_enabled_notification_types:
-          type: array
-          items:
-            type: string
-      description: UserEntity model
-    postV1IncidentsIncidentIdImpactType:
-      required:
-      - id
-      type: object
-      properties:
-        id:
-          type: string
-        condition_id:
-          type: string
-      description: Add impacted infrastructure to an incident
-    postV1IncidentsIncidentIdStatusPages:
-      required:
-      - integration_id
-      - integration_slug
-      type: object
-      properties:
-        integration_slug:
-          type: string
-        integration_id:
-          type: string
-        title:
-          type: string
-      description: Add a status page to an incident.
-    putV1IncidentsIncidentIdImpact:
+    patchV1IncidentsIncidentIdImpact:
       type: object
       properties:
         note:
@@ -2746,52 +3197,7 @@ components:
         impacts will be added or updated, but no impacts will be removed.
 
         '
-    ExternalResourceEntity:
-      type: object
-      properties:
-        connection_type:
-          type: string
-        connection_name:
-          type: string
-        connection_id:
-          type: string
-        remote_id:
-          type: string
-        remote_url:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        name:
-          type: string
-    IntegrationEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        integration_name:
-          type: string
-        integration_slug:
-          type: string
-        display_name:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-    Incidents_MilestoneEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_MilestoneEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Incidents_MilestoneEntityPaginated model
-    SeverityMatrix_ConditionEntity:
+    Ticketing_PriorityEntity:
       type: object
       properties:
         id:
@@ -2800,9 +3206,47 @@ components:
           type: string
         position:
           type: integer
-          description: Position is used to determine ordering of conditions in API responses and dropdowns. The condition with the lowest position (typically 0) will be considered the Default Condition
           format: int32
-      description: SeverityMatrix_ConditionEntity model
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      description: Ticketing_PriorityEntity model
+    ServiceEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+      description: ServiceEntityLite model
     Attachments_LinkEntity:
       type: object
       properties:
@@ -2823,6 +3267,109 @@ components:
           type: boolean
           description: Link can be deleted
       description: Attachments_LinkEntity model
+    Attachments_LinkEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachments_LinkEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Attachments_LinkEntityPaginated model
+    Incidents_ContextObjectEntity:
+      type: object
+      properties:
+        object_type:
+          type: string
+        object_id:
+          type: string
+        context_tag:
+          type: string
+        context_description:
+          type: string
+    putV1IncidentsIncidentIdMilestonesBulkUpdate:
+      required:
+      - milestones
+      type: object
+      properties:
+        bulk:
+          type: string
+          enum:
+          - 'true'
+        milestones:
+          type: array
+          items:
+            required:
+            - occurred_at
+            - type
+            type: object
+            properties:
+              type:
+                type: string
+                description: The type/slug of the milestone. Must be one of the currently configured milestones for the given incident.
+              occurred_at:
+                type: string
+                description: An ISO8601 formatted string for when this milestone occurred. If you are removing a milestone, this field still needs to be set to some value
+                format: date-time
+              remove:
+                type: boolean
+                description: If set to true, the milestone will be removed from the incident
+      description: 'Update milestone times in bulk for a given incident. All milestone
+
+        times for an incident must occur in chronological order
+
+        corresponding to the configured order of milestones. If the result
+
+        of this request would cause any milestone(s) to appear out of place,
+
+        a 422 response will instead be returned. This includes milestones
+
+        not explicitly submitted or updated in this request.
+
+        '
+    Incidents_RelatedChangeEventEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        why:
+          type: string
+          description: The reason why this change event is related to this incident
+        type:
+          type: string
+          enum:
+          - caused
+          - fixed
+          - suspect
+          - dismissed
+        change_event:
+          $ref: '#/components/schemas/ChangeEventEntity'
+        incident_id:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+      description: Incidents_RelatedChangeEventEntity model
+    Alerts_SirenEventEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        data:
+          type: object
+          properties: {}
+          description: The event's payload
+        created_at:
+          type: string
+          format: date-time
     PublicAPI_V1_Incidents_TranscriptEntity:
       type: object
       properties:
@@ -2852,124 +3399,25 @@ components:
           description: The time the transcript entry was last updated
           format: date-time
       description: PublicAPI_V1_Incidents_TranscriptEntity model
-    postV1IncidentsIncidentIdTaskLists:
-      required:
-      - task_list_id
-      type: object
-      properties:
-        task_list_id:
-          type: string
-          description: The id of the task list.
-        assignee_id:
-          type: string
-          description: The ID of the user assigned to the tasks in this list.
-      description: Add all tasks from list to incident
-    ChangeEventEntity:
+    Event_NoteEntity:
       type: object
       properties:
         id:
           type: string
-        summary:
-          type: string
-        description:
-          type: string
-        external_id:
+        body:
           type: string
         created_at:
           type: string
           format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        starts_at:
-          type: string
-          format: date-time
-        ends_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        duration_ms:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        duration_iso8601:
-          type:
-          - string
-          - 'null'
-        environments:
+        status_pages:
           type: array
           items:
-            $ref: '#/components/schemas/EnvironmentEntryEntity'
-        related_changes:
+            $ref: '#/components/schemas/Incidents_StatusPageEntity'
+        conversations:
           type: array
           items:
-            $ref: '#/components/schemas/ChangeEntity'
-        identities:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChangeIdentityEntity'
-        authors:
-          type: array
-          items:
-            $ref: '#/components/schemas/AuthorEntity'
-        attachments:
-          type: array
-          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
-          items:
-            type: object
-            properties: {}
-        labels:
-          type: object
-          properties: {}
-          description: An object of label key and values
-        services:
-          type: array
-          items:
-            $ref: '#/components/schemas/ServiceEntityLite'
-      description: ChangeEventEntity model
-    Conversations_API_Entities_Reference:
-      type: object
-      properties:
-        id:
-          type: string
-        resource_class:
-          type: string
-        resource_id:
-          type: string
-        field:
-          type: string
-        comments_url:
-          type: string
-        channel:
-          $ref: '#/components/schemas/Conversations_API_Entities_Channel'
-    Incidents_TeamAssignmentEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        team:
-          $ref: '#/components/schemas/TeamEntityLite'
-    Signals_API_TargetEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        is_pageable:
-          type: boolean
+            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
+      description: Event_NoteEntity model
     Incidents_StatusPageEntityPaginated:
       type: object
       properties:
@@ -2980,88 +3428,54 @@ components:
         pagination:
           $ref: '#/components/schemas/PaginationEntity'
       description: Incidents_StatusPageEntityPaginated model
-    patchV1IncidentsIncidentIdRelatedChangeEventsRelatedChangeEventId:
+    IncidentAttachmentEntity:
       type: object
       properties:
-        type:
+        file_name:
+          type: string
+        file_content_type:
+          type: string
+        signed_url:
+          type: string
+        media_type:
+          type: string
+        description:
+          type: string
+        external_id:
+          type: string
+        file_size:
+          type: integer
+          format: int32
+        status:
           type: string
           enum:
-          - caused
-          - fixed
-          - suspect
-          - dismissed
-        why:
-          type: string
-          description: A short description about why this change event is related
-      description: Update a change attached to an incident
-    Attachments_LinkEntityPaginated:
+          - pending_upload
+          - uploaded
+        versions:
+          type: object
+          properties: {}
+          description: An object with keys that designate a specific version or size of the attachment
+      description: IncidentAttachmentEntity model
+    IncidentEntityPaginated:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Attachments_LinkEntity'
+            $ref: '#/components/schemas/IncidentEntity'
         pagination:
           $ref: '#/components/schemas/PaginationEntity'
-      description: Attachments_LinkEntityPaginated model
-    Incidents_AlertEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        alert:
-          $ref: '#/components/schemas/Alerts_AlertEntity'
-        primary:
-          type: boolean
-          description: whether or not this is the primary alert for this incident
-      description: Incidents_AlertEntity model
-    patchV1IncidentsIncidentIdNotesNoteId:
+      description: IncidentEntityPaginated model
+    postV1IncidentsIncidentIdImpactType:
       required:
-      - body
-      type: object
-      properties:
-        body:
-          type: string
-      description: Updates the body of a note
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    ScheduledMaintenancesImpactEntity:
+      - id
       type: object
       properties:
         id:
           type: string
-        type:
+        condition_id:
           type: string
-        impact:
-          $ref: '#/components/schemas/SuccinctEntity'
-        condition:
-          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+      description: Add impacted infrastructure to an incident
     Ticketing_TicketEntity:
       type: object
       properties:
@@ -3138,7 +3552,36 @@ components:
         href:
           type: string
       description: Allows adding adhoc links to an incident as an attachment
-    Incidents_LifecycleMeasurementEntity:
+    Conversations_API_Entities_Reference:
+      type: object
+      properties:
+        id:
+          type: string
+        resource_class:
+          type: string
+        resource_id:
+          type: string
+        field:
+          type: string
+        comments_url:
+          type: string
+        channel:
+          $ref: '#/components/schemas/Conversations_API_Entities_Channel'
+    patchV1IncidentsIncidentIdRelatedChangeEventsRelatedChangeEventId:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - caused
+          - fixed
+          - suspect
+          - dismissed
+        why:
+          type: string
+          description: A short description about why this change event is related
+      description: Update a change attached to an incident
+    Incidents_LifecyclePhaseEntity:
       type: object
       properties:
         id:
@@ -3147,195 +3590,25 @@ components:
           type: string
         description:
           type: string
-        slug:
-          type: string
-        starts_at_milestone:
-          type: string
-        ends_at_milestone:
-          type: string
-        value:
-          type: string
-        calculated_at:
-          type: string
-          format: date-time
-    ChangeEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          description: UUID of the Change
-        summary:
-          type: string
-          description: Description of the Change
-        created_at:
-          type: string
-          description: The time the change entry was created
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        labels:
-          type: object
-          properties: {}
-          description: Arbitrary key/value pairs of labels.
-        description:
-          type: string
-          description: Description of the Change
-      description: ChangeEntity model
-    patchV1IncidentsIncidentIdGenericChatMessagesMessageId:
-      required:
-      - body
-      type: object
-      properties:
-        body:
-          type: string
-      description: Update an existing generic chat message on an incident.
-    Alerts_AlertEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        summary:
-          type: string
-        description:
-          type: string
-        priority:
-          type: string
-        integration_name:
-          type: string
-        starts_at:
-          type: string
-          format: date-time
-        ends_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        duration_ms:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        duration_iso8601:
-          type:
-          - string
-          - 'null'
-        status:
-          type: string
-        remote_id:
-          type: string
-        remote_url:
-          type: string
-        labels:
-          type: object
-          properties: {}
-          description: Arbitrary key:value pairs of labels.
-        environments:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuccinctEntity'
-        services:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuccinctEntity'
-        tags:
-          type: array
-          items:
-            type: string
-        source_icon:
-          type: string
-        signal_id:
-          type: string
-        signal_rule:
-          $ref: '#/components/schemas/Signals_API_RuleEntity'
-        team_name:
-          type: string
-        team_id:
+        type:
           type: string
         position:
           type: integer
           format: int32
-        incidents:
+        milestones:
           type: array
           items:
-            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/Alerts_SirenEventEntity'
-        is_expired:
-          type: boolean
-      description: Alerts_AlertEntity model
-    Alerts_SirenEventEntity:
+            $ref: '#/components/schemas/Incidents_LifecycleMilestoneEntity'
+    Incidents_MilestoneEntityPaginated:
       type: object
       properties:
-        id:
-          type: string
-        type:
-          type: string
         data:
-          type: object
-          properties: {}
-          description: The event's payload
-        created_at:
-          type: string
-          format: date-time
-    Incidents_ContextObjectEntity:
-      type: object
-      properties:
-        object_type:
-          type: string
-        object_id:
-          type: string
-        context_tag:
-          type: string
-        context_description:
-          type: string
-    EnvironmentEntryEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          description: UUID of the Environment
-        name:
-          type: string
-          description: Name of the Environment
-        slug:
-          type: string
-          description: Slug of the Environment
-        description:
-          type: string
-          description: Description of the Environment
-        updated_at:
-          type: string
-          description: The time the environment was updated
-          format: date-time
-        created_at:
-          type: string
-          description: The time the environment was created
-          format: date-time
-        active_incidents:
-          type: string
-          description: List of active incident guids
-        external_resources:
           type: array
-          description: Information about known linkages to representations of services outside of FireHydrant.
           items:
-            $ref: '#/components/schemas/ExternalResourceEntity'
-      description: EnvironmentEntryEntity model
-    patchV1IncidentsIncidentIdEventsEventIdVotes:
-      required:
-      - direction
-      type: object
-      properties:
-        direction:
-          type: string
-          description: The direction you would like to vote, or if you dig it
-          enum:
-          - up
-          - down
-          - dig
-      description: Allows for upvoting or downvoting an event
+            $ref: '#/components/schemas/Incidents_MilestoneEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Incidents_MilestoneEntityPaginated model
     IncidentEventEntity:
       type: object
       properties:
@@ -3369,175 +3642,43 @@ components:
           items:
             $ref: '#/components/schemas/Conversations_API_Entities_Reference'
       description: IncidentEventEntity model
-    VotesEntity:
-      type: object
-      properties:
-        voted:
-          type: boolean
-          description: Whether or not the current actor has voted
-        liked:
-          type: boolean
-          description: Whether or not the current actor has voted positively
-        disliked:
-          type: boolean
-          description: Whether or not the current actor has voted negatively
-        likes:
-          type: integer
-          format: int32
-        dislikes:
-          type: integer
-          format: int32
-      description: VotesEntity model
-    IncidentImpactEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/IncidentImpactEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: IncidentImpactEntityPaginated model
-    Signals_API_RuleEntity:
+    PublicAPI_V1_Incidents_SuccinctEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-        expression:
+        number:
           type: string
-        team_id:
+    Conversations_API_Entities_Channel:
+      type: object
+      properties:
+        name:
           type: string
-        target:
-          $ref: '#/components/schemas/Signals_API_TargetEntity'
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-        incident_type:
-          $ref: '#/components/schemas/SuccinctEntity'
-        notification_priority_override:
+        signals_ical_url:
           type: string
-          enum:
-          - HIGH
-          - MEDIUM
-          - LOW
-    patchV1IncidentsIncidentId:
-      type: object
-      properties:
-        name:
-          type: string
-        summary:
-          type: string
-        customer_impact_summary:
-          type: string
-        description:
-          type: string
-        labels:
-          type: object
-          properties: {}
-          description: Key:value pairs to track custom data for the incident
-        priority:
-          type: string
-        severity:
-          type: string
-        severity_condition_id:
-          type: string
-        severity_impact_id:
-          type: string
-        tag_list:
-          type: array
-          description: List of tags for the incident
-          items:
-            type: string
-      description: Updates an incident with provided parameters
-    patchV1IncidentsIncidentIdAlertsIncidentAlertIdPrimary:
-      required:
-      - primary
-      type: object
-      properties:
-        primary:
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
           type: boolean
-      description: Setting an alert as primary will overwrite milestone times in the FireHydrant incident with times included in the primary alert. Services attached to the primary alert will also be automatically added to the incident.
-    IncidentEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/IncidentEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: IncidentEntityPaginated model
-    SeverityMatrix_ImpactEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        affects_id:
-          type: string
-        position:
-          type: integer
-          format: int32
-      description: SeverityMatrix_ImpactEntity model
-    Incidents_ChannelEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        source:
-          type: string
-        source_name:
-          type: string
-        source_id:
-          type: string
-        url:
-          type: string
-        icon_url:
-          type: string
-        status:
-          type: string
-      description: Incidents_ChannelEntity model
-    Incidents_RoleAssignmentEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_RoleAssignmentEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Incidents_RoleAssignmentEntityPaginated model
-    Incidents_ImpactEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-          enum:
-          - environment
-          - functionality
-          - service
-        impact:
-          $ref: '#/components/schemas/SuccinctEntity'
-        condition:
-          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
-        conversations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
     Incidents_ConferenceBridgeEntity:
       type: object
       properties:
@@ -3549,150 +3690,22 @@ components:
           items:
             type: object
             properties: {}
-    TaskEntity:
+    Incidents_StatusPageEntity:
       type: object
       properties:
         id:
           type: string
-        title:
+        url:
           type: string
-        description:
+        external_id:
           type: string
-        state:
-          type: string
-        assignee:
-          $ref: '#/components/schemas/AuthorEntity'
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        due_at:
-          type: string
-          format: date-time
-      description: TaskEntity model
-    Incidents_RelatedChangeEventEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_RelatedChangeEventEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Incidents_RelatedChangeEventEntityPaginated model
-    Incidents_RelatedChangeEventEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        why:
-          type: string
-          description: The reason why this change event is related to this incident
-        type:
-          type: string
-          enum:
-          - caused
-          - fixed
-          - suspect
-          - dismissed
-        change_event:
-          $ref: '#/components/schemas/ChangeEventEntity'
-        incident_id:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-      description: Incidents_RelatedChangeEventEntity model
-    postV1ScheduledMaintenances:
-      required:
-      - ends_at
-      - name
-      - starts_at
-      type: object
-      properties:
         name:
           type: string
-        starts_at:
+        display_name:
           type: string
-          description: ISO8601 timestamp for the start time of the scheduled maintenance
-          format: date-time
-        ends_at:
-          type: string
-          description: ISO8601 timestamp for the end time of the scheduled maintenance
-          format: date-time
-        summary:
-          type: string
-        description:
-          type: string
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: A json object of label keys and values
-        status_pages:
-          type: array
-          description: An array of status pages to display this maintenance on
-          items:
-            required:
-            - connection_id
-            type: object
-            properties:
-              integration_slug:
-                type: string
-                description: The slug identifying the type of status page
-              connection_id:
-                type: string
-                description: The UUID of the status page to display this maintenance on
-        impacts:
-          type: array
-          description: An array of impact/condition combinations
-          items:
-            required:
-            - condition_id
-            - id
-            - type
-            type: object
-            properties:
-              type:
-                type: string
-                description: The type of impact
-              id:
-                type: string
-                description: The id of impact
-              condition_id:
-                type: string
-                description: The id of the condition
-      description: Create a new scheduled maintenance event
-    Incidents_RoleAssignmentEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        status:
-          type: string
-          enum:
-          - active
-          - inactive
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        incident_role:
-          $ref: '#/components/schemas/IncidentRoleEntity'
-        user:
-          $ref: '#/components/schemas/UserEntity'
-      description: Incidents_RoleAssignmentEntity model
+        integration:
+          $ref: '#/components/schemas/IntegrationEntity'
+      description: Incidents_StatusPageEntity model
     Event_GenericChatMessageEntity:
       type: object
       properties:
@@ -3704,25 +3717,93 @@ components:
           type: string
           format: date-time
       description: Event_GenericChatMessageEntity model
-    Event_NoteEntity:
+    OrganizationEntity:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string
+    ScheduledMaintenancesImpactEntity:
       type: object
       properties:
         id:
           type: string
+        type:
+          type: string
+        impact:
+          $ref: '#/components/schemas/SuccinctEntity'
+        condition:
+          $ref: '#/components/schemas/SeverityMatrix_ConditionEntity'
+    postV1IncidentsIncidentIdRelatedChangeEvents:
+      required:
+      - change_event_id
+      - type
+      type: object
+      properties:
+        change_event_id:
+          type: string
+          description: The ID of the change event to associate
+        type:
+          type: string
+          enum:
+          - caused
+          - fixed
+          - suspect
+          - dismissed
+        why:
+          type: string
+          description: A short description about why this change event is related
+      description: Add a related change to an incident. Changes added to an incident can be causes, fixes, or suspects. To remove a change from an incident, the type field should be set to dismissed.
+    postV1IncidentsIncidentIdGenericChatMessages:
+      required:
+      - body
+      type: object
+      properties:
         body:
           type: string
-        created_at:
+        occurred_at:
           type: string
+          description: ISO8601 timestamp for when the chat message occurred
           format: date-time
-        status_pages:
+        vote_direction:
+          type: string
+          enum:
+          - up
+          - down
+      description: Create a new generic chat message on an incident timeline. These are independent of any specific chat provider.
+    Incidents_AlertEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        alert:
+          $ref: '#/components/schemas/Alerts_AlertEntity'
+        primary:
+          type: boolean
+          description: whether or not this is the primary alert for this incident
+      description: Incidents_AlertEntity model
+    Incidents_RelatedChangeEventEntityPaginated:
+      type: object
+      properties:
+        data:
           type: array
           items:
-            $ref: '#/components/schemas/Incidents_StatusPageEntity'
-        conversations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Conversations_API_Entities_Reference'
-      description: Event_NoteEntity model
+            $ref: '#/components/schemas/Incidents_RelatedChangeEventEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Incidents_RelatedChangeEventEntityPaginated model
+    ScheduledMaintenancesStatusPageEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        integration_id:
+          type: string
+        integration_slug:
+          type: string
+        integration_name:
+          type: string
     IncidentRoleEntity:
       type: object
       properties:
@@ -3744,121 +3825,6 @@ components:
           type: string
           format: date-time
       description: IncidentRoleEntity model
-    patchV1IncidentsIncidentIdImpact:
-      type: object
-      properties:
-        note:
-          type: string
-        milestone:
-          type: string
-        impact:
-          type: array
-          items:
-            required:
-            - condition_id
-            - id
-            type: object
-            properties:
-              id:
-                type: string
-              condition_id:
-                type: string
-        status_pages:
-          type: array
-          items:
-            required:
-            - id
-            - integration_slug
-            type: object
-            properties:
-              id:
-                type: string
-              integration_slug:
-                type: string
-      description: 'Allows updating an incident''s impacted infrastructure, with the option to
-
-        move the incident into a different milestone and provide a note to update
-
-        the incident timeline and any attached status pages. If this method is
-
-        requested with the PUT verb, impacts will be completely replaced with the
-
-        information in the request body, even if not provided (effectively clearing
-
-        all impacts). If this method is requested with the PATCH verb, the provided
-
-        impacts will be added or updated, but no impacts will be removed.
-
-        '
-    IncidentAttachmentEntity:
-      type: object
-      properties:
-        file_name:
-          type: string
-        file_content_type:
-          type: string
-        signed_url:
-          type: string
-        media_type:
-          type: string
-        description:
-          type: string
-        external_id:
-          type: string
-        file_size:
-          type: integer
-          format: int32
-        status:
-          type: string
-          enum:
-          - pending_upload
-          - uploaded
-        versions:
-          type: object
-          properties: {}
-          description: An object with keys that designate a specific version or size of the attachment
-      description: IncidentAttachmentEntity model
-    IncidentEntity_FieldRequirementEntity:
-      type: object
-      properties:
-        field_id:
-          type: string
-          description: A unique identifier for the field.
-        required_at_milestone_id:
-          type: string
-          description: The milestone at which this field is required. If null, this field is always required.
-    postV1IncidentsIncidentIdRelatedChangeEvents:
-      required:
-      - change_event_id
-      - type
-      type: object
-      properties:
-        change_event_id:
-          type: string
-          description: The ID of the change event to associate
-        type:
-          type: string
-          enum:
-          - caused
-          - fixed
-          - suspect
-          - dismissed
-        why:
-          type: string
-          description: A short description about why this change event is related
-      description: Add a related change to an incident. Changes added to an incident can be causes, fixes, or suspects. To remove a change from an incident, the type field should be set to dismissed.
-    SuccinctEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-    Conversations_API_Entities_Channel:
-      type: object
-      properties:
-        name:
-          type: string
     postV1IncidentsIncidentIdNotes:
       required:
       - body
@@ -3890,13 +3856,93 @@ components:
               integration_slug:
                 type: string
       description: Create a new note on for an incident. The visibility field on a note determines where it gets posted.
-    OrganizationEntity:
+    patchV1IncidentsIncidentIdNotesNoteId:
+      required:
+      - body
       type: object
       properties:
-        name:
+        body:
           type: string
+      description: Updates the body of a note
+    AuthorEntity:
+      type: object
+      properties:
         id:
           type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
+    postV1IncidentsIncidentIdTeamAssignments:
+      required:
+      - team_id
+      type: object
+      properties:
+        team_id:
+          type: string
+          description: The team ID to associate to the incident
+      description: Assign a team for this incident
+    ErrorEntity:
+      type: object
+      properties:
+        detail:
+          type: string
+        messages:
+          type: array
+          items:
+            type: string
+        meta:
+          type: object
+          properties: {}
+          description: An object with additional error metadata
+        code:
+          type: string
+          description: A stable code on which to match errors
+      description: ErrorEntity model
+    patchV1IncidentsIncidentIdGenericChatMessagesMessageId:
+      required:
+      - body
+      type: object
+      properties:
+        body:
+          type: string
+      description: Update an existing generic chat message on an incident.
+    Incidents_RoleAssignmentEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        incident_role:
+          $ref: '#/components/schemas/IncidentRoleEntity'
+        user:
+          $ref: '#/components/schemas/UserEntity'
+      description: Incidents_RoleAssignmentEntity model
+    patchV1IncidentsIncidentIdEventsEventIdVotes:
+      required:
+      - direction
+      type: object
+      properties:
+        direction:
+          type: string
+          description: The direction you would like to vote, or if you dig it
+          enum:
+          - up
+          - down
+          - dig
+      description: Allows for upvoting or downvoting an event
     IncidentImpactEntity:
       type: object
       properties:
@@ -3907,158 +3953,112 @@ components:
         infrastructure:
           $ref: '#/components/schemas/SuccinctEntity'
       description: IncidentImpactEntity model
-    Incidents_RelationshipsEntity:
+    PaginationEntity:
       type: object
       properties:
-        parent:
-          $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
-        children:
-          type: array
-          description: The root incident's child incidents.
-          items:
-            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
-        siblings:
-          type: array
-          description: A list of incidents that share the root incident's parent.
-          items:
-            $ref: '#/components/schemas/PublicAPI_V1_Incidents_SuccinctEntity'
-      description: Incidents_RelationshipsEntity model
-    Ticketing_PriorityEntity:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    postV1IncidentsIncidentIdRoleAssignments:
+      required:
+      - incident_role_id
+      - user_id
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: The user ID to assign the role to
+        incident_role_id:
+          type: string
+          description: The Incident Role ID to assign the role to
+      description: Assign a role to a user for this incident
+    ChangeEventEntity:
       type: object
       properties:
         id:
           type: string
-        name:
+        summary:
           type: string
-        position:
-          type: integer
-          format: int32
+        description:
+          type: string
+        external_id:
+          type: string
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
-      description: Ticketing_PriorityEntity model
-    ScheduledMaintenancesStatusPageEntity:
-      type: object
-      properties:
-        id:
+        starts_at:
           type: string
-        integration_id:
-          type: string
-        integration_slug:
-          type: string
-        integration_name:
-          type: string
-    postV1Incidents:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        summary:
-          type: string
-        customer_impact_summary:
-          type: string
-        description:
-          type: string
-        priority:
-          type: string
-        severity:
-          type: string
-        severity_condition_id:
-          type: string
-        severity_impact_id:
-          type: string
-        alert_ids:
+          format: date-time
+        ends_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        duration_ms:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        duration_iso8601:
+          type:
+          - string
+          - 'null'
+        environments:
           type: array
-          description: List of alert IDs that this incident should be associated to
           items:
-            type: string
+            $ref: '#/components/schemas/EnvironmentEntryEntity'
+        related_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangeEntity'
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangeIdentityEntity'
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorEntity'
+        attachments:
+          type: array
+          description: 'A list of objects attached to this item. Can be one of: LinkEntity, CustomerSupportIssueEntity, or GenericAttachmentEntity'
+          items:
+            type: object
+            properties: {}
         labels:
           type: object
           properties: {}
-          description: Key:value pairs to track custom data for the incident
-        runbook_ids:
+          description: An object of label key and values
+        services:
           type: array
-          description: List of ids of Runbooks to attach to this incident. Foregoes any conditions these Runbooks may have guarding automatic attachment.
           items:
-            type: string
-        tag_list:
-          type: array
-          description: List of tags for the incident
-          items:
-            type: string
-        impacts:
-          type: array
-          description: An array of impacted infrastructure
-          items:
-            required:
-            - condition_id
-            - id
-            - type
-            type: object
-            properties:
-              type:
-                type: string
-                description: 'The type of impacted infrastructure. One of: environment, functionality, or service'
-              id:
-                type: string
-                description: The ID of the impacted infrastructure
-              condition_id:
-                type: string
-                description: The ID of the impact condition. Find these at /v1/severity_matrix/conditions
-        milestones:
-          type: array
-          description: An array of milestones to set on an incident. This can be used to create an already-resolved incident.
-          items:
-            required:
-            - occurred_at
-            - type
-            type: object
-            properties:
-              type:
-                type: string
-                description: The type/slug of the milestone. Must be one of the currently configured milestones.
-              occurred_at:
-                type: string
-                description: An ISO8601 formatted string for when this milestone occurred. If you are removing a milestone, this field still needs to be set to some value
-                format: date-time
-        restricted:
-          type: boolean
-        team_ids:
-          type: array
-          description: IDs of teams you wish to assign to this incident.
-          items:
-            type: string
-        custom_fields:
-          type: array
-          description: An array of custom fields to set on the incident.
-          items:
-            required:
-            - field_id
-            type: object
-            properties:
-              field_id:
-                type: string
-                description: The ID of the custom field you wish to set.
-              value_string:
-                type: string
-                description: The value you wish to set on the custom field if the type of the field accepts string values
-              value_array:
-                type: array
-                description: The value you wish to set on the custom field if the type of the field accepts array values
-                items:
-                  type: string
-        external_links:
-          type: string
-        skip_incident_type_values:
-          type: boolean
-          description: If true, the incident type values will not be copied to the incident. This is useful when creating an incident from an incident type, but you want to set the values manually.
-          default: false
-      description: Create a new incident
+            $ref: '#/components/schemas/ServiceEntityLite'
+      description: ChangeEventEntity model
     Incident:
       type: object
       properties:

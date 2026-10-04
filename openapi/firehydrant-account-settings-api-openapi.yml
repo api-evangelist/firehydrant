@@ -281,17 +281,6 @@ paths:
       x-codegen-request-body-name: patchV1SavedSearchesResourceTypeSavedSearchId
 components:
   schemas:
-    patchV1SavedSearchesResourceTypeSavedSearchId:
-      type: object
-      properties:
-        is_private:
-          type: boolean
-        name:
-          type: string
-        filter_values:
-          type: object
-          additionalProperties: true
-      description: Update a specific saved search
     PongEntity:
       type: object
       properties:
@@ -302,16 +291,41 @@ components:
         organization:
           $ref: '#/components/schemas/OrganizationEntity'
       description: PongEntity model
-    EntitlementEntityPaginated:
+    OrganizationEntity:
       type: object
       properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntitlementEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: EntitlementEntityPaginated model
+        name:
+          type: string
+        id:
+          type: string
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
     SavedSearchEntity:
       type: object
       properties:
@@ -337,6 +351,26 @@ components:
           properties: {}
           description: An unstructured key/value pair of saved values for searching
       description: SavedSearchEntity model
+    AI_Entities_PreferencesEntity:
+      type: object
+      properties:
+        ai:
+          type: boolean
+        description:
+          type: boolean
+        followups:
+          type: boolean
+        impact:
+          type: boolean
+        retros:
+          type: boolean
+        similar_incidents:
+          type: boolean
+        summaries:
+          type: boolean
+        updates:
+          type: boolean
+      description: AI_Entities_PreferencesEntity model
     ActorEntity:
       type: object
       properties:
@@ -386,6 +420,27 @@ components:
           - zoom_v2
           - linear
           - cortex
+    patchV1SavedSearchesResourceTypeSavedSearchId:
+      type: object
+      properties:
+        is_private:
+          type: boolean
+        name:
+          type: string
+        filter_values:
+          type: object
+          additionalProperties: true
+      description: Update a specific saved search
+    EntitlementEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntitlementEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: EntitlementEntityPaginated model
     EntitlementEntity:
       type: object
       properties:
@@ -414,61 +469,6 @@ components:
           - essentials
           - enterprise
           - signals_only
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    AI_Entities_PreferencesEntity:
-      type: object
-      properties:
-        ai:
-          type: boolean
-        description:
-          type: boolean
-        followups:
-          type: boolean
-        impact:
-          type: boolean
-        retros:
-          type: boolean
-        similar_incidents:
-          type: boolean
-        summaries:
-          type: boolean
-        updates:
-          type: boolean
-      description: AI_Entities_PreferencesEntity model
-    OrganizationEntity:
-      type: object
-      properties:
-        name:
-          type: string
-        id:
-          type: string
   securitySchemes:
     api_key:
       type: apiKey
