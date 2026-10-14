@@ -2,6 +2,7 @@ generated: '2026-10-14'
 method: searched
 checked:
 - https://marketplace.atlassian.com/
+- okta/integrations/okta-integration-edges.yml
 marketplace_apps: []
 edges:
 - partner_name: Atlassian Marketplace
@@ -20,5 +21,30 @@ edges:
   publisher_name: FireHydrant
   detected_by: sweep-devtools.py
   detected: '2026-10-14'
+- partner_name: Okta (own)
+  partner: okta
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://www.okta.com/integrations/firehydrant/
+  mirror_of: okta/integrations/okta-integration-edges.yml
+  apps:
+  - FireHydrant
+  listing_count: 1
+  detected: '2026-10-14'
+  detected_by: mirror-platform-listings.py
+  category: Single Sign-On
+  badges:
+  - OKTA_VERIFIED
+  features:
+  - CREATE
+  - DEACTIVATE
+  - IDENTITY_SECURITY_POSTURE_MANAGEMENT
+  - SAML
+  - UPDATE
 source:
 - https://marketplace.atlassian.com/
