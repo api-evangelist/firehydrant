@@ -1126,46 +1126,6 @@ paths:
       x-codegen-request-body-name: patchV1TicketingTicketsTicketId
 components:
   schemas:
-    Integrations_ConnectionEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        integration_slug:
-          type: string
-        integration_id:
-          type: string
-        display_name:
-          type: string
-        configuration_url:
-          type: string
-        authorized_by:
-          type: string
-        authorized_by_id:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        details:
-          type: object
-          properties: {}
-          description: Integration-specific details of this connection. As identified by the integration_slug, this object will be represented by that integration's ConnectionEntity.
-        default_authorized_actor:
-          $ref: '#/components/schemas/AuthorEntity'
-    TagEntity:
-      type: object
-      properties:
-        name:
-          type: string
-      description: TagEntity model
-    Integrations_IntegrationEntity_LogoEntity:
-      type: object
-      properties:
-        logo_url:
-          type: string
     Integrations_Statuspage_MilestoneMappingEntity:
       type: object
       properties:
@@ -1173,6 +1133,22 @@ components:
           type: string
         status:
           type: string
+    Ticketing_ProjectFieldMapEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        connection_id:
+          type: string
+        connection_type:
+          type: string
+        ticketing_project_id:
+          type: string
+        body:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticketing_ProjectFieldMapBodyEntity'
+      description: Ticketing_ProjectFieldMapEntity model
     Ticketing_PriorityEntity:
       type: object
       properties:
@@ -1209,200 +1185,37 @@ components:
           type: string
           description: If the field is required to be mapped
       description: Ticketing_FieldMaps_MappableFieldEntity model
-    Attachments_LinkEntity:
+    patchV1TicketingPrioritiesId:
       type: object
       properties:
-        id:
-          type: string
-        type:
-          type: string
-        display_text:
-          type: string
-        href_url:
-          type: string
-        icon_url:
-          type: string
-        editable:
-          type: boolean
-          description: Link can be edited
-        deletable:
-          type: boolean
-          description: Link can be deleted
-      description: Attachments_LinkEntity model
-    Ticketing_ProjectFieldMapBodyEntity:
-      type: object
-      properties:
-        strategy:
-          type: string
-          enum:
-          - basic
-          - logic
-        external_field:
-          type: string
-        external_value:
-          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
-        user_data:
-          type: object
-          properties: {}
-        cases:
-          type: array
-          items:
-            $ref: '#/components/schemas/Ticketing_ProjectFieldMapCasesEntity'
-        else:
-          $ref: '#/components/schemas/Ticketing_ProjectFieldMapCasesElseEntity'
-    Integrations_Aws_ConnectionEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Integrations_Aws_ConnectionEntityPaginated model
-    patchV1IntegrationsAwsConnectionsId:
-      type: object
-      properties:
-        aws_account_id:
-          type: string
-        target_arn:
-          type: string
-        connection_status:
-          type: string
-      description: Update the AWS connection with the provided data.
-    Ticketing_Projects_ProjectListItemEntity:
-      type: object
-      properties:
-        id:
-          type: string
         name:
           type: string
-        config:
-          $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
-        field_map:
-          $ref: '#/components/schemas/Ticketing_ProjectFieldMapEntity'
-        updated_at:
-          type: string
-          format: date-time
-        connection_slug:
-          type: string
-      description: Ticketing_Projects_ProjectListItemEntity model
-    TagEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: TagEntityPaginated model
-    Ticketing_ProjectConfigEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        connection_id:
-          type: string
-        connection_type:
-          type: string
-        ticketing_project_id:
-          type: string
-        ticketing_project_name:
-          type: string
-        details:
-          type: object
-          properties: {}
-          description: 'A config object containing details about the project config. Can be one of: Ticketing::JiraCloud::ProjectConfigEntity, Ticketing::JiraOnprem::ProjectConfigEntity, or Ticketing::Shortcut::ProjectConfigEntity'
-      description: Ticketing_ProjectConfigEntity model
-    Ticketing_ProjectFieldMapCasesElseEntity:
-      type: object
-      properties:
-        external_value:
-          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
-    Integrations_Aws_CloudtrailBatchEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        events_created:
+        position:
           type: integer
+          description: The position that this priority should take in your list of priorities. Priorities should be ordered from highest to lowest, with the highest priority at 0. If a position isn't specified, the new priority will be added to the end of the list; if another priority already exists at the specified position, this priority will shift that priority and all priorities down the list.
           format: int32
-        status:
-          type: string
-          enum:
-          - in_progress
-          - failed
-          - successful
-          - pending
-          - retried
-        starts_at:
-          type: string
-          format: date-time
-        ends_at:
-          type: string
-          format: date-time
-        connection:
-          $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
-        created_at:
-          type: string
-          format: date-time
-      description: Integrations_Aws_CloudtrailBatchEntity model
-    Ticketing_ProjectFieldMapExternalValueEntity:
+      description: Update a single ticketing priority's attributes
+    Integrations_Statuspage_SeverityEntity:
       type: object
       properties:
-        type:
+        severity_slug:
           type: string
-          enum:
-          - literal
-          - fh-attribute
-          - fh-type
-        value:
+        remote_status:
           type: string
-        attribute:
-          type: string
-        presentation:
-          type: string
-    Integrations_ConfluenceCloud_SpaceKeyEntity:
+    Integrations_Statuspage_ConditionEntity:
       type: object
       properties:
-        key:
+        condition_id:
           type: string
-        name:
+        condition_name:
           type: string
-      description: Integrations_ConfluenceCloud_SpaceKeyEntity model
-    Integrations_Aws_ConnectionEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        aws_account_id:
-          type: string
-        target_arn:
-          type: string
-        external_id:
-          type: string
-        connection_status:
+        statuspageio_condition:
           type: string
           enum:
-          - pending_setup
-          - role_assumed
-          - cant_assume_role
-          - invalid_permissions
-          - validated
-        status_text:
-          type: string
-        status_description:
-          type: string
-        environment_id:
-          type: string
-        environment_name:
-          type: string
-        regions:
-          type: array
-          items:
-            type: string
-      description: Integrations_Aws_ConnectionEntity model
+          - operational
+          - major_outage
+          - minor_outage
+          - degraded_performance
     patchV1IntegrationsStatuspageConnectionsConnectionId:
       type: object
       properties:
@@ -1456,28 +1269,27 @@ components:
                 - monitoring
                 - resolved
       description: Update the given Statuspage integration connection.
-    Integrations_Statuspage_ConnectionEntity:
+    Ticketing_ProjectFieldMapBodyEntity:
       type: object
       properties:
-        id:
+        strategy:
           type: string
-        page_name:
+          enum:
+          - basic
+          - logic
+        external_field:
           type: string
-        page_id:
-          type: string
-        conditions:
+        external_value:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+        user_data:
+          type: object
+          properties: {}
+        cases:
           type: array
           items:
-            $ref: '#/components/schemas/Integrations_Statuspage_ConditionEntity'
-        severities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Integrations_Statuspage_SeverityEntity'
-        milestone_mappings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Integrations_Statuspage_MilestoneMappingEntity'
-      description: Integrations_Statuspage_ConnectionEntity model
+            $ref: '#/components/schemas/Ticketing_ProjectFieldMapCasesEntity'
+        else:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapCasesElseEntity'
     AuthorEntity:
       type: object
       properties:
@@ -1489,16 +1301,6 @@ components:
           type: string
         email:
           type: string
-    Integrations_Aws_CloudtrailBatchEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Integrations_Aws_CloudtrailBatchEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Integrations_Aws_CloudtrailBatchEntityPaginated model
     FieldMapping_FieldMapEntity:
       type: object
       properties:
@@ -1542,36 +1344,93 @@ components:
           type: string
           description: Short, inline documentation for the present field
       description: FieldMapping_MappableFieldEntity model
-    patchV1IntegrationsAwsCloudtrailBatchesId:
+    Ticketing_ProjectFieldMapCasesEntity:
       type: object
       properties:
-        events_created:
-          type: integer
-          format: int32
-        status:
-          type: string
-        error:
-          type: string
-        ends_at:
-          type: string
-          format: date-time
-      description: Update a CloudTrail batch with new information.
-    Ticketing_ProjectFieldMapEntity:
+        logic:
+          type: object
+          properties: {}
+          description: An unstructured object of key/value pairs describing the logic for applying the rule.
+        external_value:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+    TagEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: TagEntityPaginated model
+    Integrations_ConnectionEntity:
       type: object
       properties:
         id:
           type: string
-        connection_id:
+        integration_slug:
           type: string
-        connection_type:
+        integration_id:
           type: string
-        ticketing_project_id:
+        display_name:
           type: string
-        body:
+        configuration_url:
+          type: string
+        authorized_by:
+          type: string
+        authorized_by_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        details:
+          type: object
+          properties: {}
+          description: Integration-specific details of this connection. As identified by the integration_slug, this object will be represented by that integration's ConnectionEntity.
+        default_authorized_actor:
+          $ref: '#/components/schemas/AuthorEntity'
+    Integrations_IntegrationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        setup_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        connections:
+          $ref: '#/components/schemas/Integrations_ConnectionEntity'
+        enabled:
+          type: boolean
+        installed:
+          type: boolean
+        deprecated:
+          type: boolean
+        logo:
+          $ref: '#/components/schemas/Integrations_IntegrationEntity_LogoEntity'
+        nat_ip:
+          type: string
+      description: Integrations_IntegrationEntity model
+    Integrations_Aws_ConnectionEntityPaginated:
+      type: object
+      properties:
+        data:
           type: array
           items:
-            $ref: '#/components/schemas/Ticketing_ProjectFieldMapBodyEntity'
-      description: Ticketing_ProjectFieldMapEntity model
+            $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Integrations_Aws_ConnectionEntityPaginated model
     Ticketing_TicketEntity:
       type: object
       properties:
@@ -1636,75 +1495,38 @@ components:
         link:
           $ref: '#/components/schemas/Attachments_LinkEntity'
       description: Ticketing_TicketEntity model
-    Integrations_Statuspage_SeverityEntity:
-      type: object
-      properties:
-        severity_slug:
-          type: string
-        remote_status:
-          type: string
-    Integrations_IntegrationEntity:
+    Integrations_Aws_ConnectionEntity:
       type: object
       properties:
         id:
           type: string
-        slug:
+        aws_account_id:
           type: string
-        name:
+        target_arn:
           type: string
-        description:
+        external_id:
           type: string
-        setup_url:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        connections:
-          $ref: '#/components/schemas/Integrations_ConnectionEntity'
-        enabled:
-          type: boolean
-        installed:
-          type: boolean
-        deprecated:
-          type: boolean
-        logo:
-          $ref: '#/components/schemas/Integrations_IntegrationEntity_LogoEntity'
-        nat_ip:
-          type: string
-      description: Integrations_IntegrationEntity model
-    Integrations_Statuspage_ConditionEntity:
-      type: object
-      properties:
-        condition_id:
-          type: string
-        condition_name:
-          type: string
-        statuspageio_condition:
+        connection_status:
           type: string
           enum:
-          - operational
-          - major_outage
-          - minor_outage
-          - degraded_performance
-    patchV1TicketingTicketsTicketId:
-      type: object
-      properties:
-        summary:
+          - pending_setup
+          - role_assumed
+          - cant_assume_role
+          - invalid_permissions
+          - validated
+        status_text:
           type: string
-        description:
+        status_description:
           type: string
-        state:
+        environment_id:
           type: string
-        type:
+        environment_name:
           type: string
-        priority_id:
-          type: string
-        tag_list:
+        regions:
           type: array
-          description: List of tags for the ticket
           items:
             type: string
-      description: Update a ticket's attributes
+      description: Integrations_Aws_ConnectionEntity model
     PaginationEntity:
       type: object
       properties:
@@ -1733,6 +1555,171 @@ components:
           - integer
           - 'null'
           format: int32
+    Ticketing_ProjectFieldMapCasesElseEntity:
+      type: object
+      properties:
+        external_value:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+    Attachments_LinkEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_text:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        editable:
+          type: boolean
+          description: Link can be edited
+        deletable:
+          type: boolean
+          description: Link can be deleted
+      description: Attachments_LinkEntity model
+    TagEntity:
+      type: object
+      properties:
+        name:
+          type: string
+      description: TagEntity model
+    Integrations_IntegrationEntity_LogoEntity:
+      type: object
+      properties:
+        logo_url:
+          type: string
+    Ticketing_ProjectFieldMapExternalValueEntity:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - literal
+          - fh-attribute
+          - fh-type
+        value:
+          type: string
+        attribute:
+          type: string
+        presentation:
+          type: string
+    Ticketing_ProjectConfigEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        connection_id:
+          type: string
+        connection_type:
+          type: string
+        ticketing_project_id:
+          type: string
+        ticketing_project_name:
+          type: string
+        details:
+          type: object
+          properties: {}
+          description: 'A config object containing details about the project config. Can be one of: Ticketing::JiraCloud::ProjectConfigEntity, Ticketing::JiraOnprem::ProjectConfigEntity, or Ticketing::Shortcut::ProjectConfigEntity'
+      description: Ticketing_ProjectConfigEntity model
+    Ticketing_Projects_ProjectListItemEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        config:
+          $ref: '#/components/schemas/Ticketing_ProjectConfigEntity'
+        field_map:
+          $ref: '#/components/schemas/Ticketing_ProjectFieldMapEntity'
+        updated_at:
+          type: string
+          format: date-time
+        connection_slug:
+          type: string
+      description: Ticketing_Projects_ProjectListItemEntity model
+    patchV1TicketingTicketsTicketId:
+      type: object
+      properties:
+        summary:
+          type: string
+        description:
+          type: string
+        state:
+          type: string
+        type:
+          type: string
+        priority_id:
+          type: string
+        tag_list:
+          type: array
+          description: List of tags for the ticket
+          items:
+            type: string
+      description: Update a ticket's attributes
+    Integrations_Aws_CloudtrailBatchEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        events_created:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+          - in_progress
+          - failed
+          - successful
+          - pending
+          - retried
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        connection:
+          $ref: '#/components/schemas/Integrations_Aws_ConnectionEntity'
+        created_at:
+          type: string
+          format: date-time
+      description: Integrations_Aws_CloudtrailBatchEntity model
+    Integrations_Aws_CloudtrailBatchEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Aws_CloudtrailBatchEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Integrations_Aws_CloudtrailBatchEntityPaginated model
+    Integrations_Statuspage_ConnectionEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        page_name:
+          type: string
+        page_id:
+          type: string
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_ConditionEntity'
+        severities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_SeverityEntity'
+        milestone_mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Integrations_Statuspage_MilestoneMappingEntity'
+      description: Integrations_Statuspage_ConnectionEntity model
     Integrations_Statuspage_ConnectionEntityPaginated:
       type: object
       properties:
@@ -1743,25 +1730,38 @@ components:
         pagination:
           $ref: '#/components/schemas/PaginationEntity'
       description: Integrations_Statuspage_ConnectionEntityPaginated model
-    patchV1TicketingPrioritiesId:
+    patchV1IntegrationsAwsCloudtrailBatchesId:
       type: object
       properties:
+        events_created:
+          type: integer
+          format: int32
+        status:
+          type: string
+        error:
+          type: string
+        ends_at:
+          type: string
+          format: date-time
+      description: Update a CloudTrail batch with new information.
+    Integrations_ConfluenceCloud_SpaceKeyEntity:
+      type: object
+      properties:
+        key:
+          type: string
         name:
           type: string
-        position:
-          type: integer
-          description: The position that this priority should take in your list of priorities. Priorities should be ordered from highest to lowest, with the highest priority at 0. If a position isn't specified, the new priority will be added to the end of the list; if another priority already exists at the specified position, this priority will shift that priority and all priorities down the list.
-          format: int32
-      description: Update a single ticketing priority's attributes
-    Ticketing_ProjectFieldMapCasesEntity:
+      description: Integrations_ConfluenceCloud_SpaceKeyEntity model
+    patchV1IntegrationsAwsConnectionsId:
       type: object
       properties:
-        logic:
-          type: object
-          properties: {}
-          description: An unstructured object of key/value pairs describing the logic for applying the rule.
-        external_value:
-          $ref: '#/components/schemas/Ticketing_ProjectFieldMapExternalValueEntity'
+        aws_account_id:
+          type: string
+        target_arn:
+          type: string
+        connection_status:
+          type: string
+      description: Update the AWS connection with the provided data.
   securitySchemes:
     api_key:
       type: apiKey

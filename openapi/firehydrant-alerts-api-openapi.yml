@@ -217,41 +217,6 @@ paths:
                 $ref: '#/components/schemas/Alerts_ProcessingLogEntryEntityPaginated'
 components:
   schemas:
-    Signals_API_TargetEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        type:
-          type: string
-        is_pageable:
-          type: boolean
-    Alerts_AlertEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Alerts_AlertEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Alerts_AlertEntityPaginated model
-    Alerts_SirenEventEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        data:
-          type: object
-          properties: {}
-          description: The event's payload
-        created_at:
-          type: string
-          format: date-time
     Signals_API_RuleEntity:
       type: object
       properties:
@@ -281,24 +246,26 @@ components:
           - HIGH
           - MEDIUM
           - LOW
-    Alerts_ProcessingLogEntryEntityPaginated:
+    Alerts_SirenEventEntity:
       type: object
       properties:
+        id:
+          type: string
+        type:
+          type: string
         data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Alerts_ProcessingLogEntryEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Alerts_ProcessingLogEntryEntityPaginated model
-    PublicAPI_V1_Incidents_SuccinctEntity:
+          type: object
+          properties: {}
+          description: The event's payload
+        created_at:
+          type: string
+          format: date-time
+    SuccinctEntity:
       type: object
       properties:
         id:
           type: string
         name:
-          type: string
-        number:
           type: string
     PaginationEntity:
       type: object
@@ -328,41 +295,48 @@ components:
           - integer
           - 'null'
           format: int32
-    SuccinctEntity:
+    Incidents_AlertEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Incidents_AlertEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Incidents_AlertEntityPaginated model
+    Incidents_AlertEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        alert:
+          $ref: '#/components/schemas/Alerts_AlertEntity'
+        primary:
+          type: boolean
+          description: whether or not this is the primary alert for this incident
+      description: Incidents_AlertEntity model
+    Alerts_ProcessingLogEntryEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts_ProcessingLogEntryEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Alerts_ProcessingLogEntryEntityPaginated model
+    Signals_API_TargetEntity:
       type: object
       properties:
         id:
           type: string
         name:
           type: string
-    Alerts_ProcessingLogEntryEntity:
-      type: object
-      properties:
-        id:
+        type:
           type: string
-        context:
-          type: object
-          properties: {}
-          description: An unstructured representation of this log entry's context.
-        created_at:
-          type: string
-          format: date-time
-        level:
-          type: string
-          enum:
-          - unknown
-          - debug
-          - info
-          - warn
-          - error
-          - fatal
-        message:
-          type: string
-        message_type:
-          type: string
-          enum:
-          - i18n_key
-          - custom
+        is_pageable:
+          type: boolean
     Alerts_AlertEntity:
       type: object
       properties:
@@ -439,27 +413,6 @@ components:
         is_expired:
           type: boolean
       description: Alerts_AlertEntity model
-    Incidents_AlertEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        alert:
-          $ref: '#/components/schemas/Alerts_AlertEntity'
-        primary:
-          type: boolean
-          description: whether or not this is the primary alert for this incident
-      description: Incidents_AlertEntity model
-    Incidents_AlertEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Incidents_AlertEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: Incidents_AlertEntityPaginated model
     AuthorEntity:
       type: object
       properties:
@@ -471,6 +424,53 @@ components:
           type: string
         email:
           type: string
+    PublicAPI_V1_Incidents_SuccinctEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        number:
+          type: string
+    Alerts_ProcessingLogEntryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        context:
+          type: object
+          properties: {}
+          description: An unstructured representation of this log entry's context.
+        created_at:
+          type: string
+          format: date-time
+        level:
+          type: string
+          enum:
+          - unknown
+          - debug
+          - info
+          - warn
+          - error
+          - fatal
+        message:
+          type: string
+        message_type:
+          type: string
+          enum:
+          - i18n_key
+          - custom
+    Alerts_AlertEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alerts_AlertEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: Alerts_AlertEntityPaginated model
   securitySchemes:
     api_key:
       type: apiKey

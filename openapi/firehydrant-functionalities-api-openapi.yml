@@ -227,6 +227,198 @@ paths:
       description: Production
 components:
   schemas:
+    FunctionalityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        active_incidents:
+          type: array
+          description: List of active incident guids
+          items:
+            type: string
+        links:
+          type: array
+          description: List of links attached to this functionality.
+          items:
+            $ref: '#/components/schemas/LinksEntity'
+        owner:
+          $ref: '#/components/schemas/TeamEntityLite'
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+        updated_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        services:
+          type: array
+          description: Services this functionality provides
+          items:
+            $ref: '#/components/schemas/ServiceEntityLite'
+        external_resources:
+          type: array
+          description: Information about known linkages to representations of services outside of FireHydrant.
+          items:
+            $ref: '#/components/schemas/ExternalResourceEntity'
+        teams:
+          type: array
+          description: List of teams attached to the functionality
+          items:
+            $ref: '#/components/schemas/TeamEntityLite'
+      description: FunctionalityEntity model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    LinksEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        href_url:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+    ExternalResourceEntity:
+      type: object
+      properties:
+        connection_type:
+          type: string
+        connection_name:
+          type: string
+        connection_id:
+          type: string
+        remote_id:
+          type: string
+        remote_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        name:
+          type: string
+    FunctionalityEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionalityEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: FunctionalityEntityPaginated model
+    ServiceEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        service_tier:
+          type: integer
+          format: int32
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        allowed_params:
+          type: array
+          items:
+            type: string
+        labels:
+          type: object
+          properties: {}
+          description: An object of label key and values
+        alert_on_add:
+          type: boolean
+        auto_add_responding_team:
+          type: boolean
+      description: ServiceEntityLite model
+    TeamEntityLite:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        signals_ical_url:
+          type: string
+        created_by:
+          $ref: '#/components/schemas/AuthorEntity'
+        in_support_hours:
+          type: boolean
+    AuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        source:
+          type: string
+        email:
+          type: string
     postV1Functionalities:
       required:
       - name
@@ -305,164 +497,6 @@ components:
               id:
                 type: string
       description: Creates a functionality for the organization
-    FunctionalityEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        slug:
-          type: string
-        description:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        labels:
-          type: object
-          properties: {}
-          description: An object of label key and values
-        active_incidents:
-          type: array
-          description: List of active incident guids
-          items:
-            type: string
-        links:
-          type: array
-          description: List of links attached to this functionality.
-          items:
-            $ref: '#/components/schemas/LinksEntity'
-        owner:
-          $ref: '#/components/schemas/TeamEntityLite'
-        alert_on_add:
-          type: boolean
-        auto_add_responding_team:
-          type: boolean
-        updated_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        services:
-          type: array
-          description: Services this functionality provides
-          items:
-            $ref: '#/components/schemas/ServiceEntityLite'
-        external_resources:
-          type: array
-          description: Information about known linkages to representations of services outside of FireHydrant.
-          items:
-            $ref: '#/components/schemas/ExternalResourceEntity'
-        teams:
-          type: array
-          description: List of teams attached to the functionality
-          items:
-            $ref: '#/components/schemas/TeamEntityLite'
-      description: FunctionalityEntity model
-    LinksEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        href_url:
-          type: string
-        icon_url:
-          type: string
-        name:
-          type: string
-    FunctionalityEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/FunctionalityEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: FunctionalityEntityPaginated model
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
-    ExternalResourceEntity:
-      type: object
-      properties:
-        connection_type:
-          type: string
-        connection_name:
-          type: string
-        connection_id:
-          type: string
-        remote_id:
-          type: string
-        remote_url:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        name:
-          type: string
-    ServiceEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        service_tier:
-          type: integer
-          format: int32
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        allowed_params:
-          type: array
-          items:
-            type: string
-        labels:
-          type: object
-          properties: {}
-          description: An object of label key and values
-        alert_on_add:
-          type: boolean
-        auto_add_responding_team:
-          type: boolean
-      description: ServiceEntityLite model
     patchV1FunctionalitiesFunctionalityId:
       type: object
       properties:
@@ -567,40 +601,6 @@ components:
           description: Set this to true if you want to remove all of the services that are not included in the services array from the functionality
           default: false
       description: Update a functionalities attributes
-    TeamEntityLite:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        slug:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-        signals_ical_url:
-          type: string
-        created_by:
-          $ref: '#/components/schemas/AuthorEntity'
-        in_support_hours:
-          type: boolean
-    AuthorEntity:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        source:
-          type: string
-        email:
-          type: string
   securitySchemes:
     api_key:
       type: apiKey

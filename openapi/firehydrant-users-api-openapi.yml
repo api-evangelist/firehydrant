@@ -82,44 +82,6 @@ paths:
                 $ref: '#/components/schemas/UserEntity'
 components:
   schemas:
-    UserEntityPaginated:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserEntity'
-        pagination:
-          $ref: '#/components/schemas/PaginationEntity'
-      description: UserEntityPaginated model
-    PaginationEntity:
-      type: object
-      properties:
-        count:
-          type: integer
-          format: int32
-        page:
-          type: integer
-          format: int32
-        items:
-          type: integer
-          format: int32
-        pages:
-          type: integer
-          format: int32
-        last:
-          type: integer
-          format: int32
-        prev:
-          type:
-          - integer
-          - 'null'
-          format: int32
-        next:
-          type:
-          - integer
-          - 'null'
-          format: int32
     SuccinctEntity:
       type: object
       properties:
@@ -151,6 +113,44 @@ components:
           items:
             type: string
       description: UserEntity model
+    PaginationEntity:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        page:
+          type: integer
+          format: int32
+        items:
+          type: integer
+          format: int32
+        pages:
+          type: integer
+          format: int32
+        last:
+          type: integer
+          format: int32
+        prev:
+          type:
+          - integer
+          - 'null'
+          format: int32
+        next:
+          type:
+          - integer
+          - 'null'
+          format: int32
+    UserEntityPaginated:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserEntity'
+        pagination:
+          $ref: '#/components/schemas/PaginationEntity'
+      description: UserEntityPaginated model
     CurrentUserEntity:
       type: object
       properties:

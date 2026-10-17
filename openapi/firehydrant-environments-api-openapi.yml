@@ -244,26 +244,6 @@ components:
           items:
             $ref: '#/components/schemas/ExternalResourceEntity'
       description: EnvironmentEntryEntity model
-    patchV1EnvironmentsEnvironmentId:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-      description: Update a environments attributes
-    postV1Environments:
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-      description: Creates an environment for the organization
     PaginationEntity:
       type: object
       properties:
@@ -323,6 +303,26 @@ components:
         pagination:
           $ref: '#/components/schemas/PaginationEntity'
       description: EnvironmentEntryEntityPaginated model
+    postV1Environments:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      description: Creates an environment for the organization
+    patchV1EnvironmentsEnvironmentId:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      description: Update a environments attributes
   securitySchemes:
     api_key:
       type: apiKey
