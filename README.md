@@ -1,4 +1,4 @@
-# FireHydrant (firehydrant)
+# FireHydrant
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,51 +64,198 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-FireHydrant is an incident management platform providing automated runbooks, status pages, and retrospective workflows.
+FireHydrant is an incident management platform, now part of Freshworks, that covers the whole incident lifecycle — declaring and driving incidents from Slack or Microsoft Teams, Signals on-call scheduling and alerting, automated runbooks, a service catalog with environments and functionalities, its own hosted status pages, AI-enriched incident summaries, and retrospectives with analytics. Its REST API at api.firehydrant.io/v1 is a 373-operation, 228-path surface covering incidents, alerts, teams, runbooks, changes, integrations, webhooks and SCIM 2.0 provisioning, authenticated with a single organization API key sent as a Bearer token. FireHydrant also ships an official MCP server, first-party TypeScript and Go SDKs, a Terraform provider, and the fhcli change-event CLI.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/firehydrant/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/firehydrant/refs/heads/main/apis.yml)
+**Areas:** AIOps · Incident Management · On-Call · Alerting · Status Pages · Runbooks · Site Reliability Engineering · Observability · Retrospectives · DevOps
 
-## Scope
+## FireHydrant on APIs.io
 
-- **Type:** Index
+Everything profiled for FireHydrant is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/firehydrant/](https://apis.io/providers/firehydrant/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (28)
 
-- AIOps
-- Incident Management
+- [FireHydrant Audits API](https://apis.io/apis/firehydrant/firehydrant-audits-api/) — The Audits API from FireHydrant — 1 operation(s) for audits.
+- [FireHydrant Change Events API](https://apis.io/apis/firehydrant/firehydrant-change-events-api/) — The Change Events API from FireHydrant — 2 operation(s) for change events.
+- [FireHydrant Changes API](https://apis.io/apis/firehydrant/firehydrant-changes-api/) — The Changes API from FireHydrant — 1 operation(s) for changes.
+- [FireHydrant Conversations API](https://apis.io/apis/firehydrant/firehydrant-conversations-api/) — The Conversations API from FireHydrant — 1 operation(s) for conversations.
+- [FireHydrant Environments API](https://apis.io/apis/firehydrant/firehydrant-environments-api/) — The Environments API from FireHydrant — 2 operation(s) for environments.
+- [FireHydrant Functionalities API](https://apis.io/apis/firehydrant/firehydrant-functionalities-api/) — The Functionalities API from FireHydrant — 1 operation(s) for functionalities.
+- [FireHydrant Incidents API](https://apis.io/apis/firehydrant/firehydrant-incidents-api/) — The Incidents API from FireHydrant — 5 operation(s) for incidents.
+- [FireHydrant Ping API](https://apis.io/apis/firehydrant/firehydrant-ping-api/) — The Ping API from FireHydrant — 1 operation(s) for ping.
+- [FireHydrant Priorities API](https://apis.io/apis/firehydrant/firehydrant-priorities-api/) — The Priorities API from FireHydrant — 1 operation(s) for priorities.
+- [FireHydrant Runbooks API](https://apis.io/apis/firehydrant/firehydrant-runbooks-api/) — The Runbooks API from FireHydrant — 2 operation(s) for runbooks.
+- [FireHydrant Scheduled Maintenances API](https://apis.io/apis/firehydrant/firehydrant-scheduled-maintenances-api/) — The Scheduled Maintenances API from FireHydrant — 1 operation(s) for scheduled maintenances.
+- [FireHydrant Services API](https://apis.io/apis/firehydrant/firehydrant-services-api/) — The Services API from FireHydrant — 2 operation(s) for services.
+- [FireHydrant Severities API](https://apis.io/apis/firehydrant/firehydrant-severities-api/) — The Severities API from FireHydrant — 1 operation(s) for severities.
+- [FireHydrant Signals API](https://apis.io/apis/firehydrant/firehydrant-signals-api/) — The Signals API from FireHydrant — 1 operation(s) for signals.
+- [FireHydrant Teams API](https://apis.io/apis/firehydrant/firehydrant-teams-api/) — The Teams API from FireHydrant — 2 operation(s) for teams.
+- [FireHydrant Account Settings API](https://apis.io/apis/firehydrant/firehydrant-account-settings-api/) — Operations related to Account Settings
+- [FireHydrant Alerts API](https://apis.io/apis/firehydrant/firehydrant-alerts-api/) — Operations related to Alerts
+- [FireHydrant Communication API](https://apis.io/apis/firehydrant/firehydrant-communication-api/) — Operations related to Communication
+- [FireHydrant Incident Settings API](https://apis.io/apis/firehydrant/firehydrant-incident-settings-api/) — Operations related to Incident Settings
+- [FireHydrant Integrations API](https://apis.io/apis/firehydrant/firehydrant-integrations-api/) — Operations related to Integrations
+- [FireHydrant Metrics API](https://apis.io/apis/firehydrant/firehydrant-metrics-api/) — The metrics API from FireHydrant — 1 operation(s) for metrics.
+- [FireHydrant Metrics/Reporting API](https://apis.io/apis/firehydrant/firehydrant-metrics-reporting-api/) — Operations related to Metrics/Reporting
+- [FireHydrant Retrospectives API](https://apis.io/apis/firehydrant/firehydrant-retrospectives-api/) — Operations related to Retrospectives
+- [FireHydrant SCIM API](https://apis.io/apis/firehydrant/firehydrant-scim-api/) — Operations related to SCIM
+- [FireHydrant Status Pages API](https://apis.io/apis/firehydrant/firehydrant-status-pages-api/) — Operations related to Status Pages
+- [FireHydrant Tasks API](https://apis.io/apis/firehydrant/firehydrant-tasks-api/) — Operations related to Tasks
+- [FireHydrant Users API](https://apis.io/apis/firehydrant/firehydrant-users-api/) — Operations related to Users
+- [FireHydrant Webhooks API](https://apis.io/apis/firehydrant/firehydrant-webhooks-api/) — Operations related to Webhooks
 
-## Timestamps
+### Published properties
 
-- **Created:** 2026-03-27
-- **Modified:** 2026-03-27
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### AsyncAPI (1)
 
-### FireHydrant
+Event-driven and webhook contracts.
 
-FireHydrant is an incident management platform providing automated runbooks, status pages, and retrospective workflows.
+- [Firehydrant Webhooks](https://apis.io/asyncapis/firehydrant/firehydrant-webhooks/)
 
-- **Human URL:** [https://firehydrant.com](https://firehydrant.com)
+#### GraphQL (1)
 
-#### Tags
+GraphQL schemas.
 
-- AIOps
+- [Moved to /providers/firehydrant/](https://apis.io/graphqls/firehydrant/firehydrant-graphql/)
 
-#### Properties
+#### MCP servers (1)
 
-- [Documentation](https://docs.firehydrant.io)
-- [Postman Collection](collections/firehydrant.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/firehydrant.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+Model Context Protocol servers that expose the API to agents.
 
-## Common Properties
+- [FireHydrant](https://apis.io/servers/firehydrant/firehydrant/)
 
-- [GitHub Organization](https://github.com/firehydrant)
-- [LinkedIn](https://www.linkedin.com/company/firehydrant)
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Firehydrant Agentic Access](https://apis.io/agentic-access/firehydrant/firehydrant-agentic-access/)
+
+#### Collections (16)
+
+Postman and Open Collection request collections.
+
+- [FireHydrant REST API](https://apis.io/collections/firehydrant/open-firehydrant/)
+- [FireHydrant REST Audits API](https://apis.io/collections/firehydrant/open-firehydrant-audits-api/)
+- [FireHydrant REST Audits Change Events API](https://apis.io/collections/firehydrant/open-firehydrant-change-events-api/)
+- [FireHydrant REST Audits Changes API](https://apis.io/collections/firehydrant/open-firehydrant-changes-api/)
+- [FireHydrant REST Audits Conversations API](https://apis.io/collections/firehydrant/open-firehydrant-conversations-api/)
+- [FireHydrant REST Audits Environments API](https://apis.io/collections/firehydrant/open-firehydrant-environments-api/)
+- [FireHydrant REST Audits Functionalities API](https://apis.io/collections/firehydrant/open-firehydrant-functionalities-api/)
+- [FireHydrant REST Audits Incidents API](https://apis.io/collections/firehydrant/open-firehydrant-incidents-api/)
+- [FireHydrant REST Audits Ping API](https://apis.io/collections/firehydrant/open-firehydrant-ping-api/)
+- [FireHydrant REST Audits Priorities API](https://apis.io/collections/firehydrant/open-firehydrant-priorities-api/)
+- [FireHydrant REST Audits Runbooks API](https://apis.io/collections/firehydrant/open-firehydrant-runbooks-api/)
+- [FireHydrant REST Audits Scheduled Maintenances API](https://apis.io/collections/firehydrant/open-firehydrant-scheduled-maintenances-api/)
+- [FireHydrant REST Audits Services API](https://apis.io/collections/firehydrant/open-firehydrant-services-api/)
+- [FireHydrant REST Audits Severities API](https://apis.io/collections/firehydrant/open-firehydrant-severities-api/)
+- [FireHydrant REST Audits Signals API](https://apis.io/collections/firehydrant/open-firehydrant-signals-api/)
+- [FireHydrant REST Audits Teams API](https://apis.io/collections/firehydrant/open-firehydrant-teams-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Firehydrant Api Overlay](https://apis.io/overlays/firehydrant/firehydrant-api-overlay/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Firehydrant Authentication](https://apis.io/security/firehydrant/firehydrant-authentication/)
+- [Firehydrant Domain Security](https://apis.io/security/firehydrant/firehydrant-domain-security/)
+- [Firehydrant Trust Center](https://apis.io/security/firehydrant/firehydrant-trust-center/)
+- [Firehydrant Vulnerability Disclosure](https://apis.io/security/firehydrant/firehydrant-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Firehydrant Plans Pricing](https://apis.io/plans/firehydrant/firehydrant-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Firehydrant Rate Limits](https://apis.io/rate-limits/firehydrant/firehydrant-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Firehydrant Finops](https://apis.io/finops/firehydrant/firehydrant-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://firehydrant.com)
-- [Documentation](https://docs.firehydrant.io)
-- [Integrations](https://firehydrant.com/integrations/)
+- [Documentation](https://docs.firehydrant.com)
+- [Getting started](https://docs.firehydrant.com/docs/admin-quickstart)
+- [API reference](https://docs.firehydrant.com/reference/firehydrant-api)
+- [Pricing](https://firehydrant.com/pricing/)
+- [Sign up](https://app.firehydrant.io/registrations/new/)
+- [Support](https://docs.firehydrant.com/docs/contacting-support)
+- [Changelog](https://firehydrant.com/changelog/)
+- [Blog](https://firehydrant.com/rss.xml)
+- [Security](https://firehydrant.com/security/)
+- [Compliance](https://firehydrant.com/security/)
+- [Terms of service](https://firehydrant.com/legal/ssa/)
+- [Privacy policy](https://firehydrant.com/legal/privacy/)
+- [GitHub](https://github.com/firehydrant)
+- [Status](https://status.firehydrant.com/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 64.9** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 71.7 |
+| Contract quality | 59.0 |
+| Contract governance | 4.5 |
+| Operational transparency | 65.8 |
+| Developer ergonomics | 51.8 |
+| Access clarity | 92.1 |
+
+**Agent readiness 35.1** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | mostly |
+
+**Regulatory alignment 35.3** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/firehydrant/](https://apis.io/providers/firehydrant/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for FireHydrant: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/firehydrant/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
