@@ -1,0 +1,69 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://firehydrant.com/pricing/
+sources:
+- https://firehydrant.com/pricing/
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T141238
+  grounding: every price_text was found verbatim in the fetched page text
+audience: business-product
+pricing_basis: per-seat
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-28'
+published: true
+note: Pro priced per responder/month billed annually; Enterprise is custom. FAQ notes Signals (alerting/on-call)
+  is charged based on number of alerts sent, and SMS/voice notifications available for purchase, without
+  numeric prices.
+plan_count: 3
+currency: USD
+plans:
+- name: Free
+  price_text: Free
+  period: none
+  included_quota: Up to 10 responders, 2 runbooks, Slack & Teams chatbot, 1 public status page, 3 integrations
+- name: Pro
+  price_text: $25 /responder/month, billed annually
+  price: 25
+  currency: USD
+  period: month
+  unit: responder
+  included_quota: 5 runbooks, Slack & Teams chatbot, 1 retrospective template, unlimited public status
+    pages, service catalog, 10 custom fields, 5 integrations, Signals on-call & alerting, SSO, standard
+    support
+- name: Enterprise
+  price_text: Custom Pricing
+  period: none
+  included_quota: Everything in Pro, plus enterprise features and premium support
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - subscription
+  units: []
+  plans:
+  - name: Free
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
+  - name: Pro
+    access: other
+    model: subscription
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
